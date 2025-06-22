@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
@@ -12,24 +11,24 @@ const Slate = () => {
   const products = [
     {
       id: 1,
-      name: "Small Slate Photo Keepsake",
+      name: "Natural Edge Slate Photo",
       price: 25.00,
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
-      description: "Elegant small slate piece with your photo, perfect for home décor"
+      image: "/lovable-uploads/ecf4a33f-5c77-42cb-863b-49bf81af5e31.png",
+      description: "Beautiful natural edge slate with your photo, perfect for rustic home décor"
     },
     {
       id: 2,
-      name: "Medium Slate Photo Display",
+      name: "Rectangular Slate Display",
       price: 30.00,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
-      description: "Medium-sized slate display for your favorite memories"
+      image: "/lovable-uploads/ba6e4c5b-9f82-4d73-b9b3-f9c2b1b8c1c2.png",
+      description: "Clean rectangular slate perfect for family photos and special memories"
     },
     {
       id: 3,
       name: "Large Slate Memorial",
       price: 40.00,
       originalPrice: 45.00,
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
+      image: "/lovable-uploads/ecf4a33f-5c77-42cb-863b-49bf81af5e31.png",
       description: "Large slate piece perfect for memorial or special occasions"
     }
   ];

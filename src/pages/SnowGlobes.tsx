@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
@@ -12,17 +11,17 @@ const SnowGlobes = () => {
   const products = [
     {
       id: 1,
-      name: "Classic Snow Globe",
+      name: "Winter Botanical Snow Globe",
       price: 20.00,
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      description: "Traditional snow globe with your custom photo"
+      image: "/lovable-uploads/bb21a48b-82eb-41b9-ad77-0e0ada37d35a.png",
+      description: "Beautiful snow globe with winter botanical scene, perfect for holiday displays"
     },
     {
       id: 2,
-      name: "Deluxe Snow Globe",
+      name: "Custom Photo Snow Globe",
       price: 25.00,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
-      description: "Premium snow globe with enhanced base and details"
+      image: "/lovable-uploads/bb21a48b-82eb-41b9-ad77-0e0ada37d35a.png",
+      description: "Premium snow globe with your favorite photo and enhanced base details"
     }
   ];
 

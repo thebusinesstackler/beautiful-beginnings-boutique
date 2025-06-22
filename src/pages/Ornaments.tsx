@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
@@ -12,17 +11,17 @@ const Ornaments = () => {
   const products = [
     {
       id: 1,
-      name: "Custom Photo Ornament",
+      name: "Personalized Photo Ornament",
       price: 12.00,
-      image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400",
-      description: "Transform your favorite memory into a beautiful keepsake ornament"
+      image: "/lovable-uploads/15fe6b0a-af7e-47cf-8b78-c82b37ca5c6f.png",
+      description: "Custom ornament with your favorite photo - perfect keepsake like our Jacob Santa hat ornament"
     },
     {
       id: 2,
       name: "Round Photo Ornament",
       price: 12.00,
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      description: "Classic round ornament with your personalized photo"
+      image: "/lovable-uploads/15fe6b0a-af7e-47cf-8b78-c82b37ca5c6f.png",
+      description: "Classic round ornament with your personalized photo and custom text"
     }
   ];
 

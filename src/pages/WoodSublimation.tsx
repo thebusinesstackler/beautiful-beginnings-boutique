@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
@@ -12,24 +11,24 @@ const WoodSublimation = () => {
   const products = [
     {
       id: 1,
-      name: "Small Wood Photo",
+      name: "Wood Forest Silhouette",
       price: 15.00,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400",
-      description: "Small wood sublimation photo perfect for desk or shelf display"
+      image: "/lovable-uploads/dcd1b4a7-b3b9-4b3a-9b1a-1b4a7b3b9b4a.png",
+      description: "Beautiful wood piece with forest silhouette cutouts, perfect for rustic décor"
     },
     {
       id: 2,
-      name: "Medium Wood Picture",
+      name: "HOME Photo Display",
       price: 20.00,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
-      description: "Medium-sized wood sublimation picture for wall or tabletop"
+      image: "/lovable-uploads/0e6f2d5b-8c7a-4d3e-9f1b-2c5b8a7d3e9f.png",
+      description: "Charming 'HOME' wooden letters with circular photo display"
     },
     {
       id: 3,
-      name: "Large Wood Display",
-      price: 25.00,
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
-      description: "Large wood sublimation display piece for prominent showcasing"
+      name: "SPOOKY Photo Display",
+      price: 20.00,
+      image: "/lovable-uploads/f3a9c2d1-7b5e-4c8f-a6d3-9e2c1b5f8a4d.png",
+      description: "Fun 'SPOOKY' Halloween-themed wooden letters with photo display"
     }
   ];
 
@@ -58,13 +57,13 @@ const WoodSublimation = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-playfair font-bold text-foreground mb-4">
-            Wood Sublimation Pictures
+            Wood Photo Displays
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Beautiful wood sublimation pieces that bring warmth and natural beauty to your photo memories
+            Beautiful wood pieces and decorative displays that bring warmth and personality to your photo memories
           </p>
           <div className="mt-4 text-sm text-muted-foreground">
-            Price Range: $15.00 - $25.00
+            Price Range: $15.00 - $20.00
           </div>
         </div>
 
