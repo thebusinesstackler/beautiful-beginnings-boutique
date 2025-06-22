@@ -8,6 +8,8 @@ import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SnowGlobes from "./pages/SnowGlobes";
+import WinterBotanicalSnowGlobe from "./pages/WinterBotanicalSnowGlobe";
+import CustomPhotoSnowGlobe from "./pages/CustomPhotoSnowGlobe";
 import Necklaces from "./pages/Necklaces";
 import Ornaments from "./pages/Ornaments";
 import OrnamentDetail from "./pages/OrnamentDetail";
@@ -26,6 +28,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/products/snow-globes" element={<SnowGlobes />} />
+            <Route path="/products/snow-globes/winter-botanical" element={<WinterBotanicalSnowGlobe />} />
+            <Route path="/products/snow-globes/custom-photo" element={<CustomPhotoSnowGlobe />} />
             <Route path="/products/necklaces" element={<Necklaces />} />
             <Route path="/products/ornaments" element={<Ornaments />} />
             <Route path="/products/ornaments/:id" element={<OrnamentDetail />} />

@@ -23,14 +23,16 @@ const SnowGlobes = () => {
       name: "Winter Botanical Snow Globe",
       price: 20.00,
       image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      description: "Beautiful snow globe with winter botanical scene, perfect for holiday displays"
+      description: "Beautiful snow globe with winter botanical scene, perfect for holiday displays",
+      link: "/products/snow-globes/winter-botanical"
     },
     {
       id: 2,
       name: "Custom Photo Snow Globe",
       price: 25.00,
       image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      description: "Premium snow globe with your favorite photo and enhanced base details"
+      description: "Premium snow globe with your favorite photo and enhanced base details",
+      link: "/products/snow-globes/custom-photo"
     }
   ];
 
@@ -131,28 +133,33 @@ const SnowGlobes = () => {
                 <h3 className="font-playfair font-semibold text-lg text-foreground mb-2 hover:text-primary cursor-pointer transition-colors">
                   {product.name}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                   {product.description}
                 </p>
                 
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-6">
                   <span className="text-xl font-bold text-primary">
                     ${product.price.toFixed(2)}
                   </span>
-                  <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white">
-                    <Info className="h-4 w-4 mr-2" />
-                    Learn More
-                  </Button>
                 </div>
                 
-                <Button 
-                  size="sm" 
-                  className="btn-primary w-full"
-                  onClick={() => handleAddToCart(product)}
-                >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Add to Cart
-                </Button>
+                <div className="space-y-3">
+                  <Link to={product.link}>
+                    <Button size="sm" variant="outline" className="w-full text-primary border-primary hover:bg-primary hover:text-white">
+                      <Info className="h-4 w-4 mr-2" />
+                      Learn More
+                    </Button>
+                  </Link>
+                  
+                  <Button 
+                    size="sm" 
+                    className="btn-primary w-full"
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Add to Cart
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
