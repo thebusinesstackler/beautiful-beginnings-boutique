@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Sparkles, Gift, Clock, Truck, Shield, Camera, Eye, Users, Award, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -19,38 +18,6 @@ const WinterBotanicalSnowGlobe = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const product = {
-    id: 1,
-    name: "Winter Botanical Snow Globe",
-    price: 20.00,
-    image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-    description: "Beautiful snow globe with winter botanical scene, perfect for holiday displays",
-    fullDescription: "Capture the magic of winter with our enchanting Winter Botanical Snow Globe. This beautifully crafted piece features delicate winter botanicals suspended in swirling snow, creating a mesmerizing display that brings the serenity of a winter garden into your home. Each globe is carefully hand-assembled with premium materials to ensure lasting beauty and durability.",
-    features: [
-      "Hand-crafted winter botanical scene with real preserved elements",
-      "Premium quality snow that swirls beautifully for 30+ seconds",
-      "Durable borosilicate glass globe with scratch-resistant coating",
-      "Weighted wooden base with elegant finish",
-      "Perfect 4-inch size for any display space",
-      "Makes a wonderful heirloom gift"
-    ],
-    specifications: [
-      "Size: 4 inches diameter, 5.5 inches height",
-      "Material: High-quality borosilicate glass and natural wood",
-      "Base: Solid wood, weighted for stability",
-      "Care: Dust with soft microfiber cloth",
-      "Gift packaging included at no extra cost"
-    ],
-    giftIdeas: [
-      "Perfect holiday gift for nature lovers",
-      "Thoughtful housewarming present",
-      "Beautiful centerpiece for winter weddings",
-      "Ideal teacher or coworker appreciation gift",
-      "Wonderful addition to holiday decorations",
-      "Great for creating cozy winter ambiance"
-    ]
-  };
 
   // Related products data
   const relatedProducts = [
@@ -421,10 +388,7 @@ const WinterBotanicalSnowGlobe = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {categories.map((category,
-
-
-) => (
+            {categories.map((category, index) => (
               <Link key={index} to={category.href}>
                 <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
                   <div className="relative overflow-hidden rounded-t-lg">
