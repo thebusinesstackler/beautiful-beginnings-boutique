@@ -1,10 +1,24 @@
 
 import { Button } from '@/components/ui/button';
-import { ArrowDown, Sparkles, Heart, Star } from 'lucide-react';
+import { ArrowDown, Sparkles, Heart, Star, Leaf } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section className="relative bg-gradient-to-br from-background via-muted to-secondary/20 py-24 md:py-32 overflow-hidden">
+    <section className="relative bg-warm-cream py-24 md:py-32 overflow-hidden">
+      {/* Animated leaf background */}
+      <div className="absolute inset-0 opacity-10">
+        <Leaf className="absolute top-10 left-10 h-16 w-16 text-primary rotate-12 animate-float" />
+        <Leaf className="absolute top-20 right-20 h-12 w-12 text-accent -rotate-45 animate-float" style={{ animationDelay: '1s' }} />
+        <Leaf className="absolute top-40 left-1/4 h-20 w-20 text-primary rotate-45 animate-float" style={{ animationDelay: '2s' }} />
+        <Leaf className="absolute top-60 right-1/3 h-14 w-14 text-accent -rotate-12 animate-float" style={{ animationDelay: '0.5s' }} />
+        <Leaf className="absolute bottom-40 left-16 h-18 w-18 text-primary rotate-90 animate-float" style={{ animationDelay: '1.5s' }} />
+        <Leaf className="absolute bottom-60 right-24 h-10 w-10 text-accent -rotate-30 animate-float" style={{ animationDelay: '2.5s' }} />
+        <Leaf className="absolute top-32 left-1/2 h-8 w-8 text-primary rotate-180 animate-float" style={{ animationDelay: '3s' }} />
+        <Leaf className="absolute bottom-32 left-1/3 h-22 w-22 text-accent rotate-60 animate-float" style={{ animationDelay: '0.8s' }} />
+        <Leaf className="absolute top-16 right-1/4 h-6 w-6 text-primary -rotate-60 animate-float" style={{ animationDelay: '1.8s' }} />
+        <Leaf className="absolute bottom-20 right-1/2 h-12 w-12 text-accent rotate-120 animate-float" style={{ animationDelay: '2.2s' }} />
+      </div>
+
       {/* Decorative elements */}
       <div className="absolute top-20 left-10 text-accent/20 animate-float">
         <Sparkles size={24} />
