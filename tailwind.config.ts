@@ -63,14 +63,15 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Beautiful Beginnings refined brand colors - no yellow tones
-				'warm-cream': '#faf5f0',
-				'chocolate': '#3e2723',
-				'saddle-brown': '#8b4513',
-				'burlywood': '#deb887',
-				'light-cream': '#f5f0eb',
-				'dark-brown': '#654321',
-				'peru': '#cd853f'
+				// Custom brand colors
+				'rich-brown': '#8a704d',
+				'warm-coral': '#ef9b86',
+				'golden-brown': '#ad9252',
+				'soft-peach': '#e4ae8d',
+				'light-cream': '#ebd3c3',
+				'dark-charcoal': 'rgb(64,63,61)',
+				'cream-blush': '#eed4cc',
+				'neutral-gray': '#b4b1ac'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

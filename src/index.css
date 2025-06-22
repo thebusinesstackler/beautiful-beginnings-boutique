@@ -3,86 +3,86 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Beautiful Beginnings Design System - Refined Color Palette */
+/* Beautiful Beginnings Design System - Custom Brand Colors */
 
 @layer base {
   :root {
-    --background: 250 245 240; /* #faf5f0 very light cream */
-    --foreground: 62 39 35; /* #3e2723 deep chocolate brown */
+    --background: 235 211 195; /* #ebd3c3 light cream background */
+    --foreground: 64 63 61; /* rgb(64,63,61) dark charcoal text */
 
     --card: 255 255 255; /* white cards */
-    --card-foreground: 62 39 35;
+    --card-foreground: 64 63 61;
 
     --popover: 255 255 255;
-    --popover-foreground: 62 39 35;
+    --popover-foreground: 64 63 61;
 
-    --primary: 139 69 19; /* #8b4513 rich saddle brown */
+    --primary: 138 112 77; /* #8a704d rich brown */
     --primary-foreground: 255 255 255;
 
-    --secondary: 222 184 135; /* #deb887 warm burlywood */
-    --secondary-foreground: 62 39 35;
+    --secondary: 173 146 82; /* #ad9252 golden brown */
+    --secondary-foreground: 64 63 61;
 
-    --muted: 245 240 235; /* #f5f0eb lighter cream */
-    --muted-foreground: 101 67 33; /* #654321 dark brown */
+    --muted: 238 212 204; /* #eed4cc soft peach */
+    --muted-foreground: 64 63 61;
 
-    --accent: 205 133 63; /* #cd853f peru/bronze accent */
+    --accent: 239 155 134; /* #ef9b86 warm coral */
     --accent-foreground: 255 255 255;
 
     --destructive: 220 38 38;
     --destructive-foreground: 255 255 255;
 
-    --border: 222 184 135; /* soft burlywood border */
+    --border: 180 177 172; /* #b4b1ac neutral border */
     --input: 255 255 255;
-    --ring: 139 69 19;
+    --ring: 138 112 77;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 250 245 240;
-    --sidebar-foreground: 62 39 35;
-    --sidebar-primary: 139 69 19;
+    --sidebar-background: 235 211 195;
+    --sidebar-foreground: 64 63 61;
+    --sidebar-primary: 138 112 77;
     --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 245 240 235;
-    --sidebar-accent-foreground: 62 39 35;
-    --sidebar-border: 222 184 135;
-    --sidebar-ring: 139 69 19;
+    --sidebar-accent: 238 212 204;
+    --sidebar-accent-foreground: 64 63 61;
+    --sidebar-border: 180 177 172;
+    --sidebar-ring: 138 112 77;
   }
 
   .dark {
-    --background: 62 39 35;
-    --foreground: 250 245 240;
+    --background: 64 63 61;
+    --foreground: 235 211 195;
 
-    --card: 62 39 35;
-    --card-foreground: 250 245 240;
+    --card: 64 63 61;
+    --card-foreground: 235 211 195;
 
-    --popover: 62 39 35;
-    --popover-foreground: 250 245 240;
+    --popover: 64 63 61;
+    --popover-foreground: 235 211 195;
 
-    --primary: 205 133 63;
-    --primary-foreground: 62 39 35;
+    --primary: 239 155 134;
+    --primary-foreground: 64 63 61;
 
-    --secondary: 101 67 33;
-    --secondary-foreground: 250 245 240;
+    --secondary: 138 112 77;
+    --secondary-foreground: 235 211 195;
 
-    --muted: 101 67 33;
-    --muted-foreground: 222 184 135;
+    --muted: 138 112 77;
+    --muted-foreground: 180 177 172;
 
-    --accent: 139 69 19;
-    --accent-foreground: 250 245 240;
+    --accent: 173 146 82;
+    --accent-foreground: 64 63 61;
 
     --destructive: 239 68 68;
-    --destructive-foreground: 250 245 240;
+    --destructive-foreground: 235 211 195;
 
-    --border: 101 67 33;
-    --input: 101 67 33;
-    --ring: 205 133 63;
-    --sidebar-background: 62 39 35;
-    --sidebar-foreground: 250 245 240;
-    --sidebar-primary: 205 133 63;
-    --sidebar-primary-foreground: 62 39 35;
-    --sidebar-accent: 101 67 33;
-    --sidebar-accent-foreground: 250 245 240;
-    --sidebar-border: 101 67 33;
-    --sidebar-ring: 205 133 63;
+    --border: 138 112 77;
+    --input: 138 112 77;
+    --ring: 239 155 134;
+    --sidebar-background: 64 63 61;
+    --sidebar-foreground: 235 211 195;
+    --sidebar-primary: 239 155 134;
+    --sidebar-primary-foreground: 64 63 61;
+    --sidebar-accent: 138 112 77;
+    --sidebar-accent-foreground: 235 211 195;
+    --sidebar-border: 138 112 77;
+    --sidebar-ring: 239 155 134;
   }
 }
 

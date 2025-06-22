@@ -137,7 +137,7 @@ const WinterBotanicalSnowGlobe = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -154,7 +154,7 @@ const WinterBotanicalSnowGlobe = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           {/* Product Image & Photo Upload */}
           <div className="space-y-6">
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-white p-8 border border-gray-100">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-warm-coral/10 to-soft-peach/10 p-8 border border-neutral-gray/20">
               <img
                 src={product.image}
                 alt={product.name}
@@ -166,14 +166,14 @@ const WinterBotanicalSnowGlobe = () => {
               >
                 <Heart
                   className={`h-6 w-6 transition-colors duration-200 ${
-                    isLiked ? 'text-red-500 fill-current' : 'text-gray-600'
+                    isLiked ? 'text-warm-coral fill-current' : 'text-neutral-gray'
                   }`}
                 />
               </button>
               
               {/* Trust badges */}
               <div className="absolute bottom-4 left-4 flex space-x-2">
-                <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                <div className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-medium">
                   <Award className="h-3 w-3 inline mr-1" />
                   Premium Quality
                 </div>
@@ -198,8 +198,8 @@ const WinterBotanicalSnowGlobe = () => {
                   className="mb-4"
                 />
                 {uploadedPhoto && (
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <p className="text-sm text-green-600 font-medium">
+                  <div className="text-center p-4 bg-primary/10 rounded-lg">
+                    <p className="text-sm text-primary font-medium">
                       ✨ Photo uploaded! This will look amazing with your snow globe.
                     </p>
                   </div>
@@ -208,13 +208,13 @@ const WinterBotanicalSnowGlobe = () => {
             </Card>
 
             {/* Social Proof */}
-            <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+            <div className="bg-soft-peach/20 rounded-xl p-4 border border-soft-peach/30">
               <div className="flex items-center justify-center space-x-6 text-sm">
-                <div className="flex items-center text-blue-700">
+                <div className="flex items-center text-rich-brown">
                   <Eye className="h-4 w-4 mr-1" />
                   <span className="font-medium">247 people viewed this today</span>
                 </div>
-                <div className="flex items-center text-blue-700">
+                <div className="flex items-center text-rich-brown">
                   <Users className="h-4 w-4 mr-1" />
                   <span className="font-medium">18 sold this week</span>
                 </div>
@@ -235,33 +235,33 @@ const WinterBotanicalSnowGlobe = () => {
               <div className="flex items-center space-x-3 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-accent fill-current" />
+                    <Star key={i} className="h-5 w-5 text-golden-brown fill-current" />
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">(47 reviews)</span>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">Bestseller</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">Bestseller</span>
               </div>
               <div className="flex items-center space-x-4 mb-4">
                 <p className="text-4xl font-bold text-primary">
                   ${product.price.toFixed(2)}
                 </p>
                 <div className="text-sm">
-                  <p className="text-green-600 font-medium">Free shipping on orders over $35</p>
+                  <p className="text-accent font-medium">Free shipping on orders over $35</p>
                   <p className="text-muted-foreground">Gift wrapping included</p>
                 </div>
               </div>
             </div>
 
             {/* Key Benefits */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
+            <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-6 border border-primary/20">
               <h3 className="font-semibold text-foreground mb-3 flex items-center">
-                <Sparkles className="h-5 w-5 mr-2 text-green-600" />
+                <Sparkles className="h-5 w-5 mr-2 text-primary" />
                 Why You'll Love This Snow Globe:
               </h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
                 {product.fullDescription}
               </p>
-              <p className="text-sm text-green-700 font-medium flex items-center">
+              <p className="text-sm text-primary font-medium flex items-center">
                 <Shield className="h-4 w-4 mr-1" />
                 Lifetime satisfaction guarantee included!
               </p>
@@ -270,37 +270,37 @@ const WinterBotanicalSnowGlobe = () => {
             {/* Delivery Information */}
             <div className="grid grid-cols-3 gap-4">
               <Card className="text-center p-4">
-                <Clock className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                <Clock className="h-8 w-8 text-accent mx-auto mb-2" />
                 <h4 className="font-semibold text-sm">Fast Processing</h4>
                 <p className="text-xs text-muted-foreground">Ships within 1-2 days</p>
               </Card>
               <Card className="text-center p-4">
-                <Truck className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                <Truck className="h-8 w-8 text-accent mx-auto mb-2" />
                 <h4 className="font-semibold text-sm">Quick Delivery</h4>
                 <p className="text-xs text-muted-foreground">3-5 days standard</p>
               </Card>
               <Card className="text-center p-4">
-                <Shield className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                <Shield className="h-8 w-8 text-accent mx-auto mb-2" />
                 <h4 className="font-semibold text-sm">Safe Packaging</h4>
                 <p className="text-xs text-muted-foreground">Insured delivery</p>
               </Card>
             </div>
 
             {/* Quantity & Add to Cart */}
-            <div className="space-y-4 p-6 bg-gray-50 rounded-xl">
+            <div className="space-y-4 p-6 bg-muted/30 rounded-xl">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Quantity:</span>
                 <div className="flex items-center border rounded-lg bg-white">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-2 hover:bg-gray-100 transition-colors"
+                    className="p-2 hover:bg-muted transition-colors"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
                   <span className="px-4 py-2 min-w-[3rem] text-center font-medium">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-2 hover:bg-gray-100 transition-colors"
+                    className="p-2 hover:bg-muted transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -346,9 +346,9 @@ const WinterBotanicalSnowGlobe = () => {
           </Card>
 
           {/* Gift Ideas */}
-          <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+          <Card className="bg-gradient-to-br from-accent/10 to-soft-peach/10 border-accent/30">
             <CardHeader>
-              <CardTitle className="flex items-center text-purple-800">
+              <CardTitle className="flex items-center text-accent">
                 <Gift className="h-5 w-5 mr-2" />
                 Perfect Gift Ideas
               </CardTitle>
@@ -357,7 +357,7 @@ const WinterBotanicalSnowGlobe = () => {
               <ul className="space-y-2">
                 {product.giftIdeas.map((idea, index) => (
                   <li key={index} className="flex items-center text-sm text-muted-foreground">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full mr-3 flex-shrink-0" />
+                    <div className="w-2 h-2 bg-accent rounded-full mr-3 flex-shrink-0" />
                     {idea}
                   </li>
                 ))}
@@ -391,7 +391,7 @@ const WinterBotanicalSnowGlobe = () => {
                   <h3 className="font-semibold text-sm mb-2 line-clamp-2">{product.name}</h3>
                   <div className="flex items-center space-x-1 mb-2">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-3 w-3 text-accent fill-current" />
+                      <Star key={i} className="h-3 w-3 text-golden-brown fill-current" />
                     ))}
                     <span className="text-xs text-muted-foreground">({product.reviews})</span>
                   </div>
@@ -430,7 +430,7 @@ const WinterBotanicalSnowGlobe = () => {
                       alt={category.name}
                       className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                    <div className="absolute inset-0 bg-dark-charcoal/20 group-hover:bg-dark-charcoal/10 transition-colors" />
                   </div>
                   <CardContent className="p-6 text-center">
                     <h3 className="font-playfair font-semibold text-lg mb-2">{category.name}</h3>
