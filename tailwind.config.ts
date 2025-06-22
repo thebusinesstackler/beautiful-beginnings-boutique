@@ -63,7 +63,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Beautiful Beginnings refined brand colors - removed all yellow
+				// Beautiful Beginnings refined brand colors - no yellow tones
 				'warm-cream': '#faf5f0',
 				'chocolate': '#3e2723',
 				'saddle-brown': '#8b4513',

@@ -20,7 +20,7 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="bg-background/95 backdrop-blur-md border-b border-secondary/30 sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white border-b border-secondary/30 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
@@ -96,7 +96,7 @@ const Navigation = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden animate-fade-in">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-background border-t border-secondary/30">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-secondary/30">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
