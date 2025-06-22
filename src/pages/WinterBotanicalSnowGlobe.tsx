@@ -1,16 +1,19 @@
 
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Sparkles, Gift } from 'lucide-react';
+import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Sparkles, Gift, Clock, Truck, Shield, Camera } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
+import PhotoUpload from '@/components/PhotoUpload';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const WinterBotanicalSnowGlobe = () => {
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
+  const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -23,19 +26,29 @@ const WinterBotanicalSnowGlobe = () => {
     price: 20.00,
     image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
     description: "Beautiful snow globe with winter botanical scene, perfect for holiday displays",
-    fullDescription: "Capture the magic of winter with our enchanting Winter Botanical Snow Globe. This beautifully crafted piece features delicate winter botanicals suspended in swirling snow, creating a mesmerizing display that brings the serenity of a winter garden into your home. Perfect for holiday decorating or year-round enjoyment.",
+    fullDescription: "Capture the magic of winter with our enchanting Winter Botanical Snow Globe. This beautifully crafted piece features delicate winter botanicals suspended in swirling snow, creating a mesmerizing display that brings the serenity of a winter garden into your home. Each globe is carefully hand-assembled with premium materials to ensure lasting beauty and durability.",
     features: [
-      "Hand-crafted winter botanical scene",
-      "Premium quality snow that swirls beautifully",
-      "Durable glass globe with secure base",
-      "Perfect size for display anywhere",
-      "Makes a wonderful gift"
+      "Hand-crafted winter botanical scene with real preserved elements",
+      "Premium quality snow that swirls beautifully for 30+ seconds",
+      "Durable borosilicate glass globe with scratch-resistant coating",
+      "Weighted wooden base with elegant finish",
+      "Perfect 4-inch size for any display space",
+      "Makes a wonderful heirloom gift"
     ],
     specifications: [
-      "Size: 4 inches diameter",
-      "Material: High-quality glass and resin",
-      "Base: Weighted for stability",
-      "Care: Dust with soft cloth"
+      "Size: 4 inches diameter, 5.5 inches height",
+      "Material: High-quality borosilicate glass and natural wood",
+      "Base: Solid wood, weighted for stability",
+      "Care: Dust with soft microfiber cloth",
+      "Gift packaging included at no extra cost"
+    ],
+    giftIdeas: [
+      "Perfect holiday gift for nature lovers",
+      "Thoughtful housewarming present",
+      "Beautiful centerpiece for winter weddings",
+      "Ideal teacher or coworker appreciation gift",
+      "Wonderful addition to holiday decorations",
+      "Great for creating cozy winter ambiance"
     ]
   };
 
@@ -54,6 +67,10 @@ const WinterBotanicalSnowGlobe = () => {
     });
   };
 
+  const handlePhotoUpload = (file: File) => {
+    setUploadedPhoto(file);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
@@ -69,8 +86,8 @@ const WinterBotanicalSnowGlobe = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Image */}
-          <div className="space-y-4">
+          {/* Product Image & Photo Upload */}
+          <div className="space-y-6">
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-white p-8">
               <img
                 src={product.image}
@@ -96,6 +113,33 @@ const WinterBotanicalSnowGlobe = () => {
                 <Sparkles className="h-4 w-4 text-blue-200 animate-pulse" style={{ animationDelay: '1s' }} />
               </div>
             </div>
+
+            {/* Photo Upload Section */}
+            <Card className="border-2 border-dashed border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center text-lg">
+                  <Camera className="h-5 w-5 mr-2 text-primary" />
+                  Add Your Special Photo (Optional)
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Upload a photo to see how it would look with your snow globe for the perfect personalized gift!
+                </p>
+              </CardHeader>
+              <CardContent>
+                <PhotoUpload 
+                  onUpload={handlePhotoUpload}
+                  maxSizeMB={10}
+                  className="mb-4"
+                />
+                {uploadedPhoto && (
+                  <div className="text-center">
+                    <p className="text-sm text-green-600 font-medium">
+                      ✨ Photo uploaded! This will look amazing with your snow globe.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Product Info */}
@@ -116,14 +160,49 @@ const WinterBotanicalSnowGlobe = () => {
                 </div>
                 <span className="text-sm text-muted-foreground">(47 reviews)</span>
               </div>
-              <p className="text-2xl font-bold text-primary">
+              <p className="text-3xl font-bold text-primary mb-2">
                 ${product.price.toFixed(2)}
+              </p>
+              <p className="text-sm text-green-600 font-medium">
+                Free shipping on orders over $35 • Gift wrapping included
               </p>
             </div>
 
-            <p className="text-muted-foreground leading-relaxed text-lg">
-              {product.fullDescription}
-            </p>
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
+              <h3 className="font-semibold text-foreground mb-3 flex items-center">
+                <Sparkles className="h-5 w-5 mr-2 text-green-600" />
+                Why You'll Love This Snow Globe:
+              </h3>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                {product.fullDescription}
+              </p>
+              <p className="text-sm text-green-700 font-medium">
+                Each snow globe comes with a lifetime satisfaction guarantee!
+              </p>
+            </div>
+
+            {/* Delivery Information */}
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <Clock className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                    <h4 className="font-semibold text-sm">Fast Processing</h4>
+                    <p className="text-xs text-muted-foreground">Ships within 1-2 business days</p>
+                  </div>
+                  <div className="text-center">
+                    <Truck className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                    <h4 className="font-semibold text-sm">Quick Delivery</h4>
+                    <p className="text-xs text-muted-foreground">3-5 days standard shipping</p>
+                  </div>
+                  <div className="text-center">
+                    <Shield className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                    <h4 className="font-semibold text-sm">Safe Packaging</h4>
+                    <p className="text-xs text-muted-foreground">Carefully wrapped & insured</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Quantity Selector */}
             <div className="flex items-center space-x-4">
@@ -148,12 +227,36 @@ const WinterBotanicalSnowGlobe = () => {
             {/* Add to Cart Button */}
             <Button 
               size="lg" 
-              className="btn-primary w-full text-lg py-4"
+              className="btn-primary w-full text-lg py-4 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
               onClick={handleAddToCart}
             >
               <ShoppingCart className="h-5 w-5 mr-2" />
-              Add to Cart - ${(product.price * quantity).toFixed(2)}
+              Order Now - ${(product.price * quantity).toFixed(2)}
             </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              🎁 Perfect for gift giving • ⭐ 30-day money back guarantee
+            </p>
+
+            {/* Gift Ideas */}
+            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+              <CardHeader>
+                <CardTitle className="flex items-center text-lg">
+                  <Gift className="h-5 w-5 mr-2 text-purple-600" />
+                  Perfect Gift Ideas:
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {product.giftIdeas.map((idea, index) => (
+                    <li key={index} className="flex items-center text-sm text-muted-foreground">
+                      <div className="w-2 h-2 bg-purple-400 rounded-full mr-3 flex-shrink-0" />
+                      {idea}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
 
             {/* Features */}
             <div className="space-y-4 bg-gray-50 rounded-xl p-6">
