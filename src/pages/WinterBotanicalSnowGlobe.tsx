@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Sparkles, Gift, Clock, Truck, Shield, Camera, Eye, Users, Award, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -208,7 +207,7 @@ const WinterBotanicalSnowGlobe = () => {
             </Card>
 
             {/* Social Proof */}
-            <div className="bg-soft-peach/20 rounded-xl p-4 border border-soft-peach/30">
+            <div className="bg-white rounded-xl p-4 border border-neutral-gray/30">
               <div className="flex items-center justify-center space-x-6 text-sm">
                 <div className="flex items-center text-rich-brown">
                   <Eye className="h-4 w-4 mr-1" />
