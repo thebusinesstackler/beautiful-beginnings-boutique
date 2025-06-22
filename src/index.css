@@ -3,86 +3,86 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Beautiful Beginnings Design System - Updated to match logo */
+/* Beautiful Beginnings Design System - Refined Color Palette */
 
 @layer base {
   :root {
-    --background: 252 250 248; /* #fcfaf8 warm off-white */
-    --foreground: 87 61 47; /* #573d2f darker brown for text */
+    --background: 255 253 250; /* #fffdf a warm ivory */
+    --foreground: 62 39 35; /* #3e2723 deep chocolate brown */
 
-    --card: 252 250 248;
-    --card-foreground: 87 61 47;
+    --card: 255 253 250;
+    --card-foreground: 62 39 35;
 
-    --popover: 252 250 248;
-    --popover-foreground: 87 61 47;
+    --popover: 255 253 250;
+    --popover-foreground: 62 39 35;
 
-    --primary: 218 185 167; /* #dab9a7 soft dusty rose/pink */
-    --primary-foreground: 87 61 47;
+    --primary: 139 69 19; /* #8b4513 rich saddle brown */
+    --primary-foreground: 255 253 250;
 
-    --secondary: 240 207 199; /* #f0cfc7 coral pink */
-    --secondary-foreground: 87 61 47;
+    --secondary: 222 184 135; /* #deb887 warm burlywood */
+    --secondary-foreground: 62 39 35;
 
-    --muted: 248 238 235; /* #f8eeeb very light pink */
-    --muted-foreground: 139 103 78; /* #8b674e warm brown */
+    --muted: 250 245 240; /* #faf5f0 very light cream */
+    --muted-foreground: 101 67 33; /* #654321 dark brown */
 
-    --accent: 186 148 91; /* #ba945b golden brown */
-    --accent-foreground: 252 250 248;
+    --accent: 205 133 63; /* #cd853f peru/bronze accent */
+    --accent-foreground: 255 253 250;
 
     --destructive: 220 38 38;
-    --destructive-foreground: 252 250 248;
+    --destructive-foreground: 255 253 250;
 
-    --border: 240 207 199; /* soft coral border */
-    --input: 248 238 235;
-    --ring: 218 185 167;
+    --border: 222 184 135; /* soft burlywood border */
+    --input: 250 245 240;
+    --ring: 139 69 19;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 252 250 248;
-    --sidebar-foreground: 87 61 47;
-    --sidebar-primary: 218 185 167;
-    --sidebar-primary-foreground: 87 61 47;
-    --sidebar-accent: 248 238 235;
-    --sidebar-accent-foreground: 87 61 47;
-    --sidebar-border: 240 207 199;
-    --sidebar-ring: 218 185 167;
+    --sidebar-background: 255 253 250;
+    --sidebar-foreground: 62 39 35;
+    --sidebar-primary: 139 69 19;
+    --sidebar-primary-foreground: 255 253 250;
+    --sidebar-accent: 250 245 240;
+    --sidebar-accent-foreground: 62 39 35;
+    --sidebar-border: 222 184 135;
+    --sidebar-ring: 139 69 19;
   }
 
   .dark {
-    --background: 87 61 47;
-    --foreground: 252 250 248;
+    --background: 62 39 35;
+    --foreground: 255 253 250;
 
-    --card: 87 61 47;
-    --card-foreground: 252 250 248;
+    --card: 62 39 35;
+    --card-foreground: 255 253 250;
 
-    --popover: 87 61 47;
-    --popover-foreground: 252 250 248;
+    --popover: 62 39 35;
+    --popover-foreground: 255 253 250;
 
-    --primary: 218 185 167;
-    --primary-foreground: 87 61 47;
+    --primary: 205 133 63;
+    --primary-foreground: 62 39 35;
 
-    --secondary: 139 103 78;
-    --secondary-foreground: 252 250 248;
+    --secondary: 101 67 33;
+    --secondary-foreground: 255 253 250;
 
-    --muted: 139 103 78;
-    --muted-foreground: 240 207 199;
+    --muted: 101 67 33;
+    --muted-foreground: 222 184 135;
 
-    --accent: 186 148 91;
-    --accent-foreground: 87 61 47;
+    --accent: 139 69 19;
+    --accent-foreground: 255 253 250;
 
     --destructive: 239 68 68;
-    --destructive-foreground: 252 250 248;
+    --destructive-foreground: 255 253 250;
 
-    --border: 139 103 78;
-    --input: 139 103 78;
-    --ring: 218 185 167;
-    --sidebar-background: 87 61 47;
-    --sidebar-foreground: 252 250 248;
-    --sidebar-primary: 218 185 167;
-    --sidebar-primary-foreground: 87 61 47;
-    --sidebar-accent: 139 103 78;
-    --sidebar-accent-foreground: 252 250 248;
-    --sidebar-border: 139 103 78;
-    --sidebar-ring: 218 185 167;
+    --border: 101 67 33;
+    --input: 101 67 33;
+    --ring: 205 133 63;
+    --sidebar-background: 62 39 35;
+    --sidebar-foreground: 255 253 250;
+    --sidebar-primary: 205 133 63;
+    --sidebar-primary-foreground: 62 39 35;
+    --sidebar-accent: 101 67 33;
+    --sidebar-accent-foreground: 255 253 250;
+    --sidebar-border: 101 67 33;
+    --sidebar-ring: 205 133 63;
   }
 }
 
@@ -92,25 +92,29 @@
   }
 
   body {
-    @apply bg-background text-foreground font-lato;
+    @apply bg-background text-foreground font-lato antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-playfair font-semibold;
+    @apply font-playfair font-semibold text-foreground;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6 py-3 rounded-lg transition-all duration-200 hover:shadow-md;
+    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105;
   }
 
   .btn-secondary {
-    @apply bg-secondary hover:bg-secondary/90 text-secondary-foreground font-medium px-6 py-3 rounded-lg transition-all duration-200 hover:shadow-md;
+    @apply bg-secondary hover:bg-secondary/90 text-secondary-foreground font-medium px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105;
   }
 
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-2;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
   }
 
   .shimmer {

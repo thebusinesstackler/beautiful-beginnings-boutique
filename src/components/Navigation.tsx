@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartItems] = useState(0); // This will be connected to cart state later
+  const [cartItems] = useState(0);
 
   const navItems = [
     { name: 'Home', href: '/' },
@@ -18,22 +18,24 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="bg-warm-cream border-b border-coral-pink sticky top-0 z-50 backdrop-blur-sm bg-warm-cream/95">
+    <nav className="bg-background/95 backdrop-blur-md border-b border-secondary/30 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <img 
                 src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
                 alt="Beautiful Beginnings Logo" 
-                className="h-10 w-10 object-contain"
+                className="h-12 w-12 object-contain"
               />
               <div>
-                <h1 className="text-xl font-playfair font-bold text-rich-brown">
+                <h1 className="text-2xl font-playfair font-bold text-foreground">
                   Beautiful Beginnings
                 </h1>
-                <p className="text-xs text-muted-foreground -mt-1">Handcrafted with Love</p>
+                <p className="text-xs text-muted-foreground -mt-1 tracking-wide">
+                  Handcrafted with Love
+                </p>
               </div>
             </div>
           </Link>
@@ -45,9 +47,10 @@ const Navigation = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 hover:bg-soft-pink/50"
+                  className="text-foreground hover:text-primary px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-muted relative group"
                 >
                   {item.name}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
                 </Link>
               ))}
             </div>
@@ -58,11 +61,11 @@ const Navigation = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="relative hover:bg-soft-pink/50"
+              className="relative hover:bg-muted transition-colors duration-200"
             >
-              <ShoppingCart className="h-5 w-5 text-foreground" />
+              <ShoppingCart className="h-6 w-6 text-foreground" />
               {cartItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
                   {cartItems}
                 </span>
               )}
@@ -74,7 +77,7 @@ const Navigation = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="hover:bg-soft-pink/50"
+                className="hover:bg-muted transition-colors duration-200"
               >
                 {isMenuOpen ? (
                   <X className="h-6 w-6 text-foreground" />
@@ -89,12 +92,12 @@ const Navigation = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden animate-fade-in">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-warm-cream border-t border-coral-pink">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-background border-t border-secondary/30">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium hover:bg-soft-pink/50 transition-colors duration-200"
+                  className="text-foreground hover:text-primary block px-4 py-3 rounded-lg text-base font-medium hover:bg-muted transition-colors duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
