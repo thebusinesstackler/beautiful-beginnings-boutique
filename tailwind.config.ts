@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,15 +62,16 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom brand colors
-				'rich-brown': '#8a704d',
-				'warm-coral': '#ef9b86',
-				'golden-brown': '#ad9252',
-				'soft-peach': '#e4ae8d',
-				'light-cream': '#ebd3c3',
-				'dark-charcoal': 'rgb(64,63,61)',
-				'cream-blush': '#eed4cc',
-				'neutral-gray': '#b4b1ac'
+				// Expert-designed palette for handcrafted keepsakes
+				'sage': '#8fa68e', // Sophisticated sage green - trust & nature
+				'terracotta': '#d4806a', // Warm terracotta - creativity & warmth  
+				'cream': '#f7f5f3', // Elegant cream - premium & clean
+				'charcoal': '#2d3436', // Deep charcoal - sophistication
+				'stone': '#95a3a4', // Stone gray - balance & calm
+				'blush': '#f2d7d5', // Soft blush - gentle & caring
+				'chocolate': '#6c5548', // Rich chocolate - luxury & depth
+				'pearl': '#fdfcfc', // Pearl white - purity & elegance
+				'forest': '#5d6d5b', // Forest green - stability & growth
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

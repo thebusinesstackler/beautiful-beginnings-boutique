@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Sparkles, Gift, Clock, Truck, Shield, Camera, Eye, Users, Award, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -153,7 +154,7 @@ const WinterBotanicalSnowGlobe = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           {/* Product Image & Photo Upload */}
           <div className="space-y-6">
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-warm-coral/10 to-soft-peach/10 p-8 border border-neutral-gray/20">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sage/10 to-blush/10 p-8 border border-stone/20">
               <img
                 src={product.image}
                 alt={product.name}
@@ -161,11 +162,11 @@ const WinterBotanicalSnowGlobe = () => {
               />
               <button
                 onClick={() => setIsLiked(!isLiked)}
-                className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors duration-200 shadow-lg"
+                className="absolute top-4 right-4 p-3 bg-pearl/90 backdrop-blur-sm rounded-full hover:bg-pearl transition-colors duration-200 shadow-lg"
               >
                 <Heart
                   className={`h-6 w-6 transition-colors duration-200 ${
-                    isLiked ? 'text-warm-coral fill-current' : 'text-neutral-gray'
+                    isLiked ? 'text-terracotta fill-current' : 'text-stone'
                   }`}
                 />
               </button>
@@ -207,13 +208,13 @@ const WinterBotanicalSnowGlobe = () => {
             </Card>
 
             {/* Social Proof */}
-            <div className="bg-white rounded-xl p-4 border border-neutral-gray/30">
+            <div className="bg-pearl rounded-xl p-4 border border-stone/30">
               <div className="flex items-center justify-center space-x-6 text-sm">
-                <div className="flex items-center text-rich-brown">
+                <div className="flex items-center text-chocolate">
                   <Eye className="h-4 w-4 mr-1" />
                   <span className="font-medium">247 people viewed this today</span>
                 </div>
-                <div className="flex items-center text-rich-brown">
+                <div className="flex items-center text-chocolate">
                   <Users className="h-4 w-4 mr-1" />
                   <span className="font-medium">18 sold this week</span>
                 </div>
@@ -234,7 +235,7 @@ const WinterBotanicalSnowGlobe = () => {
               <div className="flex items-center space-x-3 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-golden-brown fill-current" />
+                    <Star key={i} className="h-5 w-5 text-accent fill-current" />
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">(47 reviews)</span>
@@ -289,7 +290,7 @@ const WinterBotanicalSnowGlobe = () => {
             <div className="space-y-4 p-6 bg-muted/30 rounded-xl">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Quantity:</span>
-                <div className="flex items-center border rounded-lg bg-white">
+                <div className="flex items-center border rounded-lg bg-pearl">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="p-2 hover:bg-muted transition-colors"
@@ -345,7 +346,7 @@ const WinterBotanicalSnowGlobe = () => {
           </Card>
 
           {/* Gift Ideas */}
-          <Card className="bg-gradient-to-br from-accent/10 to-soft-peach/10 border-accent/30">
+          <Card className="bg-gradient-to-br from-accent/10 to-blush/10 border-accent/30">
             <CardHeader>
               <CardTitle className="flex items-center text-accent">
                 <Gift className="h-5 w-5 mr-2" />
@@ -390,7 +391,7 @@ const WinterBotanicalSnowGlobe = () => {
                   <h3 className="font-semibold text-sm mb-2 line-clamp-2">{product.name}</h3>
                   <div className="flex items-center space-x-1 mb-2">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-3 w-3 text-golden-brown fill-current" />
+                      <Star key={i} className="h-3 w-3 text-accent fill-current" />
                     ))}
                     <span className="text-xs text-muted-foreground">({product.reviews})</span>
                   </div>
@@ -420,7 +421,10 @@ const WinterBotanicalSnowGlobe = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {categories.map((category, index) => (
+            {categories.map((category,
+
+
+) => (
               <Link key={index} to={category.href}>
                 <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
                   <div className="relative overflow-hidden rounded-t-lg">
@@ -429,7 +433,7 @@ const WinterBotanicalSnowGlobe = () => {
                       alt={category.name}
                       className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-dark-charcoal/20 group-hover:bg-dark-charcoal/10 transition-colors" />
+                    <div className="absolute inset-0 bg-charcoal/20 group-hover:bg-charcoal/10 transition-colors" />
                   </div>
                   <CardContent className="p-6 text-center">
                     <h3 className="font-playfair font-semibold text-lg mb-2">{category.name}</h3>

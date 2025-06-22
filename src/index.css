@@ -3,86 +3,87 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Beautiful Beginnings Design System - Custom Brand Colors */
+/* Beautiful Beginnings Design System - Expert Color Palette */
 
 @layer base {
   :root {
-    --background: 235 211 195; /* #ebd3c3 light cream background */
-    --foreground: 64 63 61; /* rgb(64,63,61) dark charcoal text */
+    --background: 247 245 243; /* #f7f5f3 elegant cream background */
+    --foreground: 45 52 54; /* #2d3436 deep charcoal text */
 
-    --card: 255 255 255; /* white cards */
-    --card-foreground: 64 63 61;
+    --card: 253 252 252; /* #fdfcfc pearl white cards */
+    --card-foreground: 45 52 54;
 
-    --popover: 255 255 255;
-    --popover-foreground: 64 63 61;
+    --popover: 253 252 252;
+    --popover-foreground: 45 52 54;
 
-    --primary: 138 112 77; /* #8a704d rich brown */
-    --primary-foreground: 255 255 255;
+    --primary: 143 166 142; /* #8fa68e sophisticated sage */
+    --primary-foreground: 253 252 252;
 
-    --secondary: 173 146 82; /* #ad9252 golden brown */
-    --secondary-foreground: 64 63 61;
+    --secondary: 108 85 72; /* #6c5548 rich chocolate */
+    --secondary-foreground: 247 245 243;
 
-    --muted: 238 212 204; /* #eed4cc soft peach */
-    --muted-foreground: 64 63 61;
+    --muted: 242 215 213; /* #f2d7d5 soft blush */
+    --muted-foreground: 93 109 91;
 
-    --accent: 239 155 134; /* #ef9b86 warm coral */
-    --accent-foreground: 255 255 255;
+    --accent: 212 128 106; /* #d4806a warm terracotta */
+    --accent-foreground: 253 252 252;
 
     --destructive: 220 38 38;
-    --destructive-foreground: 255 255 255;
+    --destructive-foreground: 253 252 252;
 
-    --border: 180 177 172; /* #b4b1ac neutral border */
-    --input: 255 255 255;
-    --ring: 138 112 77;
+    --border: 149 163 164; /* #95a3a4 stone gray border */
+    --input: 253 252 252;
+    --ring: 143 166 142;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 235 211 195;
-    --sidebar-foreground: 64 63 61;
-    --sidebar-primary: 138 112 77;
-    --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 238 212 204;
-    --sidebar-accent-foreground: 64 63 61;
-    --sidebar-border: 180 177 172;
-    --sidebar-ring: 138 112 77;
+    --sidebar-background: 247 245 243;
+    --sidebar-foreground: 45 52 54;
+    --sidebar-primary: 143 166 142;
+    --sidebar-primary-foreground: 253 252 252;
+    --sidebar-accent: 242 215 213;
+    --sidebar-accent-foreground: 93 109 91;
+    --sidebar-border: 149 163 164;
+    --sidebar-ring: 143 166 142;
   }
 
   .dark {
-    --background: 64 63 61;
-    --foreground: 235 211 195;
+    --background: 45 52 54;
+    --foreground: 247 245 243;
 
-    --card: 64 63 61;
-    --card-foreground: 235 211 195;
+    --card: 45 52 54;
+    --card-foreground: 247 245 243;
 
-    --popover: 64 63 61;
-    --popover-foreground: 235 211 195;
+    --popover: 45 52 54;
+    --popover-foreground: 247 245 243;
 
-    --primary: 239 155 134;
-    --primary-foreground: 64 63 61;
+    --primary: 212 128 106;
+    --primary-foreground: 45 52 54;
 
-    --secondary: 138 112 77;
-    --secondary-foreground: 235 211 195;
+    --secondary: 93 109 91;
+    --secondary-foreground: 247 245 243;
 
-    --muted: 138 112 77;
-    --muted-foreground: 180 177 172;
+    --muted: 108 85 72;
+    --muted-foreground: 149 163 164;
 
-    --accent: 173 146 82;
-    --accent-foreground: 64 63 61;
+    --accent: 143 166 142;
+    --accent-foreground: 45 52 54;
 
     --destructive: 239 68 68;
-    --destructive-foreground: 235 211 195;
+    --destructive-foreground: 247 245 243;
 
-    --border: 138 112 77;
-    --input: 138 112 77;
-    --ring: 239 155 134;
-    --sidebar-background: 64 63 61;
-    --sidebar-foreground: 235 211 195;
-    --sidebar-primary: 239 155 134;
-    --sidebar-primary-foreground: 64 63 61;
-    --sidebar-accent: 138 112 77;
-    --sidebar-accent-foreground: 235 211 195;
-    --sidebar-border: 138 112 77;
-    --sidebar-ring: 239 155 134;
+    --border: 108 85 72;
+    --input: 108 85 72;
+    --ring: 212 128 106;
+    
+    --sidebar-background: 45 52 54;
+    --sidebar-foreground: 247 245 243;
+    --sidebar-primary: 212 128 106;
+    --sidebar-primary-foreground: 45 52 54;
+    --sidebar-accent: 108 85 72;
+    --sidebar-accent-foreground: 247 245 243;
+    --sidebar-border: 108 85 72;
+    --sidebar-ring: 212 128 106;
   }
 }
 
@@ -102,7 +103,7 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary hover:bg-primary/90 text-white font-medium px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105;
+    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105;
   }
 
   .btn-secondary {
