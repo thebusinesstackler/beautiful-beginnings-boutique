@@ -93,13 +93,13 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter antialiased;
+    @apply bg-background text-foreground font-sans antialiased;
     line-height: 1.6;
     letter-spacing: -0.01em;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-inter font-bold text-foreground;
+    @apply font-sans font-bold text-foreground;
     line-height: 1.2;
     letter-spacing: -0.025em;
   }
