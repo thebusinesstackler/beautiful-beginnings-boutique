@@ -235,7 +235,7 @@ const WinterBotanicalSnowGlobe = () => {
               <div className="flex items-center space-x-3 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                    <Star key={i} className="h-5 w-5 text-accent fill-current" />
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">(47 reviews)</span>
@@ -391,7 +391,7 @@ const WinterBotanicalSnowGlobe = () => {
                   <h3 className="font-semibold text-sm mb-2 line-clamp-2">{product.name}</h3>
                   <div className="flex items-center space-x-1 mb-2">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-3 w-3 text-yellow-400 fill-current" />
+                      <Star key={i} className="h-3 w-3 text-accent fill-current" />
                     ))}
                     <span className="text-xs text-muted-foreground">({product.reviews})</span>
                   </div>
