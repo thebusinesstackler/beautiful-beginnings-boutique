@@ -8,13 +8,13 @@
 @layer base {
   :root {
     --background: 247 245 243; /* #f7f5f3 elegant cream background */
-    --foreground: 45 52 54; /* #2d3436 deep charcoal text */
+    --foreground: 33 37 41; /* #21252f darker charcoal for better contrast */
 
     --card: 253 252 252; /* #fdfcfc pearl white cards */
-    --card-foreground: 45 52 54;
+    --card-foreground: 33 37 41;
 
     --popover: 253 252 252;
-    --popover-foreground: 45 52 54;
+    --popover-foreground: 33 37 41;
 
     --primary: 143 166 142; /* #8fa68e sophisticated sage */
     --primary-foreground: 253 252 252;
@@ -23,7 +23,7 @@
     --secondary-foreground: 247 245 243;
 
     --muted: 242 215 213; /* #f2d7d5 soft blush */
-    --muted-foreground: 93 109 91;
+    --muted-foreground: 68 68 68; /* #444444 much darker for better readability */
 
     --accent: 212 128 106; /* #d4806a warm terracotta */
     --accent-foreground: 253 252 252;
@@ -38,11 +38,11 @@
     --radius: 0.75rem;
 
     --sidebar-background: 247 245 243;
-    --sidebar-foreground: 45 52 54;
+    --sidebar-foreground: 33 37 41;
     --sidebar-primary: 143 166 142;
     --sidebar-primary-foreground: 253 252 252;
     --sidebar-accent: 242 215 213;
-    --sidebar-accent-foreground: 93 109 91;
+    --sidebar-accent-foreground: 68 68 68;
     --sidebar-border: 149 163 164;
     --sidebar-ring: 143 166 142;
   }
@@ -94,20 +94,29 @@
 
   body {
     @apply bg-background text-foreground font-lato antialiased;
+    line-height: 1.6; /* Improved line height for better readability */
+    letter-spacing: 0.01em; /* Slight letter spacing for clarity */
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-playfair font-semibold text-foreground;
+    @apply font-playfair font-bold text-foreground; /* Increased font weight */
+    line-height: 1.3; /* Better line height for headings */
+    letter-spacing: -0.01em; /* Slight negative letter spacing for large text */
+  }
+
+  p {
+    line-height: 1.7; /* Increased line height for paragraphs */
+    letter-spacing: 0.005em; /* Subtle letter spacing */
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105;
+    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105;
   }
 
   .btn-secondary {
-    @apply bg-secondary hover:bg-secondary/90 text-secondary-foreground font-medium px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105;
+    @apply bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105;
   }
 
   .card-hover {
@@ -116,6 +125,14 @@
 
   .text-gradient {
     @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+    /* Add fallback color and text shadow for better readability */
+    text-shadow: 0 0 0 rgba(143, 166, 142, 0.8);
+    -webkit-text-stroke: 0.5px rgba(143, 166, 142, 0.3);
+  }
+
+  /* Enhanced text shadows for better readability over backgrounds */
+  .text-with-shadow {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 
   .shimmer {
