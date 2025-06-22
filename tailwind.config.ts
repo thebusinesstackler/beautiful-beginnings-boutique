@@ -63,12 +63,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Beautiful Beginnings refined brand colors
-				'warm-ivory': '#fffdf a',
+				// Beautiful Beginnings refined brand colors - removed all yellow
+				'warm-cream': '#faf5f0',
 				'chocolate': '#3e2723',
 				'saddle-brown': '#8b4513',
 				'burlywood': '#deb887',
-				'light-cream': '#faf5f0',
+				'light-cream': '#f5f0eb',
 				'dark-brown': '#654321',
 				'peru': '#cd853f'
 			},
