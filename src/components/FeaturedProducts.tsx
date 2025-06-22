@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const FeaturedProducts = () => {
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
@@ -9,36 +10,41 @@ const FeaturedProducts = () => {
   const products = [
     {
       id: 1,
-      name: "Custom Photo Ornament",
-      price: 24.99,
-      originalPrice: 29.99,
+      name: "Personalized Snow Globe",
+      price: 22.50,
+      originalPrice: 25.00,
       image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      category: "Ornaments",
-      description: "Transform your favorite memory into a beautiful keepsake ornament"
+      category: "Snow Globes",
+      description: "Beautiful snow globe with your favorite photo, perfect for holiday displays",
+      href: "/products/snow-globes"
     },
     {
       id: 2,
-      name: "Seasonal Welcome Wreath",
-      price: 49.99,
-      image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400",
-      category: "Wreaths",
-      description: "Handcrafted seasonal wreath perfect for welcoming guests"
+      name: "Photo Memory Necklace",
+      price: 15.00,
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
+      category: "Necklaces",
+      description: "Keep your loved ones close with this personalized photo necklace",
+      href: "/products/necklaces"
     },
     {
       id: 3,
-      name: "Personalized Coffee Mug",
-      price: 18.99,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400",
-      category: "Drinkware",
-      description: "Start every morning with your favorite photo and a warm drink"
+      name: "Custom Photo Ornament",
+      price: 12.00,
+      image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400",
+      category: "Ornaments",
+      description: "Transform your favorite memory into a beautiful keepsake ornament",
+      href: "/products/ornaments"
     },
     {
       id: 4,
-      name: "Holiday Memory Frame",
-      price: 34.99,
+      name: "Slate Photo Keepsake",
+      price: 32.50,
+      originalPrice: 40.00,
       image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
-      category: "Home Décor",
-      description: "Elegant frame to showcase your most treasured holiday moments"
+      category: "Slate Products",
+      description: "Elegant slate piece with your photo, perfect for home décor",
+      href: "/products/slate"
     }
   ];
 
@@ -75,11 +81,13 @@ const FeaturedProducts = () => {
             >
               {/* Product Image */}
               <div className="relative overflow-hidden rounded-t-xl">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+                <Link to={product.href}>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </Link>
                 {product.originalPrice && (
                   <div className="absolute top-3 left-3 bg-accent text-accent-foreground px-2 py-1 rounded-full text-xs font-medium">
                     Sale
@@ -104,9 +112,11 @@ const FeaturedProducts = () => {
                 <div className="text-xs text-primary font-medium mb-2 uppercase tracking-wide">
                   {product.category}
                 </div>
-                <h3 className="font-playfair font-semibold text-lg text-foreground mb-2 line-clamp-2">
-                  {product.name}
-                </h3>
+                <Link to={product.href}>
+                  <h3 className="font-playfair font-semibold text-lg text-foreground mb-2 line-clamp-2 hover:text-primary transition-colors">
+                    {product.name}
+                  </h3>
+                </Link>
                 <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                   {product.description}
                 </p>
@@ -114,11 +124,11 @@ const FeaturedProducts = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <span className="text-xl font-bold text-foreground">
-                      ${product.price}
+                      ${product.price.toFixed(2)}
                     </span>
                     {product.originalPrice && (
                       <span className="text-sm text-muted-foreground line-through">
-                        ${product.originalPrice}
+                        ${product.originalPrice.toFixed(2)}
                       </span>
                     )}
                   </div>
