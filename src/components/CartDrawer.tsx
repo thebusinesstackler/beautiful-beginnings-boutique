@@ -1,0 +1,142 @@
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
+import { ShoppingCart, X } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import PhotoUpload from '@/components/PhotoUpload';
+import { toast } from '@/hooks/use-toast';
+
+interface CartDrawerProps {
+  children: React.ReactNode;
+}
+
+const CartDrawer = ({ children }: CartDrawerProps) => {
+  const { items, removeFromCart, getCartTotal, updatePhoto } = useCart();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handlePhotoUpload = (itemId: number, file: File) => {
+    updatePhoto(itemId, file);
+    toast({
+      title: "Photo uploaded!",
+      description: "Your custom photo has been added to this item.",
+    });
+  };
+
+  const handleCheckout = () => {
+    toast({
+      title: "Checkout",
+      description: "Checkout functionality would be implemented here.",
+    });
+  };
+
+  return (
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <DrawerTrigger asChild>
+        {children}
+      </DrawerTrigger>
+      <DrawerContent className="max-w-md mx-auto">
+        <DrawerHeader>
+          <DrawerTitle className="flex items-center space-x-2">
+            <ShoppingCart className="h-5 w-5" />
+            <span>Shopping Cart</span>
+          </DrawerTitle>
+          <DrawerDescription>
+            Customize your products by uploading photos
+          </DrawerDescription>
+        </DrawerHeader>
+
+        <div className="px-4 max-h-96 overflow-y-auto">
+          {items.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Your cart is empty
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {items.map((item) => (
+                <div key={item.id} className="border border-muted rounded-lg p-4 space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex space-x-3">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-16 h-16 object-cover rounded-md"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-playfair font-semibold text-sm">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Qty: {item.quantity}
+                        </p>
+                        <p className="text-sm font-medium">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFromCart(item.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-medium mb-2 text-foreground">
+                      Upload Your Photo
+                    </h4>
+                    <PhotoUpload
+                      onUpload={(file) => handlePhotoUpload(item.id, file)}
+                      maxSizeMB={10}
+                      className="text-xs"
+                    />
+                    {item.uploadedPhoto && (
+                      <p className="text-xs text-green-600 mt-2">
+                        ✓ Photo uploaded: {item.uploadedPhoto.name}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <DrawerFooter>
+          {items.length > 0 && (
+            <>
+              <div className="flex justify-between items-center mb-4 px-2">
+                <span className="font-semibold">Total:</span>
+                <span className="font-bold text-lg">
+                  ${getCartTotal().toFixed(2)}
+                </span>
+              </div>
+              <Button onClick={handleCheckout} className="w-full btn-primary">
+                Proceed to Checkout
+              </Button>
+            </>
+          )}
+          <DrawerClose asChild>
+            <Button variant="outline" className="w-full">
+              Continue Shopping
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
+};
+
+export default CartDrawer;

@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCart } from '@/contexts/CartContext';
+import CartDrawer from '@/components/CartDrawer';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartItems] = useState(0);
+  const { getCartCount } = useCart();
 
   const navItems = [
     { name: 'Home', href: '/' },
@@ -58,18 +60,20 @@ const Navigation = () => {
 
           {/* Cart & Mobile Menu Button */}
           <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="relative hover:bg-muted transition-colors duration-200"
-            >
-              <ShoppingCart className="h-6 w-6 text-foreground" />
-              {cartItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                  {cartItems}
-                </span>
-              )}
-            </Button>
+            <CartDrawer>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="relative hover:bg-muted transition-colors duration-200"
+              >
+                <ShoppingCart className="h-6 w-6 text-foreground" />
+                {getCartCount() > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                    {getCartCount()}
+                  </span>
+                )}
+              </Button>
+            </CartDrawer>
 
             {/* Mobile menu button */}
             <div className="md:hidden">

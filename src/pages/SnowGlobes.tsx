@@ -1,12 +1,17 @@
+
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { useCart } from '@/contexts/CartContext';
+import CartDrawer from '@/components/CartDrawer';
+import { toast } from '@/hooks/use-toast';
 
 const SnowGlobes = () => {
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
+  const { addToCart } = useCart();
 
   const products = [
     {
@@ -33,6 +38,19 @@ const SnowGlobes = () => {
       newLiked.add(productId);
     }
     setLikedProducts(newLiked);
+  };
+
+  const handleAddToCart = (product: typeof products[0]) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
+    });
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart.`,
+    });
   };
 
   return (
@@ -99,7 +117,11 @@ const SnowGlobes = () => {
                   <span className="text-xl font-bold text-foreground">
                     ${product.price.toFixed(2)}
                   </span>
-                  <Button size="sm" className="btn-primary">
+                  <Button 
+                    size="sm" 
+                    className="btn-primary"
+                    onClick={() => handleAddToCart(product)}
+                  >
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     Add to Cart
                   </Button>
