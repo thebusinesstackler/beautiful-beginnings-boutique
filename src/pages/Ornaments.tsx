@@ -18,14 +18,14 @@ const Ornaments = () => {
       id: 1,
       name: "Personalized Photo Ornament",
       price: 12.00,
-      image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400",
+      image: "/placeholder.svg",
       description: "Custom ornament with your favorite photo - perfect keepsake like our Jacob Santa hat ornament"
     },
     {
       id: 2,
       name: "Round Photo Ornament",
       price: 12.00,
-      image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400",
+      image: "/placeholder.svg",
       description: "Classic round ornament with your personalized photo and custom text"
     }
   ];
@@ -93,9 +93,11 @@ const Ornaments = () => {
               </div>
 
               <div className="p-6">
-                <h3 className="font-playfair font-semibold text-lg text-foreground mb-2 hover:text-primary cursor-pointer transition-colors">
-                  {product.name}
-                </h3>
+                <Link to={`/products/ornaments/${product.id}`}>
+                  <h3 className="font-playfair font-semibold text-lg text-foreground mb-2 hover:text-primary cursor-pointer transition-colors">
+                    {product.name}
+                  </h3>
+                </Link>
                 <p className="text-sm text-muted-foreground mb-4">
                   {product.description}
                 </p>
@@ -104,10 +106,12 @@ const Ornaments = () => {
                   <span className="text-xl font-bold text-foreground">
                     ${product.price.toFixed(2)}
                   </span>
-                  <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white">
-                    <Info className="h-4 w-4 mr-2" />
-                    Learn More
-                  </Button>
+                  <Link to={`/products/ornaments/${product.id}`}>
+                    <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white">
+                      <Info className="h-4 w-4 mr-2" />
+                      Learn More
+                    </Button>
+                  </Link>
                 </div>
                 
                 <Button size="sm" className="btn-primary w-full">

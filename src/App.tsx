@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import SnowGlobes from "./pages/SnowGlobes";
 import Necklaces from "./pages/Necklaces";
 import Ornaments from "./pages/Ornaments";
+import OrnamentDetail from "./pages/OrnamentDetail";
 import Slate from "./pages/Slate";
 import WoodSublimation from "./pages/WoodSublimation";
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/products/snow-globes" element={<SnowGlobes />} />
             <Route path="/products/necklaces" element={<Necklaces />} />
             <Route path="/products/ornaments" element={<Ornaments />} />
+            <Route path="/products/ornaments/:id" element={<OrnamentDetail />} />
             <Route path="/products/slate" element={<Slate />} />
             <Route path="/products/wood-sublimation" element={<WoodSublimation />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
