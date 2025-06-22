@@ -15,13 +15,13 @@ const Hero = () => {
           {/* Content */}
           <div className="text-center lg:text-left animate-fade-in">
             <h1 className="text-4xl md:text-6xl font-playfair font-bold text-foreground mb-6">
-              Handcrafted
-              <span className="block text-primary">Memories</span>
-              <span className="block text-secondary">Made Beautiful</span>
+              Where Memories
+              <span className="block text-primary">Begin and</span>
+              <span className="block text-secondary">Beauty Lasts</span>
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl">
-              Transform your precious moments into stunning keepsakes. From personalized ornaments to seasonal décor, each piece is lovingly crafted to celebrate your unique story.
+              Capture the magic of your favorite moments—handcrafted photo keepsakes made with love and lasting brilliance. From shimmering ornaments to heartfelt jewelry, Beautiful Beginnings brings your memories to life.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -36,15 +36,15 @@ const Hero = () => {
             <div className="mt-12 flex items-center justify-center lg:justify-start space-x-8 text-sm text-muted-foreground">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full bg-gold-accent"></div>
-                <span>Free Personalization</span>
+                <span>Handmade with Heart</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full bg-gold-accent"></div>
-                <span>Fast Shipping</span>
+                <span>Glossy & Glowing</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full bg-gold-accent"></div>
-                <span>Made to Last</span>
+                <span>Crafted to Last</span>
               </div>
             </div>
           </div>
@@ -61,8 +61,8 @@ const Hero = () => {
               
               {/* Floating elements */}
               <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
-                <p className="text-sm font-medium text-foreground">✨ New Collection</p>
-                <p className="text-xs text-muted-foreground">Holiday 2024</p>
+                <p className="text-sm font-medium text-foreground">✨ Holiday Ready</p>
+                <p className="text-xs text-muted-foreground">Handmade Collection</p>
               </div>
             </div>
             
