@@ -4,10 +4,10 @@ import { ArrowDown } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section className="relative bg-gradient-to-br from-cream via-soft-rose/30 to-sage-green/20 py-20 md:py-32 overflow-hidden">
+    <section className="relative bg-gradient-to-br from-warm-cream via-coral-pink/30 to-dusty-rose/20 py-20 md:py-32 overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-50" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f4e4e4' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f0cfc7' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
       }}></div>
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,15 +35,15 @@ const Hero = () => {
             
             <div className="mt-12 flex items-center justify-center lg:justify-start space-x-8 text-sm text-muted-foreground">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-gold-accent"></div>
+                <div className="w-3 h-3 rounded-full bg-golden-brown"></div>
                 <span>Handmade with Heart</span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-gold-accent"></div>
+                <div className="w-3 h-3 rounded-full bg-golden-brown"></div>
                 <span>Glossy & Glowing</span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-gold-accent"></div>
+                <div className="w-3 h-3 rounded-full bg-golden-brown"></div>
                 <span>Crafted to Last</span>
               </div>
             </div>
@@ -67,8 +67,8 @@ const Hero = () => {
             </div>
             
             {/* Decorative elements */}
-            <div className="absolute -top-4 -left-4 w-24 h-24 bg-soft-rose/30 rounded-full blur-xl"></div>
-            <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-sage-green/20 rounded-full blur-xl"></div>
+            <div className="absolute -top-4 -left-4 w-24 h-24 bg-coral-pink/30 rounded-full blur-xl"></div>
+            <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-dusty-rose/20 rounded-full blur-xl"></div>
           </div>
         </div>
 

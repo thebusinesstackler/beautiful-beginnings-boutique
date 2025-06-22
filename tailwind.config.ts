@@ -63,12 +63,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Beautiful Beginnings brand colors
-				'soft-rose': '#f4e4e4',
-				'sage-green': '#a8b5a3',
-				'cream': '#faf8f6',
-				'warm-brown': '#8b7355',
-				'gold-accent': '#d4af37'
+				// Beautiful Beginnings brand colors - updated to match logo
+				'dusty-rose': '#dab9a7',
+				'coral-pink': '#f0cfc7',
+				'warm-cream': '#fcfaf8',
+				'rich-brown': '#573d2f',
+				'golden-brown': '#ba945b',
+				'soft-pink': '#f8eeeb'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

@@ -8,28 +8,28 @@ const Categories = () => {
       description: "Transform memories into beautiful ornaments",
       image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
       href: "/products/ornaments",
-      color: "from-soft-rose/80 to-soft-rose/40"
+      color: "from-coral-pink/80 to-coral-pink/40"
     },
     {
       name: "Holiday Décor",
       description: "Festive touches for every season",
       image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400",
       href: "/products/holiday-decor",
-      color: "from-sage-green/80 to-sage-green/40"
+      color: "from-dusty-rose/80 to-dusty-rose/40"
     },
     {
       name: "Jewelry & Accessories",
       description: "Wear your memories close to your heart",
       image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
       href: "/products/jewelry",
-      color: "from-gold-accent/80 to-gold-accent/40"
+      color: "from-golden-brown/80 to-golden-brown/40"
     },
     {
       name: "Personalized Drinkware",
       description: "Sip with style and cherished memories",
       image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400",
       href: "/products/drinkware",
-      color: "from-warm-brown/80 to-warm-brown/40"
+      color: "from-rich-brown/80 to-rich-brown/40"
     },
     {
       name: "Wreaths & Home Décor",

@@ -18,19 +18,19 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="bg-cream border-b border-soft-rose sticky top-0 z-50 backdrop-blur-sm bg-cream/95">
+    <nav className="bg-warm-cream border-b border-coral-pink sticky top-0 z-50 backdrop-blur-sm bg-warm-cream/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
             <div className="flex items-center space-x-2">
               <img 
-                src="/api/placeholder/40/40" 
+                src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
                 alt="Beautiful Beginnings Logo" 
                 className="h-10 w-10 object-contain"
               />
               <div>
-                <h1 className="text-xl font-playfair font-bold text-foreground">
+                <h1 className="text-xl font-playfair font-bold text-rich-brown">
                   Beautiful Beginnings
                 </h1>
                 <p className="text-xs text-muted-foreground -mt-1">Handcrafted with Love</p>
@@ -45,7 +45,7 @@ const Navigation = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 hover:bg-soft-rose/50"
+                  className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 hover:bg-soft-pink/50"
                 >
                   {item.name}
                 </Link>
@@ -58,7 +58,7 @@ const Navigation = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="relative hover:bg-soft-rose/50"
+              className="relative hover:bg-soft-pink/50"
             >
               <ShoppingCart className="h-5 w-5 text-foreground" />
               {cartItems > 0 && (
@@ -74,7 +74,7 @@ const Navigation = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="hover:bg-soft-rose/50"
+                className="hover:bg-soft-pink/50"
               >
                 {isMenuOpen ? (
                   <X className="h-6 w-6 text-foreground" />
@@ -89,12 +89,12 @@ const Navigation = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden animate-fade-in">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-cream border-t border-soft-rose">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-warm-cream border-t border-coral-pink">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium hover:bg-soft-rose/50 transition-colors duration-200"
+                  className="text-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium hover:bg-soft-pink/50 transition-colors duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}

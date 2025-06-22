@@ -22,29 +22,29 @@ const About = () => {
             {/* Features List */}
             <div className="space-y-3 mb-8">
               <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 rounded-full bg-gold-accent"></div>
+                <div className="w-2 h-2 rounded-full bg-golden-brown"></div>
                 <span className="text-muted-foreground">Sublimated ornaments, jewelry, and keepsakes</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 rounded-full bg-gold-accent"></div>
+                <div className="w-2 h-2 rounded-full bg-golden-brown"></div>
                 <span className="text-muted-foreground">Holiday & fall-themed décor</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 rounded-full bg-gold-accent"></div>
+                <div className="w-2 h-2 rounded-full bg-golden-brown"></div>
                 <span className="text-muted-foreground">Insulated drinkware and glass tumblers</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 rounded-full bg-gold-accent"></div>
+                <div className="w-2 h-2 rounded-full bg-golden-brown"></div>
                 <span className="text-muted-foreground">Home décor and wreaths</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 rounded-full bg-gold-accent"></div>
+                <div className="w-2 h-2 rounded-full bg-golden-brown"></div>
                 <span className="text-muted-foreground">Personalized gifts for every season</span>
               </div>
             </div>
 
             {/* Taglines */}
-            <div className="bg-cream rounded-xl p-6">
+            <div className="bg-soft-pink rounded-xl p-6">
               <p className="text-sm text-muted-foreground italic text-center">
                 "Your memories deserve to shine. We make sure they do."
               </p>
