@@ -1,6 +1,7 @@
+
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react';
-import { useState } from 'react';
+import { Heart, ShoppingCart, ArrowLeft, Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -8,26 +9,30 @@ import Footer from '@/components/Footer';
 const WoodSublimation = () => {
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const products = [
     {
       id: 1,
       name: "Wood Forest Silhouette",
       price: 15.00,
-      image: "/lovable-uploads/dcd1b4a7-b3b9-4b3a-9b1a-1b4a7b3b9b4a.png",
+      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
       description: "Beautiful wood piece with forest silhouette cutouts, perfect for rustic décor"
     },
     {
       id: 2,
       name: "HOME Photo Display",
       price: 20.00,
-      image: "/lovable-uploads/0e6f2d5b-8c7a-4d3e-9f1b-2c5b8a7d3e9f.png",
+      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
       description: "Charming 'HOME' wooden letters with circular photo display"
     },
     {
       id: 3,
       name: "SPOOKY Photo Display",
       price: 20.00,
-      image: "/lovable-uploads/f3a9c2d1-7b5e-4c8f-a6d3-9e2c1b5f8a4d.png",
+      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
       description: "Fun 'SPOOKY' Halloween-themed wooden letters with photo display"
     }
   ];
@@ -95,22 +100,27 @@ const WoodSublimation = () => {
               </div>
 
               <div className="p-6">
-                <h3 className="font-playfair font-semibold text-lg text-foreground mb-2">
+                <h3 className="font-playfair font-semibold text-lg text-foreground mb-2 hover:text-primary cursor-pointer transition-colors">
                   {product.name}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   {product.description}
                 </p>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <span className="text-xl font-bold text-foreground">
                     ${product.price.toFixed(2)}
                   </span>
-                  <Button size="sm" className="btn-primary">
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
+                  <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white">
+                    <Info className="h-4 w-4 mr-2" />
+                    Learn More
                   </Button>
                 </div>
+                
+                <Button size="sm" className="btn-primary w-full">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Add to Cart
+                </Button>
               </div>
             </div>
           ))}

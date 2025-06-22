@@ -1,6 +1,7 @@
+
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react';
-import { useState } from 'react';
+import { Heart, ShoppingCart, ArrowLeft, Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -8,19 +9,23 @@ import Footer from '@/components/Footer';
 const Slate = () => {
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const products = [
     {
       id: 1,
       name: "Natural Edge Slate Photo",
       price: 25.00,
-      image: "/lovable-uploads/ecf4a33f-5c77-42cb-863b-49bf81af5e31.png",
+      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
       description: "Beautiful natural edge slate with your photo, perfect for rustic home décor"
     },
     {
       id: 2,
       name: "Rectangular Slate Display",
       price: 30.00,
-      image: "/lovable-uploads/ba6e4c5b-9f82-4d73-b9b3-f9c2b1b8c1c2.png",
+      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
       description: "Clean rectangular slate perfect for family photos and special memories"
     },
     {
@@ -28,7 +33,7 @@ const Slate = () => {
       name: "Large Slate Memorial",
       price: 40.00,
       originalPrice: 45.00,
-      image: "/lovable-uploads/ecf4a33f-5c77-42cb-863b-49bf81af5e31.png",
+      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
       description: "Large slate piece perfect for memorial or special occasions"
     }
   ];
@@ -101,14 +106,14 @@ const Slate = () => {
               </div>
 
               <div className="p-6">
-                <h3 className="font-playfair font-semibold text-lg text-foreground mb-2">
+                <h3 className="font-playfair font-semibold text-lg text-foreground mb-2 hover:text-primary cursor-pointer transition-colors">
                   {product.name}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   {product.description}
                 </p>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
                     <span className="text-xl font-bold text-foreground">
                       ${product.price.toFixed(2)}
@@ -119,11 +124,16 @@ const Slate = () => {
                       </span>
                     )}
                   </div>
-                  <Button size="sm" className="btn-primary">
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
+                  <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white">
+                    <Info className="h-4 w-4 mr-2" />
+                    Learn More
                   </Button>
                 </div>
+                
+                <Button size="sm" className="btn-primary w-full">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Add to Cart
+                </Button>
               </div>
             </div>
           ))}

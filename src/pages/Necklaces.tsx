@@ -1,13 +1,17 @@
 
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react';
-import { useState } from 'react';
+import { Heart, ShoppingCart, ArrowLeft, Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
 const Necklaces = () => {
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const products = [
     {
@@ -21,7 +25,7 @@ const Necklaces = () => {
       id: 2,
       name: "Heart Photo Pendant",
       price: 15.00,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400",
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
       description: "Heart-shaped pendant with your favorite photo"
     }
   ];
@@ -89,22 +93,27 @@ const Necklaces = () => {
               </div>
 
               <div className="p-6">
-                <h3 className="font-playfair font-semibold text-lg text-foreground mb-2">
+                <h3 className="font-playfair font-semibold text-lg text-foreground mb-2 hover:text-primary cursor-pointer transition-colors">
                   {product.name}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   {product.description}
                 </p>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <span className="text-xl font-bold text-foreground">
                     ${product.price.toFixed(2)}
                   </span>
-                  <Button size="sm" className="btn-primary">
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
+                  <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white">
+                    <Info className="h-4 w-4 mr-2" />
+                    Learn More
                   </Button>
                 </div>
+                
+                <Button size="sm" className="btn-primary w-full">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Add to Cart
+                </Button>
               </div>
             </div>
           ))}
