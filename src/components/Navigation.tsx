@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Heart } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Navigation = () => {
@@ -24,7 +24,11 @@ const Navigation = () => {
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
             <div className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-primary fill-current" />
+              <img 
+                src="/api/placeholder/40/40" 
+                alt="Beautiful Beginnings Logo" 
+                className="h-10 w-10 object-contain"
+              />
               <div>
                 <h1 className="text-xl font-playfair font-bold text-foreground">
                   Beautiful Beginnings
