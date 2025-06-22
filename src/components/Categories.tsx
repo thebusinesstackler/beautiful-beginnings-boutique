@@ -42,7 +42,7 @@ const Categories = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-warm-cream to-light-cream relative overflow-hidden">
+    <section className="py-20 bg-white relative overflow-hidden">
       {/* Decorative leaves */}
       <div className="absolute inset-0 opacity-5">
         <Leaf className="absolute top-16 left-12 h-12 w-12 text-primary rotate-12 animate-float" />
@@ -68,7 +68,7 @@ const Categories = () => {
             <Link
               key={index}
               to={category.href}
-              className={`group block bg-white rounded-2xl shadow-lg overflow-hidden card-hover relative ${
+              className={`group block bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl shadow-lg overflow-hidden card-hover relative border border-primary/10 ${
                 category.featured ? 'ring-2 ring-saddle-brown' : ''
               }`}
             >
@@ -87,7 +87,7 @@ const Categories = () => {
                   {category.description}
                 </p>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center text-white font-medium bg-gradient-to-r from-green-500 to-green-600 px-4 py-2 rounded-full group-hover:from-green-600 group-hover:to-green-700 transition-all duration-300 shadow-md">
+                  <div className="flex items-center text-white font-medium bg-gradient-to-r from-primary to-accent px-6 py-3 rounded-full group-hover:from-primary/90 group-hover:to-accent/90 transition-all duration-300 shadow-md hover:shadow-lg">
                     <Leaf className="w-4 h-4 mr-2" />
                     Explore Collection
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

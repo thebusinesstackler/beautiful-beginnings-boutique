@@ -4,7 +4,7 @@ import { ArrowDown, Sparkles, Heart, Star, Leaf } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section className="relative bg-warm-cream py-24 md:py-32 overflow-hidden">
+    <section className="relative bg-white py-24 md:py-32 overflow-hidden">
       {/* Animated leaf background */}
       <div className="absolute inset-0 opacity-10">
         <Leaf className="absolute top-10 left-10 h-16 w-16 text-primary rotate-12 animate-float" />
@@ -50,13 +50,21 @@ const Hero = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start mb-12">
-              <Button className="btn-primary text-lg group">
-                Explore Collection
-                <ArrowDown className="ml-2 h-5 w-5 group-hover:translate-y-1 transition-transform" />
+              <Button className="btn-primary text-xl px-12 py-6 group shadow-xl hover:shadow-2xl">
+                Order Now - Free Shipping
+                <ArrowDown className="ml-2 h-6 w-6 group-hover:translate-y-1 transition-transform" />
               </Button>
-              <Button variant="outline" className="text-lg px-8 py-4 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300">
-                Custom Orders
+              <Button variant="outline" className="text-xl px-12 py-6 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-lg hover:shadow-xl">
+                Personalize Your Gift Today
               </Button>
+            </div>
+
+            {/* Urgency Banner */}
+            <div className="bg-gradient-to-r from-accent/20 to-primary/20 rounded-xl p-6 mb-8 border border-accent/30">
+              <div className="text-center">
+                <p className="text-lg font-bold text-primary mb-2">🎁 Limited Time Offer</p>
+                <p className="text-muted-foreground">Free gift wrapping & personalized note with every order</p>
+              </div>
             </div>
             
             {/* Features */}
