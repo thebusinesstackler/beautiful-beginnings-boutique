@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, ShoppingCart, Tags, Star, FileText, Users, BarChart3, Settings, Megaphone, Layers } from 'lucide-react';
@@ -25,7 +26,8 @@ const AdminTabs = () => {
               className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200 
                          text-charcoal hover:text-chocolate hover:bg-white/70 
                          data-[state=active]:bg-sage data-[state=active]:text-white 
-                         data-[state=active]:shadow-sm rounded-md mx-1"
+                         data-[state=active]:shadow-sm rounded-md mx-1
+                         focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
             >
               <BarChart3 className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Dashboard</span>
@@ -36,7 +38,8 @@ const AdminTabs = () => {
               className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
-                         data-[state=active]:shadow-sm rounded-md mx-1"
+                         data-[state=active]:shadow-sm rounded-md mx-1
+                         focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
             >
               <Package className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Products</span>
@@ -47,7 +50,8 @@ const AdminTabs = () => {
               className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
-                         data-[state=active]:shadow-sm rounded-md mx-1"
+                         data-[state=active]:shadow-sm rounded-md mx-1
+                         focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
             >
               <Layers className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Inventory</span>
@@ -58,7 +62,8 @@ const AdminTabs = () => {
               className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
-                         data-[state=active]:shadow-sm rounded-md mx-1"
+                         data-[state=active]:shadow-sm rounded-md mx-1
+                         focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
             >
               <Tags className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Categories</span>
@@ -69,7 +74,8 @@ const AdminTabs = () => {
               className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
-                         data-[state=active]:shadow-sm rounded-md mx-1"
+                         data-[state=active]:shadow-sm rounded-md mx-1
+                         focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
             >
               <Star className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Featured</span>
@@ -80,7 +86,8 @@ const AdminTabs = () => {
               className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
-                         data-[state=active]:shadow-sm rounded-md mx-1"
+                         data-[state=active]:shadow-sm rounded-md mx-1
+                         focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
             >
               <FileText className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Blog</span>
@@ -91,7 +98,8 @@ const AdminTabs = () => {
               className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
-                         data-[state=active]:shadow-sm rounded-md mx-1"
+                         data-[state=active]:shadow-sm rounded-md mx-1
+                         focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
             >
               <ShoppingCart className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Orders</span>
@@ -102,7 +110,8 @@ const AdminTabs = () => {
               className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
-                         data-[state=active]:shadow-sm rounded-md mx-1"
+                         data-[state=active]:shadow-sm rounded-md mx-1
+                         focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
             >
               <Users className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Customers</span>
@@ -113,7 +122,8 @@ const AdminTabs = () => {
               className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
-                         data-[state=active]:shadow-sm rounded-md mx-1"
+                         data-[state=active]:shadow-sm rounded-md mx-1
+                         focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
             >
               <Megaphone className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Marketing</span>
@@ -124,7 +134,8 @@ const AdminTabs = () => {
               className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
-                         data-[state=active]:shadow-sm rounded-md mx-1"
+                         data-[state=active]:shadow-sm rounded-md mx-1
+                         focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
             >
               <Settings className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Settings</span>
