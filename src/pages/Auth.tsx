@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -16,7 +15,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,123 +38,78 @@ const Auth = () => {
     setLoading(false);
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    const { error } = await signUp(email, password);
-    
-    if (error) {
-      setError(error.message);
-    } else {
-      setError('Please check your email to confirm your account.');
-    }
-    
-    setLoading(false);
-  };
-
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#faf6ee' }}>
       <Navigation />
       
       <main className="flex-1 flex items-center justify-center py-12 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl text-center" style={{ color: '#7A7047' }}>
-              Welcome Back
+        <Card className="w-full max-w-md shadow-lg border-0" style={{ backgroundColor: '#ffffff' }}>
+          <CardHeader className="text-center pb-8">
+            <CardTitle className="text-3xl font-bold mb-2" style={{ color: '#7A7047' }}>
+              Admin Login
             </CardTitle>
-            <CardDescription className="text-center">
-              Sign in to your account or create a new one
+            <CardDescription className="text-base" style={{ color: '#5B4C37' }}>
+              Sign in to manage your products and website
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="signin">
-                <form onSubmit={handleSignIn} className="space-y-4 mt-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
-                    <Input
-                      id="signin-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
-                    <Input
-                      id="signin-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  {error && (
-                    <Alert>
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={loading}
-                    style={{ backgroundColor: '#E28F84' }}
-                  >
-                    {loading ? 'Signing in...' : 'Sign In'}
-                  </Button>
-                </form>
-              </TabsContent>
-              
-              <TabsContent value="signup">
-                <form onSubmit={handleSignUp} className="space-y-4 mt-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  {error && (
-                    <Alert>
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={loading}
-                    style={{ backgroundColor: '#E28F84' }}
-                  >
-                    {loading ? 'Creating account...' : 'Sign Up'}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+          <CardContent className="px-8 pb-8">
+            <form onSubmit={handleSignIn} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium" style={{ color: '#7A7047' }}>
+                  Email Address
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="h-12 border-2 focus:ring-0 focus:border-opacity-70"
+                  style={{ 
+                    borderColor: '#A89B84',
+                    backgroundColor: '#faf6ee',
+                    color: '#7A7047'
+                  }}
+                  placeholder="Enter your email"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium" style={{ color: '#7A7047' }}>
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="h-12 border-2 focus:ring-0 focus:border-opacity-70"
+                  style={{ 
+                    borderColor: '#A89B84',
+                    backgroundColor: '#faf6ee',
+                    color: '#7A7047'
+                  }}
+                  placeholder="Enter your password"
+                />
+              </div>
+              {error && (
+                <Alert className="border-0" style={{ backgroundColor: '#f8d7da', color: '#721c24' }}>
+                  <AlertDescription className="text-sm">
+                    {error}
+                  </AlertDescription>
+                </Alert>
+              )}
+              <Button 
+                type="submit" 
+                className="w-full h-12 text-white font-semibold text-base hover:opacity-90 transition-opacity border-0" 
+                disabled={loading}
+                style={{ backgroundColor: '#E28F84' }}
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
+              </Button>
+            </form>
           </CardContent>
         </Card>
       </main>
