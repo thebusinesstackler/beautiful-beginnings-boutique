@@ -5,10 +5,12 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import PhotoUpload from '@/components/PhotoUpload';
+import { useCart } from '@/contexts/CartContext';
+import { toast } from '@/hooks/use-toast';
 
 const Necklaces = () => {
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
+  const { addToCart } = useCart();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -19,17 +21,17 @@ const Necklaces = () => {
       id: 1,
       name: "Photo Memory Necklace",
       price: 15.00,
-      image: "https://img.kwcdn.com/product/open/2fe48b660cda4288b8989a4cce3e7ccf-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
-      description: "Keep your loved ones close with this personalized photo necklace",
-      slug: "photo-memory"
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
+      description: "Cherish your memories with this elegant photo necklace that keeps your loved ones close to your heart",
+      link: "/products/necklaces/photo-memory"
     },
     {
       id: 2,
       name: "Heart Photo Pendant",
-      price: 15.00,
-      image: "https://img.kwcdn.com/product/open/2fe48b660cda4288b8989a4cce3e7ccf-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
-      description: "Heart-shaped pendant with your favorite photo",
-      slug: "heart-photo"
+      price: 18.00,
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400", 
+      description: "A beautiful heart-shaped pendant that holds your precious memories in stunning detail",
+      link: "/products/necklaces/heart-photo-pendant"
     }
   ];
 
@@ -43,113 +45,164 @@ const Necklaces = () => {
     setLikedProducts(newLiked);
   };
 
-  const handlePhotoUpload = (file: File) => {
-    console.log('Photo uploaded:', file.name);
+  const handleAddToCart = (product: typeof products[0]) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
+    });
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart.`,
+    });
   };
 
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
-          <Link to="/" className="hover:text-primary">Home</Link>
-          <span>/</span>
-          <span className="text-foreground">Necklaces</span>
+      {/* Hero Section */}
+      <section className="relative py-20 overflow-hidden" style={{ backgroundColor: '#FAF5EF' }}>
+        {/* Soft decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-32 h-32 bg-rose-200 rounded-full blur-xl"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-rose-100 rounded-full blur-lg"></div>
+          <div className="absolute bottom-32 left-32 w-28 h-28 bg-rose-200 rounded-full blur-xl"></div>
         </div>
 
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6">
-            Photo Necklaces
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
-            Keep your loved ones close with beautiful personalized photo necklaces
-          </p>
-          <div className="text-sm text-muted-foreground mb-8">
-            Price: $15.00
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          {/* Breadcrumb */}
+          <div className="flex items-center space-x-2 text-sm mb-8" style={{ color: '#A89B84' }}>
+            <Link to="/" className="hover:text-[#E28F84] transition-colors">Home</Link>
+            <span>/</span>
+            <span style={{ color: '#5B4C37' }}>Memory Jewelry</span>
           </div>
-          
-          {/* Photo Upload Section */}
-          <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-8 max-w-4xl mx-auto mb-12">
-            <div className="flex items-center justify-center mb-4">
-              <Palette className="h-8 w-8 text-primary mr-3" />
-              <Sparkles className="h-6 w-6 text-accent" />
+
+          <div className="text-center">
+            {/* Large logo */}
+            <div className="mb-8">
+              <img 
+                src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
+                alt="Beautiful Beginnings Logo" 
+                className="h-48 w-48 object-contain mx-auto"
+              />
             </div>
-            <h2 className="text-2xl font-playfair font-semibold text-foreground mb-3">
-              Upload Your Photo for Personalization
-            </h2>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Upload your cherished photos and create a stunning piece of jewelry that keeps your memories close to your heart
+            
+            <div className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold mb-6" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
+              <Sparkles className="h-4 w-4 mr-2" />
+              Wearable Memory Keepsakes
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-playfair font-bold mb-6 leading-tight">
+              <span style={{ color: '#5B4C37' }}>Memory Jewelry</span>
+              <br />
+              <span className="bg-gradient-to-r from-[#E28F84] to-[#F4A79B] bg-clip-text text-transparent">Wear Your Heart</span>
+            </h1>
+            
+            <p className="text-xl mb-8 max-w-3xl mx-auto leading-relaxed" style={{ color: '#A89B84' }}>
+              Keep your most treasured memories close to your heart with our beautiful collection of photo jewelry. 
+              Each piece is carefully crafted to hold your precious moments, creating wearable keepsakes that tell your unique story 
+              and connect you to the people and moments that matter most.
             </p>
             
-            <div className="max-w-md mx-auto mb-6">
-              <PhotoUpload onUpload={handlePhotoUpload} />
+            <div className="bg-white rounded-2xl p-8 shadow-lg max-w-4xl mx-auto mb-12" style={{ borderColor: '#F6DADA', borderWidth: '1px' }}>
+              <div className="flex items-center justify-center mb-4">
+                <Heart className="h-8 w-8 mr-3" style={{ color: '#E28F84' }} />
+                <Sparkles className="h-6 w-6" style={{ color: '#7A7047' }} />
+              </div>
+              <h2 className="text-2xl font-playfair font-semibold mb-3" style={{ color: '#5B4C37' }}>
+                Personalize Your Perfect Piece
+              </h2>
+              <p className="mb-6 max-w-2xl mx-auto" style={{ color: '#A89B84' }}>
+                Transform your favorite photos into stunning jewelry that celebrates your most cherished relationships. 
+                Each necklace is a unique expression of love, memory, and connection.
+              </p>
+              <Button 
+                className="text-lg px-8 py-4 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
+                style={{ backgroundColor: '#E28F84' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
+              >
+                <Sparkles className="h-5 w-5 mr-2" />
+                Create Your Jewelry
+              </Button>
             </div>
-            
-            <Button className="btn-primary text-lg px-8 py-3">
-              <Sparkles className="h-5 w-5 mr-2" />
-              Start Personalizing Now
-            </Button>
           </div>
         </div>
+      </section>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group border border-primary/10"
+              className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden border border-gray-100"
             >
-              <div className="relative overflow-hidden rounded-t-xl">
-                <Link to={`/products/necklaces/${product.slug}`}>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
-                  />
-                </Link>
+              <div className="relative overflow-hidden">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <button
                   onClick={() => toggleLike(product.id)}
-                  className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors duration-200 shadow-md"
+                  className="absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white hover:scale-110 transition-all duration-200 shadow-lg"
                 >
                   <Heart
-                    className={`h-4 w-4 transition-colors duration-200 ${
+                    className={`h-5 w-5 transition-all duration-200 ${
                       likedProducts.has(product.id)
-                        ? 'text-red-500 fill-current'
+                        ? 'text-red-500 fill-current scale-110'
                         : 'text-gray-600'
                     }`}
                   />
                 </button>
               </div>
 
-              <div className="p-6">
-                <Link to={`/products/necklaces/${product.slug}`}>
-                  <h3 className="font-playfair font-semibold text-lg text-foreground mb-2 hover:text-primary cursor-pointer transition-colors">
-                    {product.name}
-                  </h3>
-                </Link>
-                <p className="text-sm text-muted-foreground mb-4">
+              <div className="p-8">
+                <h3 className="font-playfair font-bold text-2xl mb-4 group-hover:text-[#E28F84] transition-colors duration-300" style={{ color: '#5B4C37' }}>
+                  {product.name}
+                </h3>
+                <p className="text-base leading-relaxed mb-6" style={{ color: '#A89B84' }}>
                   {product.description}
                 </p>
                 
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xl font-bold text-primary">
+                <div className="flex items-center justify-between mb-8">
+                  <span className="text-3xl font-bold" style={{ color: '#E28F84' }}>
                     ${product.price.toFixed(2)}
                   </span>
-                  <Link to={`/products/necklaces/${product.slug}`}>
-                    <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white">
-                      <Info className="h-4 w-4 mr-2" />
-                      Learn More
-                    </Button>
-                  </Link>
+                  <div className="px-4 py-2 rounded-full text-sm font-medium" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
+                    Handcrafted with ❤️
+                  </div>
                 </div>
                 
-                <Button size="sm" className="btn-primary w-full">
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Add to Cart
-                </Button>
+                <div className="space-y-4">
+                  <Link to={product.link} className="block">
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="w-full text-base py-3 border-2 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-300 hover:scale-105"
+                      style={{ borderColor: '#E28F84' }}
+                    >
+                      <Info className="h-5 w-5 mr-2" />
+                      Discover the Beauty
+                    </Button>
+                  </Link>
+                  
+                  <Button 
+                    size="lg" 
+                    className="w-full text-base py-3 text-white font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    style={{ backgroundColor: '#E28F84' }}
+                    onClick={() => handleAddToCart(product)}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
+                  >
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Add to Your Collection
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
@@ -158,9 +211,21 @@ const Necklaces = () => {
         {/* Back to Home */}
         <div className="text-center">
           <Link to="/">
-            <Button variant="outline" className="px-6 py-3 border-primary text-primary hover:bg-primary hover:text-white">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+            <Button 
+              variant="outline" 
+              className="px-8 py-4 text-lg border-2 transition-all duration-300 hover:scale-105"
+              style={{ borderColor: '#7A7047', color: '#7A7047' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F6DADA';
+                e.currentTarget.style.borderColor = '#7A7047';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = '#7A7047';
+              }}
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Return to Beautiful Beginnings
             </Button>
           </Link>
         </div>
