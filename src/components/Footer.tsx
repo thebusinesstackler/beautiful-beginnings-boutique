@@ -1,8 +1,16 @@
 
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook, Mail, Phone, MapPin, Award, Star } from 'lucide-react';
+import { Instagram, Facebook, Mail, Phone, MapPin, Award, Star, LogIn, LogOut, Shield } from 'luc
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
 
 const Footer = () => {
+  const { user, profile, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <footer className="relative" style={{ backgroundColor: '#7A7047', color: '#FAF5EF' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -65,7 +73,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact Info & Auth */}
           <div>
             <h4 className="text-lg font-semibold mb-6" style={{ color: '#FAF5EF' }}>Get in Touch</h4>
             <div className="space-y-4 mb-6">
@@ -84,6 +92,66 @@ const Footer = () => {
                   Artisan Village, AV 12345
                 </span>
               </div>
+            </div>
+
+            {/* Auth Section */}
+            <div className="mb-6 space-y-3">
+              {user ? (
+                <div className="space-y-2">
+                  <p className="text-sm" style={{ color: '#A89B84' }}>
+                    Welcome, {user.email}
+                  </p>
+                  <div className="flex flex-col space-y-2">
+                    {profile?.is_admin && (
+                      <Link to="/admin">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full text-left justify-start"
+                          style={{ 
+                            borderColor: '#A89B84', 
+                            color: '#A89B84',
+                            backgroundColor: 'transparent'
+                          }}
+                        >
+                          <Shield className="h-4 w-4 mr-2" />
+                          Admin Panel
+                        </Button>
+                      </Link>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleSignOut}
+                      className="w-full text-left justify-start"
+                      style={{ 
+                        borderColor: '#A89B84', 
+                        color: '#A89B84',
+                        backgroundColor: 'transparent'
+                      }}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Link to="/auth">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-left justify-start"
+                    style={{ 
+                      borderColor: '#A89B84', 
+                      color: '#A89B84',
+                      backgroundColor: 'transparent'
+                    }}
+                  >
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Admin Login
+                  </Button>
+                </Link>
+              )}
             </div>
             
             {/* Social Links */}
