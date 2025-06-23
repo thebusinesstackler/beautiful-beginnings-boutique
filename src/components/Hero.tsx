@@ -44,16 +44,16 @@ const Hero = () => {
                 variant="outline" 
                 className="text-lg px-8 py-3 border-2 transition-all duration-200 font-semibold rounded-lg"
                 style={{ 
-                  borderColor: '#7A7047', 
+                  borderColor: '#E28F84', 
                   color: '#7A7047',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#F6DADA';
-                  e.currentTarget.style.borderColor = '#7A7047';
+                  e.currentTarget.style.borderColor = '#E28F84';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.borderColor = '#7A7047';
+                  e.currentTarget.style.borderColor = '#E28F84';
                 }}
               >
                 Customize Your Gift
