@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Sparkles, Shield, Truck, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -15,7 +14,7 @@ const PhotoMemoryNecklace = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [showPersonalization, setShowPersonalization] = useState(false);
   const [showShipping, setShowShipping] = useState(false);
-  const [showFAQ, setShowFAQ] = useState(false);
+  const [showFAQ, setShowFAQ] = useState<number | null>(null);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -292,7 +291,7 @@ const PhotoMemoryNecklace = () => {
               {faqs.map((faq, index) => (
                 <div key={index} className="border-b border-gray-100 pb-4 last:border-0">
                   <button
-                    onClick={() => setShowFAQ(showFAQ === index ? -1 : index)}
+                    onClick={() => setShowFAQ(showFAQ === index ? null : index)}
                     className="w-full flex items-center justify-between text-left py-2"
                   >
                     <h3 className="font-semibold" style={{ color: '#2d3436' }}>{faq.question}</h3>
