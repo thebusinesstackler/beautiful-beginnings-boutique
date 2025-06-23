@@ -1,3 +1,4 @@
+
 import { Star, Quote } from 'lucide-react';
 
 const Testimonials = () => {
@@ -33,10 +34,10 @@ const Testimonials = () => {
             <Star className="h-4 w-4 mr-2 fill-current" />
             5-Star Reviews from Happy Customers
           </div>
-          <h2 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6">
+          <h2 className="text-4xl md:text-5xl font-playfair font-bold text-black mb-6">
             What Our Customers Say
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-black max-w-3xl mx-auto">
             Join thousands of satisfied customers who have turned their memories into treasured keepsakes
           </p>
         </div>
@@ -56,7 +57,7 @@ const Testimonials = () => {
                   className="w-12 h-12 rounded-full object-cover mr-4"
                 />
                 <div>
-                  <h4 className="font-semibold text-foreground">{testimonial.name}</h4>
+                  <h4 className="font-semibold text-black">{testimonial.name}</h4>
                   <div className="flex items-center">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="h-4 w-4 text-accent fill-current" />
@@ -65,7 +66,7 @@ const Testimonials = () => {
                 </div>
               </div>
               
-              <p className="text-muted-foreground mb-4 leading-relaxed italic">
+              <p className="text-black mb-4 leading-relaxed italic">
                 "{testimonial.text}"
               </p>
               
@@ -77,16 +78,16 @@ const Testimonials = () => {
         </div>
 
         <div className="text-center bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-8">
-          <h3 className="text-2xl font-playfair font-bold text-foreground mb-4">
+          <h3 className="text-2xl font-playfair font-bold text-black mb-4">
             Join 500+ Happy Customers
           </h3>
           <div className="flex items-center justify-center space-x-1 mb-4">
             {[...Array(5)].map((_, i) => (
               <Star key={i} className="h-6 w-6 text-accent fill-current" />
             ))}
-            <span className="ml-2 text-xl font-bold text-foreground">4.9/5</span>
+            <span className="ml-2 text-xl font-bold text-black">4.9/5</span>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-black">
             Average rating from verified customers
           </p>
         </div>
