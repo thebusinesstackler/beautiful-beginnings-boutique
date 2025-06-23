@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { Heart, Gift, Calendar, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -66,7 +67,7 @@ const GiftingSection = () => {
                 <p className="text-gray-700 mb-4 leading-relaxed">
                   {occasion.description}
                 </p>
-                <Button size="sm" variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-white">
+                <Button size="sm" variant="outline" className="w-full border-2 hover:scale-105 transition-all duration-300" style={{ borderColor: '#E28F84', color: '#7A7047' }}>
                   Shop {occasion.title}
                 </Button>
               </div>
@@ -84,11 +85,11 @@ const GiftingSection = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/products/ornaments">
-                <Button className="btn-primary text-lg px-8 py-4">
+                <Button className="text-lg px-8 py-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 text-white font-semibold" style={{ backgroundColor: '#E28F84' }}>
                   Order Now - Free Shipping
                 </Button>
               </Link>
-              <Button variant="outline" className="text-lg px-8 py-4 border-2 border-accent text-accent hover:bg-accent hover:text-white">
+              <Button variant="outline" className="text-lg px-8 py-4 border-2 hover:scale-105 transition-all duration-300" style={{ borderColor: '#E28F84', color: '#7A7047' }}>
                 Personalize Your Gift Today
               </Button>
             </div>

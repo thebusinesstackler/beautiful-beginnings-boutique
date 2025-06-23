@@ -218,7 +218,7 @@ const About = () => {
               <Sparkles className="h-5 w-5 mr-2" />
               Start Personalizing
             </Button>
-            <Button variant="outline" className="text-lg px-10 py-4 border-2 hover:scale-105 transition-all duration-300" style={{ borderColor: '#7A7047', color: '#7A7047' }}>
+            <Button variant="outline" className="text-lg px-10 py-4 border-2 hover:scale-105 transition-all duration-300" style={{ borderColor: '#E28F84', color: '#7A7047' }}>
               View All Products
             </Button>
           </div>
