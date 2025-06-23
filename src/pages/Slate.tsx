@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Info, Sparkles, Palette } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -127,9 +126,7 @@ const Slate = () => {
               <Button 
                 className="text-lg px-8 py-4 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
                 style={{ backgroundColor: '#E28F84' }}
-                onMouse
-
-nter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
               >
                 <Sparkles className="h-5 w-5 mr-2" />
