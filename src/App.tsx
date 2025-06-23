@@ -11,6 +11,8 @@ import SnowGlobes from "./pages/SnowGlobes";
 import WinterBotanicalSnowGlobe from "./pages/WinterBotanicalSnowGlobe";
 import CustomPhotoSnowGlobe from "./pages/CustomPhotoSnowGlobe";
 import Necklaces from "./pages/Necklaces";
+import PhotoMemoryNecklace from "./pages/PhotoMemoryNecklace";
+import HeartPhotoPendant from "./pages/HeartPhotoPendant";
 import Ornaments from "./pages/Ornaments";
 import OrnamentDetail from "./pages/OrnamentDetail";
 import Slate from "./pages/Slate";
@@ -31,6 +33,8 @@ const App = () => (
             <Route path="/products/snow-globes/winter-botanical" element={<WinterBotanicalSnowGlobe />} />
             <Route path="/products/snow-globes/custom-photo" element={<CustomPhotoSnowGlobe />} />
             <Route path="/products/necklaces" element={<Necklaces />} />
+            <Route path="/products/necklaces/photo-memory" element={<PhotoMemoryNecklace />} />
+            <Route path="/products/necklaces/heart-photo" element={<HeartPhotoPendant />} />
             <Route path="/products/ornaments" element={<Ornaments />} />
             <Route path="/products/ornaments/:id" element={<OrnamentDetail />} />
             <Route path="/products/slate" element={<Slate />} />
