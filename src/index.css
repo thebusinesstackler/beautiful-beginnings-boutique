@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -33,7 +32,7 @@
 
     --border: 226 232 240; /* Slate 200 - subtle borders */
     --input: 255 255 255;
-    --ring: 169 178 143 !important; /* Beautiful Beginnings Sage Green for focus rings */
+    --ring: 100 116 139 !important; /* FORCE Slate 500 - NO YELLOW EVER */
 
     --radius: 0.5rem;
 
@@ -44,7 +43,7 @@
     --sidebar-accent: 247 245 243; /* Beautiful Beginnings Cream */
     --sidebar-accent-foreground: 91 76 55; /* Beautiful Beginnings Earthy Brown */
     --sidebar-border: 226 232 240;
-    --sidebar-ring: 169 178 143 !important; /* Beautiful Beginnings Sage Green */
+    --sidebar-ring: 100 116 139 !important; /* FORCE Slate 500 - NO YELLOW EVER */
   }
 
   .dark {
@@ -74,7 +73,7 @@
 
     --border: 30 41 59;
     --input: 30 41 59;
-    --ring: 169 178 143 !important; /* Beautiful Beginnings Sage Green for focus rings */
+    --ring: 100 116 139 !important; /* FORCE Slate 500 - NO YELLOW EVER */
     
     --sidebar-background: 2 6 23;
     --sidebar-foreground: 248 250 252;
@@ -83,7 +82,7 @@
     --sidebar-accent: 30 41 59;
     --sidebar-accent-foreground: 248 250 252;
     --sidebar-border: 30 41 59;
-    --sidebar-ring: 169 178 143 !important; /* Beautiful Beginnings Sage Green */
+    --sidebar-ring: 100 116 139 !important; /* FORCE Slate 500 - NO YELLOW EVER */
   }
 }
 
@@ -204,33 +203,139 @@
     color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
   }
 
-  /* Button variant overrides to ensure no yellow ever appears */
-  button[class*="outline"]:hover {
-    background-color: rgb(169 178 143) !important; /* Beautiful Beginnings Sage Green */
-    color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
+  /* ===== COMPLETE BUTTON VARIANT OVERRIDES - NO YELLOW EVER ===== */
+  
+  /* Outline button overrides - FORCE stone colors */
+  button[class*="outline"]:hover,
+  .outline:hover,
+  [data-variant="outline"]:hover {
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
+    color: rgb(68 64 60) !important; /* Stone 700 */
+    border-color: rgb(214 211 209) !important; /* Stone 300 */
   }
 
-  button[class*="ghost"]:hover {
-    background-color: rgb(169 178 143) !important; /* Beautiful Beginnings Sage Green */
-    color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
+  button[class*="outline"]:focus,
+  .outline:focus,
+  [data-variant="outline"]:focus {
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
+    color: rgb(68 64 60) !important; /* Stone 700 */
+    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
   }
 
-  /* Focus ring overrides */
+  button[class*="outline"]:focus-visible,
+  .outline:focus-visible,
+  [data-variant="outline"]:focus-visible {
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
+    color: rgb(68 64 60) !important; /* Stone 700 */
+    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
+    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
+  }
+
+  /* Ghost button overrides - FORCE stone colors */
+  button[class*="ghost"]:hover,
+  .ghost:hover,
+  [data-variant="ghost"]:hover {
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
+    color: rgb(68 64 60) !important; /* Stone 700 */
+  }
+
+  button[class*="ghost"]:focus,
+  .ghost:focus,
+  [data-variant="ghost"]:focus {
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
+    color: rgb(68 64 60) !important; /* Stone 700 */
+    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
+  }
+
+  button[class*="ghost"]:focus-visible,
+  .ghost:focus-visible,
+  [data-variant="ghost"]:focus-visible {
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
+    color: rgb(68 64 60) !important; /* Stone 700 */
+    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
+    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
+  }
+
+  /* ===== SELECT COMPONENT OVERRIDES - NO YELLOW EVER ===== */
+  
+  /* Select trigger focus overrides */
+  [data-radix-collection-item]:focus,
+  [role="combobox"]:focus,
+  [role="button"][aria-haspopup="listbox"]:focus {
+    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
+    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
+    background-color: rgb(255 255 255) !important; /* Force white */
+  }
+
+  /* Select item focus overrides */
+  .focus\:bg-stone-100:focus,
+  [data-highlighted] {
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
+    color: rgb(68 64 60) !important; /* Stone 700 */
+  }
+
+  .focus\:text-stone-900:focus {
+    color: rgb(28 25 23) !important; /* Stone 900 */
+  }
+
+  /* ===== TABS COMPONENT OVERRIDES - NO YELLOW EVER ===== */
+  
+  /* Tabs trigger focus overrides */
+  [role="tab"]:focus,
+  [role="tab"]:focus-visible {
+    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
+    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
+    color: rgb(68 64 60) !important; /* Stone 700 */
+  }
+
+  /* ===== UNIVERSAL FOCUS OVERRIDES - NO YELLOW ANYWHERE ===== */
+  
+  /* Force ALL focus rings to be slate instead of yellow */
+  .focus-visible\:ring-2:focus-visible,
+  .focus-visible\:ring-ring:focus-visible,
+  .focus\:ring-2:focus,
+  .focus\:ring-ring:focus {
+    --tw-ring-color: rgb(100 116 139) !important; /* Slate 500 */
+    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
+  }
+
+  /* Force ALL focus-visible states */
   *:focus-visible {
-    outline: 2px solid rgb(169 178 143) !important; /* Beautiful Beginnings Sage Green */
+    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
     outline-offset: 2px !important;
+    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
   }
 
-  /* Toggle component overrides */
+  /* Override any remaining hover states that might use yellow */
   .hover\:bg-stone-100:hover {
-    background-color: rgb(245 245 244) !important; /* Stone 100 instead of yellow */
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
   }
 
   .hover\:text-stone-800:hover {
-    color: rgb(41 37 36) !important; /* Stone 800 instead of yellow */
+    color: rgb(41 37 36) !important; /* Stone 800 */
   }
 
-  /* CRITICAL INPUT FIELD OVERRIDES - Eliminate ALL yellow backgrounds */
+  /* ===== RADIX UI COMPONENT STATE OVERRIDES ===== */
+  
+  /* Override any Radix component open/focus states */
+  [data-state="open"],
+  [data-state="active"] {
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
+    color: rgb(68 64 60) !important; /* Stone 700 */
+  }
+
+  /* Override dropdown menu item states */
+  [role="menuitem"]:focus,
+  [role="menuitem"]:hover,
+  [role="option"]:focus,
+  [role="option"]:hover {
+    background-color: rgb(245 245 244) !important; /* Stone 100 */
+    color: rgb(68 64 60) !important; /* Stone 700 */
+  }
+
+  /* ===== CRITICAL INPUT FIELD OVERRIDES - NO YELLOW BACKGROUNDS ===== */
+  
   input,
   input[type="text"],
   input[type="email"],
@@ -337,5 +442,35 @@
     background-color: rgb(30 41 59) !important;
     background: rgb(30 41 59) !important;
     color: rgb(248 250 252) !important;
+  }
+
+  /* ===== FINAL NUCLEAR OVERRIDES - ELIMINATE ALL REMAINING YELLOW ===== */
+  
+  /* Override ANY element that might still have yellow */
+  *[class*="yellow"],
+  *[style*="yellow"],
+  *[style*="#ffff"],
+  *[style*="#fde047"],
+  *[style*="rgb(253, 224, 71)"] {
+    background-color: rgb(245 245 244) !important; /* Force stone */
+    color: rgb(68 64 60) !important; /* Force stone text */
+  }
+
+  /* Override any CSS custom properties that might contain yellow */
+  * {
+    --tw-ring-color: rgb(100 116 139) !important; /* Force slate ring */
+  }
+
+  /* Force all Tailwind ring utilities to use slate */
+  .ring-ring {
+    --tw-ring-color: rgb(100 116 139) !important;
+  }
+
+  .focus\:ring-ring:focus {
+    --tw-ring-color: rgb(100 116 139) !important;
+  }
+
+  .focus-visible\:ring-ring:focus-visible {
+    --tw-ring-color: rgb(100 116 139) !important;
   }
 }
