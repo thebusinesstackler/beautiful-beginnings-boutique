@@ -229,4 +229,113 @@
   .hover\:text-stone-800:hover {
     color: rgb(41 37 36) !important; /* Stone 800 instead of yellow */
   }
+
+  /* CRITICAL INPUT FIELD OVERRIDES - Eliminate ALL yellow backgrounds */
+  input,
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="date"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="search"],
+  input[type="password"],
+  textarea {
+    background-color: rgb(255 255 255) !important; /* Force white background */
+    background: rgb(255 255 255) !important; /* Backup declaration */
+    color: rgb(15 23 42) !important; /* Force dark text */
+  }
+
+  /* Dark mode input overrides */
+  .dark input,
+  .dark input[type="text"],
+  .dark input[type="email"],
+  .dark input[type="number"],
+  .dark input[type="date"],
+  .dark input[type="url"],
+  .dark input[type="tel"],
+  .dark input[type="search"],
+  .dark input[type="password"],
+  .dark textarea {
+    background-color: rgb(30 41 59) !important; /* Dark slate background */
+    background: rgb(30 41 59) !important; /* Backup declaration */
+    color: rgb(248 250 252) !important; /* Light text for dark mode */
+  }
+
+  /* Browser autocomplete override - prevents yellow autocomplete backgrounds */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  textarea:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px rgb(255 255 255) inset !important; /* Cover yellow with white */
+    -webkit-text-fill-color: rgb(15 23 42) !important; /* Force dark text */
+    background-color: rgb(255 255 255) !important;
+    background: rgb(255 255 255) !important;
+    caret-color: rgb(15 23 42) !important; /* Dark cursor */
+  }
+
+  /* Dark mode autocomplete overrides */
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:hover,
+  .dark input:-webkit-autofill:focus,
+  .dark input:-webkit-autofill:active,
+  .dark textarea:-webkit-autofill,
+  .dark textarea:-webkit-autofill:hover,
+  .dark textarea:-webkit-autofill:focus,
+  .dark textarea:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px rgb(30 41 59) inset !important; /* Cover with dark background */
+    -webkit-text-fill-color: rgb(248 250 252) !important; /* Light text for dark mode */
+    background-color: rgb(30 41 59) !important;
+    background: rgb(30 41 59) !important;
+    caret-color: rgb(248 250 252) !important; /* Light cursor */
+  }
+
+  /* Mozilla/Firefox specific overrides */
+  input:-moz-autofill,
+  textarea:-moz-autofill {
+    background-color: rgb(255 255 255) !important;
+    color: rgb(15 23 42) !important;
+  }
+
+  .dark input:-moz-autofill,
+  .dark textarea:-moz-autofill {
+    background-color: rgb(30 41 59) !important;
+    color: rgb(248 250 252) !important;
+  }
+
+  /* High specificity overrides for any missed cases */
+  .bg-background input,
+  .bg-card input,
+  .bg-white input,
+  form input,
+  div input,
+  .bg-background textarea,
+  .bg-card textarea,
+  .bg-white textarea,
+  form textarea,
+  div textarea {
+    background-color: rgb(255 255 255) !important;
+    background: rgb(255 255 255) !important;
+    color: rgb(15 23 42) !important;
+  }
+
+  /* Dark mode high specificity overrides */
+  .dark .bg-background input,
+  .dark .bg-card input,
+  .dark .bg-white input,
+  .dark form input,
+  .dark div input,
+  .dark .bg-background textarea,
+  .dark .bg-card textarea,
+  .dark .bg-white textarea,
+  .dark form textarea,
+  .dark div textarea {
+    background-color: rgb(30 41 59) !important;
+    background: rgb(30 41 59) !important;
+    color: rgb(248 250 252) !important;
+  }
 }
