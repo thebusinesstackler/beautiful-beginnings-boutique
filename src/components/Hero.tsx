@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Star, Heart, Sparkles } from 'lucide-react';
 
@@ -112,7 +111,7 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Image Gallery */}
+          {/* Updated Image Gallery */}
           <div className="relative lg:order-2 animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <div className="grid grid-cols-2 gap-4">
               {/* Main large image */}
@@ -132,7 +131,7 @@ const Hero = () => {
               {/* Smaller images */}
               <div className="relative rounded-xl overflow-hidden shadow-lg card-hover">
                 <img
-                  src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400"
+                  src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
                   alt="Handcrafted jewelry"
                   className="w-full h-32 md:h-40 object-cover"
                 />
@@ -140,7 +139,7 @@ const Hero = () => {
               
               <div className="relative rounded-xl overflow-hidden shadow-lg card-hover">
                 <img
-                  src="https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400"
+                  src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
                   alt="Custom slate products"
                   className="w-full h-32 md:h-40 object-cover"
                 />

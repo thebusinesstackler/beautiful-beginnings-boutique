@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, Gift, Calendar, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -9,19 +8,19 @@ const GiftingSection = () => {
       icon: Heart,
       title: "Anniversaries",
       description: "Celebrate your love story with personalized keepsakes",
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400"
+      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
     },
     {
       icon: Gift,
       title: "Birthdays",
       description: "Make their special day unforgettable with custom gifts",
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400"
+      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
     },
     {
       icon: Calendar,
       title: "Holidays",
       description: "Create magical holiday memories with personalized ornaments",
-      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400"
+      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
     }
   ];
 

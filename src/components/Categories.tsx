@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { ArrowRight, Heart } from 'lucide-react';
 
@@ -69,13 +68,13 @@ const Categories = () => {
                 category.featured ? 'ring-2 ring-rose-200' : ''
               }`}
             >
-              {/* Placeholder image */}
-              <div className="aspect-square overflow-hidden bg-gradient-to-br from-rose-50 to-rose-100">
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="w-24 h-24 bg-rose-200/50 rounded-full flex items-center justify-center">
-                    <Heart className="w-8 h-8 text-rose-400" />
-                  </div>
-                </div>
+              {/* Updated image */}
+              <div className="aspect-square overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+                  alt={category.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
               </div>
               
               <div className="p-6">
