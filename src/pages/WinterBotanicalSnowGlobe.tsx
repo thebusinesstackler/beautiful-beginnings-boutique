@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Sparkles, Gift, Clock, Truck, Shield, Camera, Eye, Users, Award, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -136,24 +137,24 @@ const WinterBotanicalSnowGlobe = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
+        <div className="flex items-center space-x-2 text-sm text-slate-600 mb-6">
           <Link to="/" className="hover:text-primary">Home</Link>
           <ChevronRight className="h-4 w-4" />
           <Link to="/products/snow-globes" className="hover:text-primary">Snow Globes</Link>
           <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground">{product.name}</span>
+          <span className="text-slate-900">{product.name}</span>
         </div>
 
         {/* Main Product Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           {/* Product Image & Photo Upload */}
           <div className="space-y-6">
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sage/10 to-blush/10 p-8 border border-stone/20">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-8 border border-slate-200">
               <img
                 src={product.image}
                 alt={product.name}
@@ -161,11 +162,11 @@ const WinterBotanicalSnowGlobe = () => {
               />
               <button
                 onClick={() => setIsLiked(!isLiked)}
-                className="absolute top-4 right-4 p-3 bg-pearl/90 backdrop-blur-sm rounded-full hover:bg-pearl transition-colors duration-200 shadow-lg"
+                className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors duration-200 shadow-lg"
               >
                 <Heart
                   className={`h-6 w-6 transition-colors duration-200 ${
-                    isLiked ? 'text-terracotta fill-current' : 'text-stone'
+                    isLiked ? 'text-pink-500 fill-current' : 'text-slate-600'
                   }`}
                 />
               </button>
@@ -186,7 +187,7 @@ const WinterBotanicalSnowGlobe = () => {
                   <Camera className="h-5 w-5 mr-2 text-primary" />
                   Add Your Special Photo (Optional)
                 </CardTitle>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-slate-600">
                   Upload a photo to see how it would look with your snow globe for the perfect personalized gift!
                 </p>
               </CardHeader>
@@ -207,13 +208,13 @@ const WinterBotanicalSnowGlobe = () => {
             </Card>
 
             {/* Social Proof */}
-            <div className="bg-pearl rounded-xl p-4 border border-stone/30">
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
               <div className="flex items-center justify-center space-x-6 text-sm">
-                <div className="flex items-center text-chocolate">
+                <div className="flex items-center text-slate-700">
                   <Eye className="h-4 w-4 mr-1" />
                   <span className="font-medium">247 people viewed this today</span>
                 </div>
-                <div className="flex items-center text-chocolate">
+                <div className="flex items-center text-slate-700">
                   <Users className="h-4 w-4 mr-1" />
                   <span className="font-medium">18 sold this week</span>
                 </div>
@@ -228,16 +229,16 @@ const WinterBotanicalSnowGlobe = () => {
                 <Gift className="h-5 w-5 text-primary" />
                 <span className="text-sm text-primary font-medium bg-primary/10 px-2 py-1 rounded-full">Perfect Gift</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-playfair font-bold text-foreground mb-3">
+              <h1 className="text-3xl md:text-4xl font-playfair font-bold text-slate-900 mb-3">
                 {product.name}
               </h1>
               <div className="flex items-center space-x-3 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-accent fill-current" />
+                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <span className="text-sm text-muted-foreground">(47 reviews)</span>
+                <span className="text-sm text-slate-600">(47 reviews)</span>
                 <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">Bestseller</span>
               </div>
               <div className="flex items-center space-x-4 mb-4">
@@ -245,19 +246,19 @@ const WinterBotanicalSnowGlobe = () => {
                   ${product.price.toFixed(2)}
                 </p>
                 <div className="text-sm">
-                  <p className="text-accent font-medium">Free shipping on orders over $35</p>
-                  <p className="text-muted-foreground">Gift wrapping included</p>
+                  <p className="text-pink-600 font-medium">Free shipping on orders over $35</p>
+                  <p className="text-slate-600">Gift wrapping included</p>
                 </div>
               </div>
             </div>
 
             {/* Key Benefits */}
-            <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-6 border border-primary/20">
-              <h3 className="font-semibold text-foreground mb-3 flex items-center">
+            <div className="bg-gradient-to-r from-primary/10 to-pink-50 rounded-xl p-6 border border-primary/20">
+              <h3 className="font-semibold text-slate-900 mb-3 flex items-center">
                 <Sparkles className="h-5 w-5 mr-2 text-primary" />
                 Why You'll Love This Snow Globe:
               </h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
+              <p className="text-slate-700 leading-relaxed mb-4">
                 {product.fullDescription}
               </p>
               <p className="text-sm text-primary font-medium flex items-center">
@@ -269,37 +270,37 @@ const WinterBotanicalSnowGlobe = () => {
             {/* Delivery Information */}
             <div className="grid grid-cols-3 gap-4">
               <Card className="text-center p-4">
-                <Clock className="h-8 w-8 text-accent mx-auto mb-2" />
+                <Clock className="h-8 w-8 text-pink-600 mx-auto mb-2" />
                 <h4 className="font-semibold text-sm">Fast Processing</h4>
-                <p className="text-xs text-muted-foreground">Ships within 1-2 days</p>
+                <p className="text-xs text-slate-600">Ships within 1-2 days</p>
               </Card>
               <Card className="text-center p-4">
-                <Truck className="h-8 w-8 text-accent mx-auto mb-2" />
+                <Truck className="h-8 w-8 text-pink-600 mx-auto mb-2" />
                 <h4 className="font-semibold text-sm">Quick Delivery</h4>
-                <p className="text-xs text-muted-foreground">3-5 days standard</p>
+                <p className="text-xs text-slate-600">3-5 days standard</p>
               </Card>
               <Card className="text-center p-4">
-                <Shield className="h-8 w-8 text-accent mx-auto mb-2" />
+                <Shield className="h-8 w-8 text-pink-600 mx-auto mb-2" />
                 <h4 className="font-semibold text-sm">Safe Packaging</h4>
-                <p className="text-xs text-muted-foreground">Insured delivery</p>
+                <p className="text-xs text-slate-600">Insured delivery</p>
               </Card>
             </div>
 
             {/* Quantity & Add to Cart */}
-            <div className="space-y-4 p-6 bg-muted/30 rounded-xl">
+            <div className="space-y-4 p-6 bg-slate-50 rounded-xl border border-slate-200">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Quantity:</span>
-                <div className="flex items-center border rounded-lg bg-pearl">
+                <div className="flex items-center border rounded-lg bg-white">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-2 hover:bg-muted transition-colors"
+                    className="p-2 hover:bg-slate-100 transition-colors"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
                   <span className="px-4 py-2 min-w-[3rem] text-center font-medium">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-2 hover:bg-muted transition-colors"
+                    className="p-2 hover:bg-slate-100 transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -315,7 +316,7 @@ const WinterBotanicalSnowGlobe = () => {
                 Add to Cart - ${(product.price * quantity).toFixed(2)}
               </Button>
 
-              <p className="text-center text-sm text-muted-foreground">
+              <p className="text-center text-sm text-slate-600">
                 🎁 Perfect for gifting • ⭐ 30-day money-back guarantee
               </p>
             </div>
@@ -345,9 +346,9 @@ const WinterBotanicalSnowGlobe = () => {
           </Card>
 
           {/* Gift Ideas */}
-          <Card className="bg-gradient-to-br from-accent/10 to-blush/10 border-accent/30">
+          <Card className="bg-gradient-to-br from-pink-50 to-slate-50 border-pink-200">
             <CardHeader>
-              <CardTitle className="flex items-center text-accent">
+              <CardTitle className="flex items-center text-pink-600">
                 <Gift className="h-5 w-5 mr-2" />
                 Perfect Gift Ideas
               </CardTitle>
@@ -355,8 +356,8 @@ const WinterBotanicalSnowGlobe = () => {
             <CardContent>
               <ul className="space-y-2">
                 {product.giftIdeas.map((idea, index) => (
-                  <li key={index} className="flex items-center text-sm text-muted-foreground">
-                    <div className="w-2 h-2 bg-accent rounded-full mr-3 flex-shrink-0" />
+                  <li key={index} className="flex items-center text-sm text-slate-600">
+                    <div className="w-2 h-2 bg-pink-600 rounded-full mr-3 flex-shrink-0" />
                     {idea}
                   </li>
                 ))}
@@ -368,7 +369,7 @@ const WinterBotanicalSnowGlobe = () => {
         {/* People Also Bought */}
         <section className="mb-16">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-playfair font-bold text-foreground">
+            <h2 className="text-2xl md:text-3xl font-playfair font-bold text-slate-900">
               People Also Bought
             </h2>
             <Link to="/products/snow-globes" className="text-primary hover:underline text-sm font-medium">
@@ -390,9 +391,9 @@ const WinterBotanicalSnowGlobe = () => {
                   <h3 className="font-semibold text-sm mb-2 line-clamp-2">{product.name}</h3>
                   <div className="flex items-center space-x-1 mb-2">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-3 w-3 text-accent fill-current" />
+                      <Star key={i} className="h-3 w-3 text-yellow-400 fill-current" />
                     ))}
-                    <span className="text-xs text-muted-foreground">({product.reviews})</span>
+                    <span className="text-xs text-slate-600">({product.reviews})</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-primary">${product.price.toFixed(2)}</span>
@@ -411,10 +412,10 @@ const WinterBotanicalSnowGlobe = () => {
         {/* Browse Categories */}
         <section className="mb-16">
           <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-playfair font-bold text-foreground mb-4">
+            <h2 className="text-2xl md:text-3xl font-playfair font-bold text-slate-900 mb-4">
               Explore More Categories
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-slate-600 max-w-2xl mx-auto">
               Discover our full collection of personalized keepsakes and memory products
             </p>
           </div>
@@ -429,11 +430,11 @@ const WinterBotanicalSnowGlobe = () => {
                       alt={category.name}
                       className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-charcoal/20 group-hover:bg-charcoal/10 transition-colors" />
+                    <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-slate-900/10 transition-colors" />
                   </div>
                   <CardContent className="p-6 text-center">
                     <h3 className="font-playfair font-semibold text-lg mb-2">{category.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">{category.description}</p>
+                    <p className="text-sm text-slate-600 mb-2">{category.description}</p>
                     <p className="text-xs text-primary font-medium">{category.count}</p>
                   </CardContent>
                 </Card>
