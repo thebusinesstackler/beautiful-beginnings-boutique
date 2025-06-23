@@ -22,13 +22,13 @@ const Hero = () => {
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              <span style={{ color: '#5B4C37' }}>Beautiful</span>
+              <span style={{ color: '#5B4C37' }}>Where Memories Begin</span>
               <br />
-              <span className="bg-gradient-to-r from-[#E28F84] to-[#F4A79B] bg-clip-text text-transparent font-bold">Beginnings</span>
+              <span className="bg-gradient-to-r from-[#E28F84] to-[#F4A79B] bg-clip-text text-transparent font-bold">and Beauty Lasts</span>
             </h1>
             
             <p className="text-xl mb-8 max-w-2xl leading-relaxed" style={{ color: '#A89B84' }}>
-              Transform your precious memories into lasting treasures. Each piece is lovingly handcrafted to celebrate life's most beautiful moments.
+              Capture the magic of your favorite moments—handcrafted photo keepsakes made with love and lasting brilliance. From shimmering ornaments to heartfelt jewelry, Beautiful Beginnings brings your memories to life.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
@@ -99,8 +99,8 @@ const Hero = () => {
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto lg:mx-0 mb-2" style={{ backgroundColor: '#F6DADA' }}>
                   <Star className="h-5 w-5" style={{ color: '#E28F84' }} />
                 </div>
-                <p className="text-sm font-semibold" style={{ color: '#5B4C37' }}>Premium</p>
-                <p className="text-xs" style={{ color: '#A89B84' }}>Quality</p>
+                <p className="text-sm font-semibold" style={{ color: '#5B4C37' }}>Glossy & Glowing</p>
+                <p className="text-xs" style={{ color: '#A89B84' }}>Guaranteed</p>
               </div>
               <div className="text-center lg:text-left p-4 rounded-lg bg-white/50" style={{ borderColor: '#F6DADA', borderWidth: '1px' }}>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto lg:mx-0 mb-2" style={{ backgroundColor: '#F6DADA' }}>
