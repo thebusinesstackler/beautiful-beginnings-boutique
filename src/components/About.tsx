@@ -172,7 +172,7 @@ const About = () => {
                   <Button 
                     variant="outline" 
                     className="flex-1 text-lg px-8 py-4 border-2 hover:scale-105 transition-all duration-300"
-                    style={{ borderColor: '#7A7047', color: '#7A7047' }}
+                    style={{ borderColor: '#E28F84', color: '#7A7047' }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#F6DADA';
                     }}
