@@ -188,7 +188,7 @@ const About = () => {
                 {/* Trust Elements */}
                 <div className="flex items-center justify-center space-x-6 mt-6 text-sm" style={{ color: '#A89B84' }}>
                   <div className="flex items-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <div className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: '#E28F84' }}></div>
                     Free Shipping
                   </div>
                   <div className="flex items-center">
