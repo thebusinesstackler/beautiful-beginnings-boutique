@@ -23,7 +23,7 @@ interface Product {
 const FeaturedManager = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  const { toast } = useTo ast();
 
   useEffect(() => {
     fetchProducts();
@@ -88,56 +88,56 @@ const FeaturedManager = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2 text-gray-800">Featured & Bestsellers</h2>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: '#5B4C37' }}>Featured & Bestsellers</h2>
         <p className="text-gray-600">Manage featured products and bestsellers for homepage display</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Total Products</CardTitle>
+            <Eye className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{products.length}</div>
-            <p className="text-xs text-muted-foreground">Active products</p>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{products.length}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>Active products</p>
           </CardContent>
         </Card>
 
-        <Card className="border-blue-200 bg-blue-50">
+        <Card style={{ backgroundColor: '#F6DADA' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-blue-800">Featured</CardTitle>
-            <Star className="h-4 w-4 text-blue-600" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Featured</CardTitle>
+            <Star className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-800">{featuredProducts.length}</div>
-            <p className="text-xs text-blue-600">Featured products</p>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{featuredProducts.length}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>Featured products</p>
           </CardContent>
         </Card>
 
-        <Card className="border-green-200 bg-green-50">
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-green-800">Bestsellers</CardTitle>
-            <Award className="h-4 w-4 text-green-600" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Bestsellers</CardTitle>
+            <Award className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-800">{bestsellerProducts.length}</div>
-            <p className="text-xs text-green-600">Bestseller products</p>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{bestsellerProducts.length}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>Bestseller products</p>
           </CardContent>
         </Card>
       </div>
 
       {/* All Products Management */}
-      <Card>
+      <Card style={{ backgroundColor: '#F6DADA' }}>
         <CardHeader>
-          <CardTitle>Product Status Management</CardTitle>
+          <CardTitle style={{ color: '#5B4C37' }}>Product Status Management</CardTitle>
           <CardDescription>Toggle featured and bestseller status for your products</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {products.map((product) => (
-              <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg" style={{ backgroundColor: 'white' }}>
                 <div className="flex items-center space-x-4">
                   {product.image_url && (
                     <img
@@ -149,8 +149,8 @@ const FeaturedManager = () => {
                   <div>
                     <h3 className="font-medium flex items-center space-x-2">
                       <span>{product.name}</span>
-                      {product.is_featured && <Star className="h-4 w-4 text-blue-500" />}
-                      {product.is_bestseller && <Award className="h-4 w-4 text-green-500" />}
+                      {product.is_featured && <Star className="h-4 w-4" style={{ color: '#E28F84' }} />}
+                      {product.is_bestseller && <Award className="h-4 w-4" style={{ color: '#A9B28F' }} />}
                     </h3>
                     <p className="text-sm text-gray-500">{product.category}</p>
                     <div className="flex items-center space-x-2 mt-1">
@@ -164,7 +164,7 @@ const FeaturedManager = () => {
                 
                 <div className="flex items-center space-x-6">
                   <div className="flex items-center space-x-2">
-                    <Label htmlFor={`featured-${product.id}`} className="text-sm">
+                    <Label htmlFor={`featured-${product.id}`} className="text-sm" style={{ color: '#5B4C37' }}>
                       Featured
                     </Label>
                     <Switch
@@ -175,7 +175,7 @@ const FeaturedManager = () => {
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    <Label htmlFor={`bestseller-${product.id}`} className="text-sm">
+                    <Label htmlFor={`bestseller-${product.id}`} className="text-sm" style={{ color: '#5B4C37' }}>
                       Bestseller
                     </Label>
                     <Switch

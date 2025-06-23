@@ -15,14 +15,19 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, user } = useAuth();
+  const { signIn, user, profile } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      navigate('/');
+    if (user && profile) {
+      // Redirect admin users to admin panel, regular users to home
+      if (profile.is_admin) {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     }
-  }, [user, navigate]);
+  }, [user, profile, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +50,7 @@ const Auth = () => {
       <main className="flex-1 flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md shadow-lg border-0" style={{ backgroundColor: '#ffffff' }}>
           <CardHeader className="text-center pb-8">
-            <CardTitle className="text-3xl font-bold mb-2" style={{ color: '#7A7047' }}>
+            <CardTitle className="text-3xl font-bold mb-2" style={{ color: '#5B4C37' }}>
               Admin Login
             </CardTitle>
             <CardDescription className="text-base" style={{ color: '#5B4C37' }}>
@@ -55,7 +60,7 @@ const Auth = () => {
           <CardContent className="px-8 pb-8">
             <form onSubmit={handleSignIn} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium" style={{ color: '#7A7047' }}>
+                <Label htmlFor="email" className="text-sm font-medium" style={{ color: '#5B4C37' }}>
                   Email Address
                 </Label>
                 <Input
@@ -75,7 +80,7 @@ const Auth = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium" style={{ color: '#7A7047' }}>
+                <Label htmlFor="password" className="text-sm font-medium" style={{ color: '#5B4C37' }}>
                   Password
                 </Label>
                 <Input
