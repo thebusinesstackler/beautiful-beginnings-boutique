@@ -245,7 +245,6 @@ const InventoryManagement = () => {
                       id={`backorder-${product.id}`}
                       checked={product.backorder_allowed}
                       onCheckedChange={(checked) => toggleBackorder(product.id, checked)}
-                      className="data-[state=checked]:bg-sage data-[state=unchecked]:bg-stone/30 border-0 focus:ring-sage focus-visible:ring-sage"
                     />
                   </div>
                   
@@ -253,7 +252,7 @@ const InventoryManagement = () => {
                     <Input
                       type="number"
                       min="0"
-                      className="w-20 border-stone/30 focus:border-sage focus:ring-sage"
+                      className="w-20 border-0 focus:border-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none bg-white"
                       value={editingStock[product.id] || product.inventory_quantity}
                       onChange={(e) => handleStockEdit(product.id, e.target.value)}
                       onKeyPress={(e) => {
@@ -267,7 +266,7 @@ const InventoryManagement = () => {
                       variant="outline"
                       onClick={() => handleStockUpdate(product.id)}
                       disabled={!editingStock[product.id] || editingStock[product.id] === product.inventory_quantity.toString()}
-                      className="border-stone text-charcoal hover:bg-cream/50 border-0"
+                      className="border-0 text-charcoal hover:bg-cream/50 focus:outline-none focus:ring-0"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
