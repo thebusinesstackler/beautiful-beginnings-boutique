@@ -15,19 +15,13 @@ const GiftingSection = () => {
       icon: Gift,
       title: "Birthdays",
       description: "Make their special day unforgettable with custom gifts",
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400"
     },
     {
       icon: Calendar,
       title: "Holidays",
       description: "Create magical holiday memories with personalized ornaments",
-      image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400"
-    },
-    {
-      icon: Star,
-      title: "Memorials",
-      description: "Honor precious memories with beautiful keepsakes",
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400"
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400"
     }
   ];
 
@@ -47,7 +41,7 @@ const GiftingSection = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {occasions.map((occasion, index) => (
             <div
               key={index}
@@ -67,10 +61,10 @@ const GiftingSection = () => {
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-playfair font-bold text-foreground mb-3">
+                <h3 className="text-xl font-playfair font-bold text-black mb-3">
                   {occasion.title}
                 </h3>
-                <p className="text-muted-foreground mb-4 leading-relaxed">
+                <p className="text-gray-700 mb-4 leading-relaxed">
                   {occasion.description}
                 </p>
                 <Button size="sm" variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-white">
@@ -83,10 +77,10 @@ const GiftingSection = () => {
 
         <div className="text-center space-y-6">
           <div className="bg-white rounded-2xl p-8 shadow-lg max-w-4xl mx-auto">
-            <h3 className="text-2xl font-playfair font-bold text-foreground mb-4">
+            <h3 className="text-2xl font-playfair font-bold text-black mb-4">
               🎁 Limited Time: Free Gift Wrapping
             </h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-gray-700 mb-6">
               Make your gift extra special with our complimentary elegant gift wrapping and personalized note
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
