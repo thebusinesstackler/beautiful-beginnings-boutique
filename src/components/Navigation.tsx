@@ -20,7 +20,7 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="shadow-lg sticky top-0 z-50 border-b border-border" style={{ backgroundColor: '#faf6ee' }}>
+    <nav className="shadow-lg sticky top-0 z-50" style={{ backgroundColor: '#7A7047', borderBottom: '1px solid #A89B84' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -39,10 +39,13 @@ const Navigation = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-foreground hover:text-accent px-3 py-2 text-sm font-medium transition-colors duration-200 relative group"
+                  className="px-3 py-2 text-sm font-medium transition-colors duration-200 relative group"
+                  style={{ color: '#FAF5EF' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#F6DADA'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#FAF5EF'}
                 >
                   {item.name}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all duration-200 group-hover:w-full"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-200 group-hover:w-full" style={{ backgroundColor: '#E28F84' }}></span>
                 </Link>
               ))}
             </div>
@@ -54,11 +57,14 @@ const Navigation = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="relative hover:bg-muted transition-colors duration-200"
+                className="relative transition-colors duration-200"
+                style={{ color: '#FAF5EF' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A89B84'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <ShoppingCart className="h-5 w-5" />
                 {getCartCount() > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-accent text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                  <span className="absolute -top-2 -right-2 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium" style={{ backgroundColor: '#E28F84' }}>
                     {getCartCount()}
                   </span>
                 )}
@@ -71,7 +77,10 @@ const Navigation = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="hover:bg-muted transition-colors duration-200"
+                className="transition-colors duration-200"
+                style={{ color: '#FAF5EF' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A89B84'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 {isMenuOpen ? (
                   <X className="h-5 w-5" />
@@ -86,13 +95,22 @@ const Navigation = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden animate-fade-in">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-border" style={{ backgroundColor: '#faf6ee' }}>
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3" style={{ backgroundColor: '#7A7047', borderTop: '1px solid #A89B84' }}>
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-foreground hover:text-accent block px-3 py-2 text-base font-medium hover:bg-muted transition-colors duration-200 rounded-md"
+                  className="block px-3 py-2 text-base font-medium transition-colors duration-200 rounded-md"
+                  style={{ color: '#FAF5EF' }}
                   onClick={() => setIsMenuOpen(false)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#A89B84';
+                    e.currentTarget.style.color = '#FAF5EF';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#FAF5EF';
+                  }}
                 >
                   {item.name}
                 </Link>
