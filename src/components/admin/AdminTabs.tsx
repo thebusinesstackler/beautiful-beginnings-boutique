@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, ShoppingCart, Tags, Star, FileText, Users, BarChart3, Settings, Megaphone, Layers } from 'lucide-react';
@@ -15,6 +16,13 @@ import MarketingTools from './MarketingTools';
 const AdminTabs = () => {
   return (
     <div className="w-full">
+      <style jsx>{`
+        .tab-button:focus {
+          outline: none !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+      `}</style>
       <Tabs defaultValue="dashboard" className="w-full">
         <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
           <TabsList 
@@ -22,7 +30,7 @@ const AdminTabs = () => {
           >
             <TabsTrigger 
               value="dashboard" 
-              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200 
+              className="tab-button flex flex-col items-center p-3 text-xs font-medium transition-all duration-200 
                          text-charcoal hover:text-chocolate hover:bg-white/70 
                          data-[state=active]:bg-sage data-[state=active]:text-white 
                          data-[state=active]:shadow-sm rounded-md mx-1
@@ -36,7 +44,7 @@ const AdminTabs = () => {
             
             <TabsTrigger 
               value="products" 
-              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
+              className="tab-button flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
                          data-[state=active]:shadow-sm rounded-md mx-1
@@ -50,7 +58,7 @@ const AdminTabs = () => {
             
             <TabsTrigger 
               value="inventory" 
-              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
+              className="tab-button flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
                          data-[state=active]:shadow-sm rounded-md mx-1
@@ -64,7 +72,7 @@ const AdminTabs = () => {
             
             <TabsTrigger 
               value="categories" 
-              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
+              className="tab-button flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
                          data-[state=active]:shadow-sm rounded-md mx-1
@@ -78,7 +86,7 @@ const AdminTabs = () => {
             
             <TabsTrigger 
               value="featured" 
-              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
+              className="tab-button flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
                          data-[state=active]:shadow-sm rounded-md mx-1
@@ -92,7 +100,7 @@ const AdminTabs = () => {
             
             <TabsTrigger 
               value="blog" 
-              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
+              className="tab-button flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
                          data-[state=active]:shadow-sm rounded-md mx-1
@@ -106,7 +114,7 @@ const AdminTabs = () => {
             
             <TabsTrigger 
               value="orders" 
-              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
+              className="tab-button flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
                          data-[state=active]:shadow-sm rounded-md mx-1
@@ -120,7 +128,7 @@ const AdminTabs = () => {
             
             <TabsTrigger 
               value="customers" 
-              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
+              className="tab-button flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
                          data-[state=active]:shadow-sm rounded-md mx-1
@@ -134,7 +142,7 @@ const AdminTabs = () => {
             
             <TabsTrigger 
               value="marketing" 
-              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
+              className="tab-button flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
                          data-[state=active]:shadow-sm rounded-md mx-1
@@ -148,7 +156,7 @@ const AdminTabs = () => {
             
             <TabsTrigger 
               value="settings" 
-              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
+              className="tab-button flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
                          text-charcoal hover:text-chocolate hover:bg-white/70
                          data-[state=active]:bg-sage data-[state=active]:text-white
                          data-[state=active]:shadow-sm rounded-md mx-1
