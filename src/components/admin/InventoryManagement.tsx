@@ -132,7 +132,7 @@ const InventoryManagement = () => {
 
       {/* Inventory Alerts */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-cream/50 border-0 shadow-sm">
+        <Card className="bg-cream/50 shadow-sm border-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-charcoal">Total Products</CardTitle>
             <Package className="h-4 w-4 text-stone" />
@@ -143,7 +143,7 @@ const InventoryManagement = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-orange-50 border-orange-200 shadow-sm">
+        <Card className="bg-orange-50 shadow-sm border-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-orange-800">Low Stock</CardTitle>
             <AlertTriangle className="h-4 w-4 text-orange-600" />
@@ -154,7 +154,7 @@ const InventoryManagement = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-red-50 border-red-200 shadow-sm">
+        <Card className="bg-red-50 shadow-sm border-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-red-800">Out of Stock</CardTitle>
             <AlertTriangle className="h-4 w-4 text-red-600" />
@@ -168,7 +168,7 @@ const InventoryManagement = () => {
 
       {/* Low Stock Alert */}
       {lowStockProducts.length > 0 && (
-        <Card className="bg-orange-50 border-orange-200 shadow-sm">
+        <Card className="bg-orange-50 shadow-sm border-0">
           <CardHeader>
             <CardTitle className="flex items-center text-orange-800">
               <AlertTriangle className="h-5 w-5 mr-2" />
@@ -179,7 +179,7 @@ const InventoryManagement = () => {
           <CardContent>
             <div className="space-y-3">
               {lowStockProducts.map((product) => (
-                <div key={product.id} className="flex items-center justify-between p-3 bg-orange-100/50 rounded-lg">
+                <div key={product.id} className="flex items-center justify-between p-3 bg-orange-100/50 rounded-lg border-0">
                   <div className="flex items-center space-x-3">
                     {product.image_url && (
                       <img
@@ -204,7 +204,7 @@ const InventoryManagement = () => {
       )}
 
       {/* All Products Inventory */}
-      <Card className="bg-blush/20 border-0 shadow-sm">
+      <Card className="bg-blush/20 shadow-sm border-0">
         <CardHeader>
           <CardTitle className="text-charcoal">Product Inventory</CardTitle>
           <CardDescription>Manage stock levels for all products</CardDescription>
@@ -212,7 +212,7 @@ const InventoryManagement = () => {
         <CardContent>
           <div className="space-y-4">
             {products.map((product) => (
-              <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm">
+              <div key={product.id} className="flex items-center justify-between p-4 rounded-lg bg-white shadow-sm border-0">
                 <div className="flex items-center space-x-4">
                   {product.image_url && (
                     <img
@@ -245,6 +245,7 @@ const InventoryManagement = () => {
                       id={`backorder-${product.id}`}
                       checked={product.backorder_allowed}
                       onCheckedChange={(checked) => toggleBackorder(product.id, checked)}
+                      className="data-[state=checked]:bg-sage data-[state=unchecked]:bg-stone/30 border-0 focus:ring-sage focus-visible:ring-sage"
                     />
                   </div>
                   
@@ -252,7 +253,7 @@ const InventoryManagement = () => {
                     <Input
                       type="number"
                       min="0"
-                      className="w-20"
+                      className="w-20 border-stone/30 focus:border-sage focus:ring-sage"
                       value={editingStock[product.id] || product.inventory_quantity}
                       onChange={(e) => handleStockEdit(product.id, e.target.value)}
                       onKeyPress={(e) => {
@@ -266,7 +267,7 @@ const InventoryManagement = () => {
                       variant="outline"
                       onClick={() => handleStockUpdate(product.id)}
                       disabled={!editingStock[product.id] || editingStock[product.id] === product.inventory_quantity.toString()}
-                      className="border-stone text-charcoal hover:bg-cream/50"
+                      className="border-stone text-charcoal hover:bg-cream/50 border-0"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
