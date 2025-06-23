@@ -11,15 +11,15 @@ const AdminSettings = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#5B4C37' }}>Admin Settings</h2>
-        <p className="text-gray-600">Configure your store settings and preferences</p>
+        <h2 className="text-2xl font-bold text-charcoal mb-2">Admin Settings</h2>
+        <p className="text-stone">Configure your store settings and preferences</p>
       </div>
 
       {/* Store Information */}
-      <Card style={{ backgroundColor: '#FAF5EF' }}>
+      <Card className="bg-cream/30 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center" style={{ color: '#5B4C37' }}>
-            <Store className="h-5 w-5 mr-2" style={{ color: '#A89B84' }} />
+          <CardTitle className="flex items-center text-charcoal">
+            <Store className="h-5 w-5 mr-2 text-stone" />
             Store Information
           </CardTitle>
           <CardDescription>Basic information about your store</CardDescription>
@@ -27,37 +27,37 @@ const AdminSettings = () => {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="store_name" style={{ color: '#5B4C37' }}>Store Name</Label>
+              <Label htmlFor="store_name" className="text-charcoal">Store Name</Label>
               <Input id="store_name" defaultValue="Beautiful Beginnings" />
             </div>
             <div>
-              <Label htmlFor="store_email" style={{ color: '#5B4C37' }}>Contact Email</Label>
+              <Label htmlFor="store_email" className="text-charcoal">Contact Email</Label>
               <Input id="store_email" type="email" defaultValue="contact@beautifulbeginnings.com" />
             </div>
             <div>
-              <Label htmlFor="store_phone" style={{ color: '#5B4C37' }}>Phone Number</Label>
+              <Label htmlFor="store_phone" className="text-charcoal">Phone Number</Label>
               <Input id="store_phone" defaultValue="+1 (555) 123-4567" />
             </div>
             <div>
-              <Label htmlFor="store_website" style={{ color: '#5B4C37' }}>Website URL</Label>
+              <Label htmlFor="store_website" className="text-charcoal">Website URL</Label>
               <Input id="store_website" defaultValue="https://beautifulbeginnings.com" />
             </div>
           </div>
           <div>
-            <Label htmlFor="store_address" style={{ color: '#5B4C37' }}>Store Address</Label>
+            <Label htmlFor="store_address" className="text-charcoal">Store Address</Label>
             <Textarea id="store_address" defaultValue="123 Craft Lane, Creative City, CC 12345" />
           </div>
-          <Button style={{ backgroundColor: '#E28F84' }} className="text-white hover:opacity-90">
+          <Button className="bg-sage hover:bg-sage/90 text-white">
             Save Store Information
           </Button>
         </CardContent>
       </Card>
 
       {/* Payment Settings */}
-      <Card style={{ backgroundColor: '#F6DADA' }}>
+      <Card className="bg-blush/20 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center" style={{ color: '#5B4C37' }}>
-            <CreditCard className="h-5 w-5 mr-2" style={{ color: '#A89B84' }} />
+          <CardTitle className="flex items-center text-charcoal">
+            <CreditCard className="h-5 w-5 mr-2 text-stone" />
             Payment Settings
           </CardTitle>
           <CardDescription>Configure payment processing</CardDescription>
@@ -65,33 +65,33 @@ const AdminSettings = () => {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="square_app_id" style={{ color: '#5B4C37' }}>Square Application ID</Label>
+              <Label htmlFor="square_app_id" className="text-charcoal">Square Application ID</Label>
               <Input id="square_app_id" placeholder="Enter Square App ID" />
             </div>
             <div>
-              <Label htmlFor="square_location_id" style={{ color: '#5B4C37' }}>Square Location ID</Label>
+              <Label htmlFor="square_location_id" className="text-charcoal">Square Location ID</Label>
               <Input id="square_location_id" placeholder="Enter Square Location ID" />
             </div>
           </div>
           <div>
-            <Label htmlFor="payment_instructions" style={{ color: '#5B4C37' }}>Payment Instructions</Label>
+            <Label htmlFor="payment_instructions" className="text-charcoal">Payment Instructions</Label>
             <Textarea 
               id="payment_instructions" 
               placeholder="Special instructions for customers about payment..."
               rows={3}
             />
           </div>
-          <Button style={{ backgroundColor: '#E28F84' }} className="text-white hover:opacity-90">
+          <Button className="bg-sage hover:bg-sage/90 text-white">
             Save Payment Settings
           </Button>
         </CardContent>
       </Card>
 
       {/* Shipping Settings */}
-      <Card style={{ backgroundColor: '#FAF5EF' }}>
+      <Card className="bg-cream/30 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center" style={{ color: '#5B4C37' }}>
-            <Truck className="h-5 w-5 mr-2" style={{ color: '#A89B84' }} />
+          <CardTitle className="flex items-center text-charcoal">
+            <Truck className="h-5 w-5 mr-2 text-stone" />
             Shipping Settings
           </CardTitle>
           <CardDescription>Configure shipping zones and pricing</CardDescription>
@@ -99,48 +99,48 @@ const AdminSettings = () => {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="domestic_shipping" style={{ color: '#5B4C37' }}>Domestic Shipping Rate</Label>
+              <Label htmlFor="domestic_shipping" className="text-charcoal">Domestic Shipping Rate</Label>
               <Input id="domestic_shipping" type="number" step="0.01" placeholder="5.99" />
             </div>
             <div>
-              <Label htmlFor="international_shipping" style={{ color: '#5B4C37' }}>International Shipping Rate</Label>
+              <Label htmlFor="international_shipping" className="text-charcoal">International Shipping Rate</Label>
               <Input id="international_shipping" type="number" step="0.01" placeholder="15.99" />
             </div>
             <div>
-              <Label htmlFor="free_shipping_threshold" style={{ color: '#5B4C37' }}>Free Shipping Threshold</Label>
+              <Label htmlFor="free_shipping_threshold" className="text-charcoal">Free Shipping Threshold</Label>
               <Input id="free_shipping_threshold" type="number" step="0.01" placeholder="75.00" />
             </div>
             <div>
-              <Label htmlFor="processing_time" style={{ color: '#5B4C37' }}>Processing Time (days)</Label>
+              <Label htmlFor="processing_time" className="text-charcoal">Processing Time (days)</Label>
               <Input id="processing_time" type="number" placeholder="3-5" />
             </div>
           </div>
           <div>
-            <Label htmlFor="shipping_policy" style={{ color: '#5B4C37' }}>Shipping Policy</Label>
+            <Label htmlFor="shipping_policy" className="text-charcoal">Shipping Policy</Label>
             <Textarea 
               id="shipping_policy" 
               placeholder="Describe your shipping policy..."
               rows={4}
             />
           </div>
-          <Button style={{ backgroundColor: '#E28F84' }} className="text-white hover:opacity-90">
+          <Button className="bg-sage hover:bg-sage/90 text-white">
             Save Shipping Settings
           </Button>
         </CardContent>
       </Card>
 
       {/* Email Settings */}
-      <Card style={{ backgroundColor: '#F6DADA' }}>
+      <Card className="bg-blush/20 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center" style={{ color: '#5B4C37' }}>
-            <Mail className="h-5 w-5 mr-2" style={{ color: '#A89B84' }} />
+          <CardTitle className="flex items-center text-charcoal">
+            <Mail className="h-5 w-5 mr-2 text-stone" />
             Email Settings
           </CardTitle>
           <CardDescription>Configure email notifications</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="order_confirmation_template" style={{ color: '#5B4C37' }}>Order Confirmation Email Template</Label>
+            <Label htmlFor="order_confirmation_template" className="text-charcoal">Order Confirmation Email Template</Label>
             <Textarea 
               id="order_confirmation_template" 
               placeholder="Thank you for your order! Your order #{{order_id}} has been received..."
@@ -148,24 +148,24 @@ const AdminSettings = () => {
             />
           </div>
           <div>
-            <Label htmlFor="shipping_confirmation_template" style={{ color: '#5B4C37' }}>Shipping Confirmation Template</Label>
+            <Label htmlFor="shipping_confirmation_template" className="text-charcoal">Shipping Confirmation Template</Label>
             <Textarea 
               id="shipping_confirmation_template" 
               placeholder="Great news! Your order #{{order_id}} has shipped..."
               rows={4}
             />
           </div>
-          <Button style={{ backgroundColor: '#E28F84' }} className="text-white hover:opacity-90">
+          <Button className="bg-sage hover:bg-sage/90 text-white">
             Save Email Settings
           </Button>
         </CardContent>
       </Card>
 
       {/* Craft Show Settings */}
-      <Card style={{ backgroundColor: '#FAF5EF' }}>
+      <Card className="bg-cream/30 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center" style={{ color: '#5B4C37' }}>
-            <Settings className="h-5 w-5 mr-2" style={{ color: '#A89B84' }} />
+          <CardTitle className="flex items-center text-charcoal">
+            <Settings className="h-5 w-5 mr-2 text-stone" />
             Craft Show Schedule
           </CardTitle>
           <CardDescription>Manage your craft show appearances</CardDescription>
@@ -173,31 +173,31 @@ const AdminSettings = () => {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="next_show_name" style={{ color: '#5B4C37' }}>Next Show Name</Label>
+              <Label htmlFor="next_show_name" className="text-charcoal">Next Show Name</Label>
               <Input id="next_show_name" placeholder="Spring Craft Fair" />
             </div>
             <div>
-              <Label htmlFor="next_show_date" style={{ color: '#5B4C37' }}>Show Date</Label>
+              <Label htmlFor="next_show_date" className="text-charcoal">Show Date</Label>
               <Input id="next_show_date" type="date" />
             </div>
             <div>
-              <Label htmlFor="show_location" style={{ color: '#5B4C37' }}>Location</Label>
+              <Label htmlFor="show_location" className="text-charcoal">Location</Label>
               <Input id="show_location" placeholder="Community Center, Main St" />
             </div>
             <div>
-              <Label htmlFor="booth_number" style={{ color: '#5B4C37' }}>Booth Number</Label>
+              <Label htmlFor="booth_number" className="text-charcoal">Booth Number</Label>
               <Input id="booth_number" placeholder="A-15" />
             </div>
           </div>
           <div>
-            <Label htmlFor="show_notes" style={{ color: '#5B4C37' }}>Show Notes</Label>
+            <Label htmlFor="show_notes" className="text-charcoal">Show Notes</Label>
             <Textarea 
               id="show_notes" 
               placeholder="Special preparations, new products to showcase..."
               rows={3}
             />
           </div>
-          <Button style={{ backgroundColor: '#E28F84' }} className="text-white hover:opacity-90">
+          <Button className="bg-sage hover:bg-sage/90 text-white">
             Save Show Information
           </Button>
         </CardContent>

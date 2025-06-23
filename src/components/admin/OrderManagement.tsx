@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -123,10 +124,10 @@ const OrderManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#5B4C37' }}>Order Management</h2>
-          <p className="text-gray-600">View and manage customer orders</p>
+          <h2 className="text-2xl font-bold text-charcoal mb-2">Order Management</h2>
+          <p className="text-stone">View and manage customer orders</p>
         </div>
-        <Button onClick={exportOrders} variant="outline" style={{ borderColor: '#A89B84', color: '#5B4C37' }}>
+        <Button onClick={exportOrders} variant="outline" className="border-stone text-charcoal hover:bg-cream/50">
           <Download className="h-4 w-4 mr-2" />
           Export CSV
         </Button>
@@ -134,57 +135,57 @@ const OrderManagement = () => {
 
       {/* Order Stats */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card style={{ backgroundColor: '#FAF5EF' }}>
+        <Card className="bg-cream/50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Total Orders</CardTitle>
-            <Package className="h-4 w-4" style={{ color: '#A89B84' }} />
+            <CardTitle className="text-sm font-medium text-charcoal">Total Orders</CardTitle>
+            <Package className="h-4 w-4 text-stone" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{orderStats.total}</div>
+            <div className="text-2xl font-bold text-charcoal">{orderStats.total}</div>
           </CardContent>
         </Card>
 
-        <Card style={{ backgroundColor: '#FFF8F0' }}>
+        <Card className="bg-orange-50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Pending</CardTitle>
+            <CardTitle className="text-sm font-medium text-charcoal">Pending</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#E6A23C' }}>{orderStats.pending}</div>
+            <div className="text-2xl font-bold text-orange-600">{orderStats.pending}</div>
           </CardContent>
         </Card>
 
-        <Card style={{ backgroundColor: '#F0F8FF' }}>
+        <Card className="bg-blue-50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Paid</CardTitle>
+            <CardTitle className="text-sm font-medium text-charcoal">Paid</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#4F8AC7' }}>{orderStats.paid}</div>
+            <div className="text-2xl font-bold text-blue-600">{orderStats.paid}</div>
           </CardContent>
         </Card>
 
-        <Card style={{ backgroundColor: '#F0FDF4' }}>
+        <Card className="bg-green-50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Fulfilled</CardTitle>
+            <CardTitle className="text-sm font-medium text-charcoal">Fulfilled</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#16A34A' }}>{orderStats.fulfilled}</div>
+            <div className="text-2xl font-bold text-green-600">{orderStats.fulfilled}</div>
           </CardContent>
         </Card>
 
-        <Card style={{ backgroundColor: '#F6DADA' }}>
+        <Card className="bg-blush/30 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium text-charcoal">Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>${orderStats.revenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-charcoal">${orderStats.revenue.toFixed(2)}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Filter Controls */}
-      <Card style={{ backgroundColor: '#FAF5EF' }}>
+      <Card className="bg-cream/30 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle style={{ color: '#5B4C37' }}>Filter Orders</CardTitle>
+          <CardTitle className="text-charcoal">Filter Orders</CardTitle>
         </CardHeader>
         <CardContent>
           <Select value={filterStatus} onValueChange={setFilterStatus}>
@@ -203,28 +204,28 @@ const OrderManagement = () => {
       </Card>
 
       {/* Orders List */}
-      <Card style={{ backgroundColor: '#F6DADA' }}>
+      <Card className="bg-blush/20 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle style={{ color: '#5B4C37' }}>Orders ({filteredOrders.length})</CardTitle>
+          <CardTitle className="text-charcoal">Orders ({filteredOrders.length})</CardTitle>
           <CardDescription>Manage customer orders and fulfillment</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {filteredOrders.map((order) => (
-              <div key={order.id} className="border rounded-lg p-4" style={{ backgroundColor: 'white' }}>
+              <div key={order.id} className="border rounded-lg p-4 bg-white shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="font-medium">Order #{order.id.slice(0, 8)}</h3>
-                    <p className="text-sm text-gray-500">{order.customer_email}</p>
+                    <h3 className="font-medium text-charcoal">Order #{order.id.slice(0, 8)}</h3>
+                    <p className="text-sm text-stone">{order.customer_email}</p>
                     {order.customer_name && (
-                      <p className="text-sm text-gray-500">{order.customer_name}</p>
+                      <p className="text-sm text-stone">{order.customer_name}</p>
                     )}
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-stone">
                       {new Date(order.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-lg">${order.total_amount?.toFixed(2)}</p>
+                    <p className="font-medium text-lg text-charcoal">${order.total_amount?.toFixed(2)}</p>
                     <Badge variant={
                       order.status === 'fulfilled' ? 'default' :
                       order.status === 'paid' ? 'secondary' :
@@ -255,7 +256,7 @@ const OrderManagement = () => {
                         size="sm"
                         variant="outline"
                         onClick={() => updateOrderStatus(order.id, 'paid')}
-                        style={{ borderColor: '#A89B84', color: '#5B4C37' }}
+                        className="border-stone text-charcoal hover:bg-cream/50"
                       >
                         Mark Paid
                       </Button>
@@ -264,8 +265,7 @@ const OrderManagement = () => {
                       <Button
                         size="sm"
                         onClick={() => updateOrderStatus(order.id, 'fulfilled')}
-                        style={{ backgroundColor: '#E28F84' }}
-                        className="text-white hover:opacity-90"
+                        className="bg-sage hover:bg-sage/90 text-white"
                       >
                         <CheckCircle className="h-4 w-4 mr-1" />
                         Fulfill
@@ -277,7 +277,7 @@ const OrderManagement = () => {
                 {/* Customer Images */}
                 {order.uploaded_images && order.uploaded_images.length > 0 && (
                   <div className="mt-4 pt-4 border-t">
-                    <p className="text-sm font-medium mb-2">Customer Images:</p>
+                    <p className="text-sm font-medium mb-2 text-charcoal">Customer Images:</p>
                     <div className="flex space-x-2">
                       {order.uploaded_images.map((imageUrl, index) => (
                         <img
@@ -294,7 +294,7 @@ const OrderManagement = () => {
               </div>
             ))}
             {filteredOrders.length === 0 && (
-              <p className="text-center py-8 text-gray-500">No orders found</p>
+              <p className="text-center py-8 text-stone">No orders found</p>
             )}
           </div>
         </CardContent>

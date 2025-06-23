@@ -178,13 +178,12 @@ const MarketingTools = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#7A7047' }}>Marketing Tools</h2>
-          <p className="text-gray-600">Create and manage promotional campaigns</p>
+          <h2 className="text-2xl font-bold text-charcoal mb-2">Marketing Tools</h2>
+          <p className="text-stone">Create and manage promotional campaigns</p>
         </div>
         <Button
           onClick={() => setShowForm(true)}
-          style={{ backgroundColor: '#E28F84' }}
-          className="hover:opacity-90"
+          className="bg-sage hover:bg-sage/90 text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Create Promo Code
@@ -192,9 +191,9 @@ const MarketingTools = () => {
       </div>
 
       {showForm && (
-        <Card>
+        <Card className="bg-cream/30 border-0 shadow-sm">
           <CardHeader>
-            <CardTitle>{editingPromo ? 'Edit Promo Code' : 'Create New Promo Code'}</CardTitle>
+            <CardTitle className="text-charcoal">{editingPromo ? 'Edit Promo Code' : 'Create New Promo Code'}</CardTitle>
             <CardDescription>
               {editingPromo ? 'Update promotional code settings' : 'Create a new discount code'}
             </CardDescription>
@@ -203,7 +202,7 @@ const MarketingTools = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="code">Promo Code *</Label>
+                  <Label htmlFor="code" className="text-charcoal">Promo Code *</Label>
                   <div className="flex space-x-2">
                     <Input
                       id="code"
@@ -212,13 +211,13 @@ const MarketingTools = () => {
                       placeholder="SUMMER20"
                       required
                     />
-                    <Button type="button" variant="outline" onClick={generateRandomCode}>
+                    <Button type="button" variant="outline" onClick={generateRandomCode} className="border-stone text-charcoal hover:bg-cream/50">
                       Generate
                     </Button>
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="type">Discount Type</Label>
+                  <Label htmlFor="type" className="text-charcoal">Discount Type</Label>
                   <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
                     <SelectTrigger>
                       <SelectValue />
@@ -230,7 +229,7 @@ const MarketingTools = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="value">Discount Value *</Label>
+                  <Label htmlFor="value" className="text-charcoal">Discount Value *</Label>
                   <Input
                     id="value"
                     type="number"
@@ -242,7 +241,7 @@ const MarketingTools = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="minimum_order">Minimum Order Amount</Label>
+                  <Label htmlFor="minimum_order" className="text-charcoal">Minimum Order Amount</Label>
                   <Input
                     id="minimum_order"
                     type="number"
@@ -253,7 +252,7 @@ const MarketingTools = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="usage_limit">Usage Limit</Label>
+                  <Label htmlFor="usage_limit" className="text-charcoal">Usage Limit</Label>
                   <Input
                     id="usage_limit"
                     type="number"
@@ -263,7 +262,7 @@ const MarketingTools = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="starts_at">Start Date</Label>
+                  <Label htmlFor="starts_at" className="text-charcoal">Start Date</Label>
                   <Input
                     id="starts_at"
                     type="date"
@@ -272,7 +271,7 @@ const MarketingTools = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="expires_at">Expiry Date</Label>
+                  <Label htmlFor="expires_at" className="text-charcoal">Expiry Date</Label>
                   <Input
                     id="expires_at"
                     type="date"
@@ -283,7 +282,7 @@ const MarketingTools = () => {
               </div>
 
               <div className="flex space-x-2">
-                <Button type="submit" style={{ backgroundColor: '#E28F84' }}>
+                <Button type="submit" className="bg-sage hover:bg-sage/90 text-white">
                   {editingPromo ? 'Update Promo Code' : 'Create Promo Code'}
                 </Button>
                 <Button
@@ -294,6 +293,7 @@ const MarketingTools = () => {
                     setEditingPromo(null);
                     resetForm();
                   }}
+                  className="border-stone text-charcoal hover:bg-cream/50"
                 >
                   Cancel
                 </Button>
@@ -303,18 +303,18 @@ const MarketingTools = () => {
         </Card>
       )}
 
-      <Card>
+      <Card className="bg-blush/20 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle>Promo Codes ({promoCodes.length})</CardTitle>
+          <CardTitle className="text-charcoal">Promo Codes ({promoCodes.length})</CardTitle>
           <CardDescription>Manage your promotional discount codes</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {promoCodes.map((promo) => (
-              <div key={promo.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={promo.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm">
                 <div>
                   <h3 className="font-medium flex items-center space-x-2">
-                    <span>{promo.code}</span>
+                    <span className="text-charcoal">{promo.code}</span>
                     {promo.type === 'percentage' ? (
                       <Badge variant="outline">
                         <Percent className="h-3 w-3 mr-1" />
@@ -332,18 +332,18 @@ const MarketingTools = () => {
                       {promo.is_active ? 'Active' : 'Inactive'}
                     </Badge>
                     {promo.minimum_order && (
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-stone">
                         Min: ${promo.minimum_order}
                       </span>
                     )}
                     {promo.usage_limit && (
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-stone">
                         Used: {promo.used_count || 0}/{promo.usage_limit}
                       </span>
                     )}
                   </div>
                   {promo.expires_at && (
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-stone mt-1">
                       Expires: {new Date(promo.expires_at).toLocaleDateString()}
                     </p>
                   )}
@@ -353,6 +353,7 @@ const MarketingTools = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(promo)}
+                    className="border-stone text-charcoal hover:bg-cream/50"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -360,6 +361,7 @@ const MarketingTools = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDelete(promo.id)}
+                    className="text-red-600 border-red-200 hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -367,7 +369,7 @@ const MarketingTools = () => {
               </div>
             ))}
             {promoCodes.length === 0 && (
-              <p className="text-center py-8 text-gray-500">No promo codes found</p>
+              <p className="text-center py-8 text-stone">No promo codes found</p>
             )}
           </div>
         </CardContent>

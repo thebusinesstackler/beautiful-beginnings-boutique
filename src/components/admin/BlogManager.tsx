@@ -170,13 +170,12 @@ const BlogManager = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#7A7047' }}>Blog Manager</h2>
-          <p className="text-gray-600">Create and manage your blog content</p>
+          <h2 className="text-2xl font-bold text-charcoal mb-2">Blog Manager</h2>
+          <p className="text-stone">Create and manage your blog content</p>
         </div>
         <Button
           onClick={() => setShowForm(true)}
-          style={{ backgroundColor: '#E28F84' }}
-          className="hover:opacity-90"
+          className="bg-sage hover:bg-sage/90 text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           New Post
@@ -184,9 +183,9 @@ const BlogManager = () => {
       </div>
 
       {showForm && (
-        <Card>
+        <Card className="bg-cream/30 border-0 shadow-sm">
           <CardHeader>
-            <CardTitle>{editingPost ? 'Edit Blog Post' : 'Create New Blog Post'}</CardTitle>
+            <CardTitle className="text-charcoal">{editingPost ? 'Edit Blog Post' : 'Create New Blog Post'}</CardTitle>
             <CardDescription>
               {editingPost ? 'Update blog post content' : 'Write a new blog post'}
             </CardDescription>
@@ -195,7 +194,7 @@ const BlogManager = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="title">Title *</Label>
+                  <Label htmlFor="title" className="text-charcoal">Title *</Label>
                   <Input
                     id="title"
                     value={formData.title}
@@ -204,7 +203,7 @@ const BlogManager = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="slug">URL Slug</Label>
+                  <Label htmlFor="slug" className="text-charcoal">URL Slug</Label>
                   <Input
                     id="slug"
                     value={formData.slug}
@@ -213,7 +212,7 @@ const BlogManager = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="status">Status</Label>
+                  <Label htmlFor="status" className="text-charcoal">Status</Label>
                   <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
                     <SelectTrigger>
                       <SelectValue />
@@ -226,7 +225,7 @@ const BlogManager = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="publish_date">Publish Date</Label>
+                  <Label htmlFor="publish_date" className="text-charcoal">Publish Date</Label>
                   <Input
                     id="publish_date"
                     type="date"
@@ -237,7 +236,7 @@ const BlogManager = () => {
               </div>
 
               <div>
-                <Label htmlFor="featured_image">Featured Image URL</Label>
+                <Label htmlFor="featured_image" className="text-charcoal">Featured Image URL</Label>
                 <Input
                   id="featured_image"
                   value={formData.featured_image}
@@ -246,7 +245,7 @@ const BlogManager = () => {
               </div>
 
               <div>
-                <Label htmlFor="excerpt">Excerpt</Label>
+                <Label htmlFor="excerpt" className="text-charcoal">Excerpt</Label>
                 <Textarea
                   id="excerpt"
                   value={formData.excerpt}
@@ -257,7 +256,7 @@ const BlogManager = () => {
               </div>
 
               <div>
-                <Label htmlFor="content">Content</Label>
+                <Label htmlFor="content" className="text-charcoal">Content</Label>
                 <Textarea
                   id="content"
                   value={formData.content}
@@ -268,7 +267,7 @@ const BlogManager = () => {
               </div>
 
               <div className="flex space-x-2">
-                <Button type="submit" style={{ backgroundColor: '#E28F84' }}>
+                <Button type="submit" className="bg-sage hover:bg-sage/90 text-white">
                   {editingPost ? 'Update Post' : 'Create Post'}
                 </Button>
                 <Button
@@ -279,6 +278,7 @@ const BlogManager = () => {
                     setEditingPost(null);
                     resetForm();
                   }}
+                  className="border-stone text-charcoal hover:bg-cream/50"
                 >
                   Cancel
                 </Button>
@@ -288,15 +288,15 @@ const BlogManager = () => {
         </Card>
       )}
 
-      <Card>
+      <Card className="bg-blush/20 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle>Blog Posts ({posts.length})</CardTitle>
+          <CardTitle className="text-charcoal">Blog Posts ({posts.length})</CardTitle>
           <CardDescription>Manage your blog content</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {posts.map((post) => (
-              <div key={post.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={post.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm">
                 <div className="flex items-center space-x-4">
                   {post.featured_image && (
                     <img
@@ -306,20 +306,20 @@ const BlogManager = () => {
                     />
                   )}
                   <div>
-                    <h3 className="font-medium">{post.title}</h3>
-                    <p className="text-sm text-gray-500">{post.slug}</p>
+                    <h3 className="font-medium text-charcoal">{post.title}</h3>
+                    <p className="text-sm text-stone">{post.slug}</p>
                     {post.excerpt && (
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{post.excerpt}</p>
+                      <p className="text-sm text-stone mt-1 line-clamp-2">{post.excerpt}</p>
                     )}
                     <div className="flex items-center space-x-2 mt-2">
                       <Badge variant={post.status === 'published' ? "default" : post.status === 'draft' ? "secondary" : "outline"}>
                         {post.status}
                       </Badge>
-                      <div className="flex items-center space-x-1 text-sm text-gray-500">
+                      <div className="flex items-center space-x-1 text-sm text-stone">
                         <Eye className="h-3 w-3" />
                         <span>{post.view_count || 0}</span>
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-stone">
                         {new Date(post.created_at).toLocaleDateString()}
                       </span>
                     </div>
@@ -330,6 +330,7 @@ const BlogManager = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(post)}
+                    className="border-stone text-charcoal hover:bg-cream/50"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -337,6 +338,7 @@ const BlogManager = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDelete(post.id)}
+                    className="text-red-600 border-red-200 hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -344,7 +346,7 @@ const BlogManager = () => {
               </div>
             ))}
             {posts.length === 0 && (
-              <p className="text-center py-8 text-gray-500">No blog posts found</p>
+              <p className="text-center py-8 text-stone">No blog posts found</p>
             )}
           </div>
         </CardContent>

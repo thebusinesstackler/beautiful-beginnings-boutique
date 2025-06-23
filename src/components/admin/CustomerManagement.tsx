@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -108,15 +109,15 @@ const CustomerManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#5B4C37' }}>Customer Management</h2>
-          <p className="text-gray-600">View and manage your customer base</p>
+          <h2 className="text-2xl font-bold text-charcoal mb-2">Customer Management</h2>
+          <p className="text-stone">View and manage your customer base</p>
         </div>
         <div className="flex space-x-2">
-          <Button onClick={exportNewsletterSubscribers} variant="outline" style={{ borderColor: '#A89B84', color: '#5B4C37' }}>
+          <Button onClick={exportNewsletterSubscribers} variant="outline" className="border-stone text-charcoal hover:bg-cream/50">
             <Mail className="h-4 w-4 mr-2" />
             Export Newsletter
           </Button>
-          <Button onClick={exportCustomers} variant="outline" style={{ borderColor: '#A89B84', color: '#5B4C37' }}>
+          <Button onClick={exportCustomers} variant="outline" className="border-stone text-charcoal hover:bg-cream/50">
             <Download className="h-4 w-4 mr-2" />
             Export All
           </Button>
@@ -125,58 +126,58 @@ const CustomerManagement = () => {
 
       {/* Customer Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card style={{ backgroundColor: '#FAF5EF' }}>
+        <Card className="bg-cream/50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Total Customers</CardTitle>
-            <Users className="h-4 w-4" style={{ color: '#A89B84' }} />
+            <CardTitle className="text-sm font-medium text-charcoal">Total Customers</CardTitle>
+            <Users className="h-4 w-4 text-stone" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{customerStats.total}</div>
+            <div className="text-2xl font-bold text-charcoal">{customerStats.total}</div>
           </CardContent>
         </Card>
 
-        <Card style={{ backgroundColor: '#F6DADA' }}>
+        <Card className="bg-blush/30 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Newsletter Subscribers</CardTitle>
-            <Mail className="h-4 w-4" style={{ color: '#A89B84' }} />
+            <CardTitle className="text-sm font-medium text-charcoal">Newsletter Subscribers</CardTitle>
+            <Mail className="h-4 w-4 text-stone" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{customerStats.newsletter}</div>
-            <p className="text-xs" style={{ color: '#A89B84' }}>
+            <div className="text-2xl font-bold text-charcoal">{customerStats.newsletter}</div>
+            <p className="text-xs text-stone">
               {customerStats.total > 0 ? Math.round((customerStats.newsletter / customerStats.total) * 100) : 0}% of customers
             </p>
           </CardContent>
         </Card>
 
-        <Card style={{ backgroundColor: '#FAF5EF' }}>
+        <Card className="bg-cream/50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>High-Value Customers</CardTitle>
+            <CardTitle className="text-sm font-medium text-charcoal">High-Value Customers</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{customerStats.highValue}</div>
-            <p className="text-xs" style={{ color: '#A89B84' }}>Spent over $100</p>
+            <div className="text-2xl font-bold text-charcoal">{customerStats.highValue}</div>
+            <p className="text-xs text-stone">Spent over $100</p>
           </CardContent>
         </Card>
 
-        <Card style={{ backgroundColor: '#F6DADA' }}>
+        <Card className="bg-blush/30 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Customer Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium text-charcoal">Customer Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>${customerStats.totalRevenue.toFixed(2)}</div>
-            <p className="text-xs" style={{ color: '#A89B84' }}>Total customer value</p>
+            <div className="text-2xl font-bold text-charcoal">${customerStats.totalRevenue.toFixed(2)}</div>
+            <p className="text-xs text-stone">Total customer value</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Search */}
-      <Card style={{ backgroundColor: '#FAF5EF' }}>
+      <Card className="bg-cream/30 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle style={{ color: '#5B4C37' }}>Search Customers</CardTitle>
+          <CardTitle className="text-charcoal">Search Customers</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-3 h-4 w-4 text-stone" />
             <Input
               placeholder="Search by email or name..."
               value={searchTerm}
@@ -188,22 +189,22 @@ const CustomerManagement = () => {
       </Card>
 
       {/* Customers List */}
-      <Card style={{ backgroundColor: '#F6DADA' }}>
+      <Card className="bg-blush/20 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle style={{ color: '#5B4C37' }}>Customers ({filteredCustomers.length})</CardTitle>
+          <CardTitle className="text-charcoal">Customers ({filteredCustomers.length})</CardTitle>
           <CardDescription>Customer database and order history</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {filteredCustomers.map((customer) => (
-              <div key={customer.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={customer.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm">
                 <div>
-                  <h3 className="font-medium">{customer.email}</h3>
+                  <h3 className="font-medium text-charcoal">{customer.email}</h3>
                   {customer.name && (
-                    <p className="text-sm text-gray-600">{customer.name}</p>
+                    <p className="text-sm text-stone">{customer.name}</p>
                   )}
                   {customer.phone && (
-                    <p className="text-sm text-gray-500">{customer.phone}</p>
+                    <p className="text-sm text-stone">{customer.phone}</p>
                   )}
                   <div className="flex items-center space-x-2 mt-2">
                     <Badge variant="outline">
@@ -218,7 +219,7 @@ const CustomerManagement = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-stone">
                     Joined {new Date(customer.created_at).toLocaleDateString()}
                   </p>
                   {(customer.total_spent || 0) > 100 && (
@@ -228,7 +229,7 @@ const CustomerManagement = () => {
               </div>
             ))}
             {filteredCustomers.length === 0 && (
-              <p className="text-center py-8 text-gray-500">No customers found</p>
+              <p className="text-center py-8 text-stone">No customers found</p>
             )}
           </div>
         </CardContent>
