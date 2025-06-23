@@ -23,7 +23,7 @@ const SnowGlobes = () => {
       name: "Winter Botanical Snow Globe",
       price: 20.00,
       image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      description: "Beautiful snow globe with winter botanical scene, perfect for holiday displays",
+      description: "Transform your winter memories into a magical snow globe that captures the beauty of the season",
       link: "/products/snow-globes/winter-botanical"
     },
     {
@@ -31,7 +31,7 @@ const SnowGlobes = () => {
       name: "Custom Photo Snow Globe",
       price: 25.00,
       image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      description: "Premium snow globe with your favorite photo and enhanced base details",
+      description: "Your most precious moments preserved in a enchanting snow globe that brings joy with every shake",
       link: "/products/snow-globes/custom-photo"
     }
   ];
@@ -63,101 +63,153 @@ const SnowGlobes = () => {
     <div className="min-h-screen bg-white">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
-          <Link to="/" className="hover:text-primary">Home</Link>
-          <span>/</span>
-          <span className="text-foreground">Snow Globes</span>
+      {/* Hero Section with larger logo */}
+      <section className="relative py-20 overflow-hidden" style={{ backgroundColor: '#FAF5EF' }}>
+        {/* Soft decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-32 h-32 bg-rose-200 rounded-full blur-xl"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-rose-100 rounded-full blur-lg"></div>
+          <div className="absolute bottom-32 left-32 w-28 h-28 bg-rose-200 rounded-full blur-xl"></div>
         </div>
 
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6">
-            Snow Globes
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
-            Beautiful snow globes with your favorite photos, perfect for holiday displays and year-round memories
-          </p>
-          <div className="text-sm text-muted-foreground mb-8">
-            Price Range: $20.00 - $25.00
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          {/* Breadcrumb */}
+          <div className="flex items-center space-x-2 text-sm mb-8" style={{ color: '#A89B84' }}>
+            <Link to="/" className="hover:text-[#E28F84] transition-colors">Home</Link>
+            <span>/</span>
+            <span style={{ color: '#5B4C37' }}>Snow Globes</span>
           </div>
-          
-          {/* Call to Action */}
-          <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-8 max-w-4xl mx-auto mb-12">
-            <div className="flex items-center justify-center mb-4">
-              <Palette className="h-8 w-8 text-primary mr-3" />
-              <Sparkles className="h-6 w-6 text-accent" />
+
+          <div className="text-center">
+            {/* Large logo */}
+            <div className="mb-8">
+              <img 
+                src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
+                alt="Beautiful Beginnings Logo" 
+                className="h-48 w-48 object-contain mx-auto"
+              />
             </div>
-            <h2 className="text-2xl font-playfair font-semibold text-foreground mb-3">
-              Create Your Magical Snow Globe
-            </h2>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Capture your precious moments in a beautiful snow globe that brings magic to your memories with every shake
+            
+            <div className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold mb-6" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
+              <Sparkles className="h-4 w-4 mr-2" />
+              Handcrafted Memory Keepsakes
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-playfair font-bold mb-6 leading-tight">
+              <span style={{ color: '#5B4C37' }}>Magical Snow Globes</span>
+              <br />
+              <span className="bg-gradient-to-r from-[#E28F84] to-[#F4A79B] bg-clip-text text-transparent">Where Memories Dance</span>
+            </h1>
+            
+            <p className="text-xl mb-8 max-w-3xl mx-auto leading-relaxed" style={{ color: '#A89B84' }}>
+              Capture the magic of your most precious moments in enchanting snow globes that bring wonder to your world. 
+              Each gentle shake releases a flurry of memories, transforming your favorite photos into mesmerizing keepsakes 
+              that sparkle with love and lasting beauty.
             </p>
-            <Button className="btn-primary text-lg px-8 py-3">
-              <Sparkles className="h-5 w-5 mr-2" />
-              Start Personalizing Now
-            </Button>
+            
+            <div className="bg-white rounded-2xl p-8 shadow-lg max-w-4xl mx-auto mb-12" style={{ borderColor: '#F6DADA', borderWidth: '1px' }}>
+              <div className="flex items-center justify-center mb-4">
+                <Heart className="h-8 w-8 mr-3" style={{ color: '#E28F84' }} />
+                <Sparkles className="h-6 w-6" style={{ color: '#7A7047' }} />
+              </div>
+              <h2 className="text-2xl font-playfair font-semibold mb-3" style={{ color: '#5B4C37' }}>
+                Create Your Winter Wonderland
+              </h2>
+              <p className="mb-6 max-w-2xl mx-auto" style={{ color: '#A89B84' }}>
+                Transform your cherished memories into magical snow globes that capture hearts and create smiles. 
+                Every shake brings your story to life in a whirlwind of beauty and wonder.
+              </p>
+              <Button 
+                className="text-lg px-8 py-4 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
+                style={{ backgroundColor: '#E28F84' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
+              >
+                <Sparkles className="h-5 w-5 mr-2" />
+                Start Creating Magic
+              </Button>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Modern Products Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group border border-primary/10"
+              className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden border border-gray-100"
             >
-              <div className="relative overflow-hidden rounded-t-xl">
+              <div className="relative overflow-hidden">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <button
                   onClick={() => toggleLike(product.id)}
-                  className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors duration-200 shadow-md"
+                  className="absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white hover:scale-110 transition-all duration-200 shadow-lg"
                 >
                   <Heart
-                    className={`h-4 w-4 transition-colors duration-200 ${
+                    className={`h-5 w-5 transition-all duration-200 ${
                       likedProducts.has(product.id)
-                        ? 'text-red-500 fill-current'
+                        ? 'text-red-500 fill-current scale-110'
                         : 'text-gray-600'
                     }`}
                   />
                 </button>
               </div>
 
-              <div className="p-6">
-                <h3 className="font-playfair font-semibold text-lg text-foreground mb-2 hover:text-primary cursor-pointer transition-colors">
+              <div className="p-8">
+                <h3 className="font-playfair font-bold text-2xl mb-4 group-hover:text-[#E28F84] transition-colors duration-300" style={{ color: '#5B4C37' }}>
                   {product.name}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                <p className="text-base leading-relaxed mb-6" style={{ color: '#A89B84' }}>
                   {product.description}
                 </p>
                 
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-xl font-bold text-primary">
+                <div className="flex items-center justify-between mb-8">
+                  <span className="text-3xl font-bold" style={{ color: '#E28F84' }}>
                     ${product.price.toFixed(2)}
                   </span>
+                  <div className="px-4 py-2 rounded-full text-sm font-medium" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
+                    Handcrafted with ❤️
+                  </div>
                 </div>
                 
-                <div className="space-y-3">
-                  <Link to={product.link}>
-                    <Button size="sm" variant="outline" className="w-full text-primary border-primary hover:bg-primary hover:text-white">
-                      <Info className="h-4 w-4 mr-2" />
-                      Learn More
+                <div className="space-y-4">
+                  <Link to={product.link} className="block">
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="w-full text-base py-3 border-2 transition-all duration-300 hover:scale-105"
+                      style={{ borderColor: '#E28F84', color: '#E28F84' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#E28F84';
+                        e.currentTarget.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = '#E28F84';
+                      }}
+                    >
+                      <Info className="h-5 w-5 mr-2" />
+                      Discover the Magic
                     </Button>
                   </Link>
                   
                   <Button 
-                    size="sm" 
-                    className="btn-primary w-full"
+                    size="lg" 
+                    className="w-full text-base py-3 text-white font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    style={{ backgroundColor: '#E28F84' }}
                     onClick={() => handleAddToCart(product)}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
                   >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Add to Your Collection
                   </Button>
                 </div>
               </div>
@@ -168,9 +220,21 @@ const SnowGlobes = () => {
         {/* Back to Home */}
         <div className="text-center">
           <Link to="/">
-            <Button variant="outline" className="px-6 py-3 border-primary text-primary hover:bg-primary hover:text-white">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+            <Button 
+              variant="outline" 
+              className="px-8 py-4 text-lg border-2 transition-all duration-300 hover:scale-105"
+              style={{ borderColor: '#7A7047', color: '#7A7047' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F6DADA';
+                e.currentTarget.style.borderColor = '#7A7047';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = '#7A7047';
+              }}
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Return to Beautiful Beginnings
             </Button>
           </Link>
         </div>
