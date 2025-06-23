@@ -58,23 +58,23 @@ const PhotoMemoryNecklace = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: '#faf6ee' }}>
       <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
-          <Link to="/" className="hover:text-primary">Home</Link>
+        <div className="flex items-center space-x-2 text-sm mb-8" style={{ color: '#a48f4b' }}>
+          <Link to="/" className="hover:opacity-80">Home</Link>
           <span>/</span>
-          <Link to="/products/necklaces" className="hover:text-primary">Necklaces</Link>
+          <Link to="/products/necklaces" className="hover:opacity-80">Necklaces</Link>
           <span>/</span>
-          <span className="text-foreground">{product.name}</span>
+          <span style={{ color: '#2d3436' }}>{product.name}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="relative overflow-hidden rounded-2xl bg-white">
+            <div className="relative overflow-hidden rounded-2xl bg-white shadow-lg">
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
@@ -82,12 +82,13 @@ const PhotoMemoryNecklace = () => {
               />
               <button
                 onClick={() => setIsLiked(!isLiked)}
-                className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors duration-200"
+                className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors duration-200 shadow-md"
               >
                 <Heart
                   className={`h-6 w-6 transition-colors duration-200 ${
-                    isLiked ? 'text-red-500 fill-current' : 'text-gray-600'
+                    isLiked ? 'fill-current' : ''
                   }`}
+                  style={{ color: isLiked ? '#E28F84' : '#a48f4b' }}
                 />
               </button>
             </div>
@@ -98,9 +99,10 @@ const PhotoMemoryNecklace = () => {
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                    selectedImage === index ? 'border-primary' : 'border-gray-200'
+                  className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors shadow-sm ${
+                    selectedImage === index ? 'border-2' : 'border-gray-200'
                   }`}
+                  style={{ borderColor: selectedImage === index ? '#E28F84' : '#e5e7eb' }}
                 >
                   <img
                     src={image}
@@ -115,33 +117,33 @@ const PhotoMemoryNecklace = () => {
           {/* Product Info */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-playfair font-bold text-foreground mb-2">
+              <h1 className="text-3xl font-playfair font-bold mb-2" style={{ color: '#2d3436' }}>
                 {product.name}
               </h1>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 text-accent fill-current" />
+                    <Star key={i} className="h-4 w-4 fill-current" style={{ color: '#E28F84' }} />
                   ))}
                 </div>
-                <span className="text-sm text-muted-foreground">(32 reviews)</span>
+                <span className="text-sm" style={{ color: '#a48f4b' }}>(32 reviews)</span>
               </div>
-              <p className="text-xl font-bold text-foreground">
+              <p className="text-xl font-bold" style={{ color: '#2d3436' }}>
                 ${product.price.toFixed(2)}
               </p>
             </div>
 
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="leading-relaxed" style={{ color: '#6c5548' }}>
               {product.fullDescription}
             </p>
 
             {/* Photo Upload Section */}
-            <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-6">
+            <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#F6DADA' }}>
               <div className="flex items-center mb-3">
-                <Sparkles className="h-5 w-5 text-primary mr-2" />
-                <h3 className="font-semibold text-foreground">Upload Your Photo</h3>
+                <Sparkles className="h-5 w-5 mr-2" style={{ color: '#E28F84' }} />
+                <h3 className="font-semibold" style={{ color: '#2d3436' }}>Upload Your Photo</h3>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm mb-4" style={{ color: '#6c5548' }}>
                 Upload your favorite photo to personalize this necklace
               </p>
               <PhotoUpload onUpload={handlePhotoUpload} />
@@ -149,20 +151,20 @@ const PhotoMemoryNecklace = () => {
 
             {/* Quantity Selector */}
             <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium">Quantity:</span>
-              <div className="flex items-center border rounded-lg">
+              <span className="text-sm font-medium" style={{ color: '#2d3436' }}>Quantity:</span>
+              <div className="flex items-center border rounded-lg bg-white shadow-sm" style={{ borderColor: '#F6DADA' }}>
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-2 hover:bg-gray-100"
+                  className="p-2 hover:bg-gray-50 transition-colors"
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-4 w-4" style={{ color: '#a48f4b' }} />
                 </button>
-                <span className="px-4 py-2 min-w-[3rem] text-center">{quantity}</span>
+                <span className="px-4 py-2 min-w-[3rem] text-center" style={{ color: '#2d3436' }}>{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="p-2 hover:bg-gray-100"
+                  className="p-2 hover:bg-gray-50 transition-colors"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4" style={{ color: '#a48f4b' }} />
                 </button>
               </div>
             </div>
@@ -170,20 +172,21 @@ const PhotoMemoryNecklace = () => {
             {/* Add to Cart Button */}
             <Button 
               size="lg" 
-              className="btn-primary w-full"
+              className="w-full font-semibold text-white hover:opacity-90 transition-opacity shadow-md"
               onClick={handleAddToCart}
+              style={{ backgroundColor: '#E28F84' }}
             >
               <ShoppingCart className="h-5 w-5 mr-2" />
               Add to Cart - ${(product.price * quantity).toFixed(2)}
             </Button>
 
             {/* Features */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-foreground">Features:</h3>
+            <div className="space-y-4 bg-white p-6 rounded-xl shadow-sm">
+              <h3 className="font-semibold" style={{ color: '#2d3436' }}>Features:</h3>
               <ul className="space-y-2">
                 {product.features.map((feature, index) => (
-                  <li key={index} className="flex items-center text-sm text-muted-foreground">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full mr-3" />
+                  <li key={index} className="flex items-center text-sm" style={{ color: '#6c5548' }}>
+                    <div className="w-1.5 h-1.5 rounded-full mr-3" style={{ backgroundColor: '#E28F84' }} />
                     {feature}
                   </li>
                 ))}
@@ -191,12 +194,12 @@ const PhotoMemoryNecklace = () => {
             </div>
 
             {/* Specifications */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-foreground">Specifications:</h3>
+            <div className="space-y-4 bg-white p-6 rounded-xl shadow-sm">
+              <h3 className="font-semibold" style={{ color: '#2d3436' }}>Specifications:</h3>
               <ul className="space-y-2">
                 {product.specifications.map((spec, index) => (
-                  <li key={index} className="flex items-center text-sm text-muted-foreground">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full mr-3" />
+                  <li key={index} className="flex items-center text-sm" style={{ color: '#6c5548' }}>
+                    <div className="w-1.5 h-1.5 rounded-full mr-3" style={{ backgroundColor: '#E28F84' }} />
                     {spec}
                   </li>
                 ))}
@@ -208,7 +211,11 @@ const PhotoMemoryNecklace = () => {
         {/* Back to Necklaces */}
         <div className="mt-16">
           <Link to="/products/necklaces">
-            <Button variant="outline" className="px-6 py-3">
+            <Button 
+              variant="outline" 
+              className="px-6 py-3 border-2 font-medium hover:bg-white/50 transition-colors shadow-sm"
+              style={{ borderColor: '#E28F84', color: '#E28F84' }}
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Necklaces
             </Button>
