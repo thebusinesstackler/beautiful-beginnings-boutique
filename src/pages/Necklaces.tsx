@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import PhotoUpload from '@/components/PhotoUpload';
 
 const Necklaces = () => {
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
@@ -18,14 +19,14 @@ const Necklaces = () => {
       id: 1,
       name: "Photo Memory Necklace",
       price: 15.00,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
+      image: "https://img.kwcdn.com/product/open/2fe48b660cda4288b8989a4cce3e7ccf-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
       description: "Keep your loved ones close with this personalized photo necklace"
     },
     {
       id: 2,
       name: "Heart Photo Pendant",
       price: 15.00,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
+      image: "https://img.kwcdn.com/product/open/2fe48b660cda4288b8989a4cce3e7ccf-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
       description: "Heart-shaped pendant with your favorite photo"
     }
   ];
@@ -38,6 +39,10 @@ const Necklaces = () => {
       newLiked.add(productId);
     }
     setLikedProducts(newLiked);
+  };
+
+  const handlePhotoUpload = (file: File) => {
+    console.log('Photo uploaded:', file.name);
   };
 
   return (
@@ -64,18 +69,23 @@ const Necklaces = () => {
             Price: $15.00
           </div>
           
-          {/* Call to Action */}
+          {/* Photo Upload Section */}
           <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-8 max-w-4xl mx-auto mb-12">
             <div className="flex items-center justify-center mb-4">
               <Palette className="h-8 w-8 text-primary mr-3" />
               <Sparkles className="h-6 w-6 text-accent" />
             </div>
             <h2 className="text-2xl font-playfair font-semibold text-foreground mb-3">
-              Design Your Perfect Necklace
+              Upload Your Photo for Personalization
             </h2>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
               Upload your cherished photos and create a stunning piece of jewelry that keeps your memories close to your heart
             </p>
+            
+            <div className="max-w-md mx-auto mb-6">
+              <PhotoUpload onUpload={handlePhotoUpload} />
+            </div>
+            
             <Button className="btn-primary text-lg px-8 py-3">
               <Sparkles className="h-5 w-5 mr-2" />
               Start Personalizing Now
