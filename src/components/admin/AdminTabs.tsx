@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, ShoppingCart, Tags, Star, FileText, Users, BarChart3, Settings, Megaphone, Layers } from 'lucide-react';
@@ -27,7 +28,6 @@ const AdminTabs = () => {
               color: '#5B4C37',
               backgroundColor: 'transparent'
             }}
-            data-active-style={{ backgroundColor: '#A9B28F', color: 'white' }}
           >
             <BarChart3 className="h-4 w-4 mb-1" />
             <span className="hidden sm:block">Dashboard</span>
@@ -39,7 +39,6 @@ const AdminTabs = () => {
               color: '#5B4C37',
               backgroundColor: 'transparent'
             }}
-            data-active-style={{ backgroundColor: '#A9B28F', color: 'white' }}
           >
             <Package className="h-4 w-4 mb-1" />
             <span className="hidden sm:block">Products</span>
@@ -51,7 +50,6 @@ const AdminTabs = () => {
               color: '#5B4C37',
               backgroundColor: 'transparent'
             }}
-            data-active-style={{ backgroundColor: '#A9B28F', color: 'white' }}
           >
             <Layers className="h-4 w-4 mb-1" />
             <span className="hidden sm:block">Inventory</span>
@@ -63,7 +61,6 @@ const AdminTabs = () => {
               color: '#5B4C37',
               backgroundColor: 'transparent'
             }}
-            data-active-style={{ backgroundColor: '#A9B28F', color: 'white' }}
           >
             <Tags className="h-4 w-4 mb-1" />
             <span className="hidden sm:block">Categories</span>
@@ -75,7 +72,6 @@ const AdminTabs = () => {
               color: '#5B4C37',
               backgroundColor: 'transparent'
             }}
-            data-active-style={{ backgroundColor: '#A9B28F', color: 'white' }}
           >
             <Star className="h-4 w-4 mb-1" />
             <span className="hidden sm:block">Featured</span>
@@ -87,7 +83,6 @@ const AdminTabs = () => {
               color: '#5B4C37',
               backgroundColor: 'transparent'
             }}
-            data-active-style={{ backgroundColor: '#A9B28F', color: 'white' }}
           >
             <FileText className="h-4 w-4 mb-1" />
             <span className="hidden sm:block">Blog</span>
@@ -99,7 +94,6 @@ const AdminTabs = () => {
               color: '#5B4C37',
               backgroundColor: 'transparent'
             }}
-            data-active-style={{ backgroundColor: '#A9B28F', color: 'white' }}
           >
             <ShoppingCart className="h-4 w-4 mb-1" />
             <span className="hidden sm:block">Orders</span>
@@ -111,7 +105,6 @@ const AdminTabs = () => {
               color: '#5B4C37',
               backgroundColor: 'transparent'
             }}
-            data-active-style={{ backgroundColor: '#A9B28F', color: 'white' }}
           >
             <Users className="h-4 w-4 mb-1" />
             <span className="hidden sm:block">Customers</span>
@@ -123,7 +116,6 @@ const AdminTabs = () => {
               color: '#5B4C37',
               backgroundColor: 'transparent'
             }}
-            data-active-style={{ backgroundColor: '#A9B28F', color: 'white' }}
           >
             <Megaphone className="h-4 w-4 mb-1" />
             <span className="hidden sm:block">Marketing</span>
@@ -135,7 +127,6 @@ const AdminTabs = () => {
               color: '#5B4C37',
               backgroundColor: 'transparent'
             }}
-            data-active-style={{ backgroundColor: '#A9B28F', color: 'white' }}
           >
             <Settings className="h-4 w-4 mb-1" />
             <span className="hidden sm:block">Settings</span>
@@ -176,7 +167,7 @@ const AdminTabs = () => {
         </div>
       </Tabs>
 
-      <style jsx>{`
+      <style>{`
         [data-state="active"] {
           background-color: #A9B28F !important;
           color: white !important;
