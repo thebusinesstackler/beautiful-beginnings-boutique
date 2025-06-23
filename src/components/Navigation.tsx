@@ -25,21 +25,11 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
-            <div className="flex items-center space-x-3">
-              <img 
-                src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
-                alt="Beautiful Beginnings Logo" 
-                className="h-10 w-10 object-contain"
-              />
-              <div>
-                <h1 className="text-xl font-bold text-foreground">
-                  Beautiful Beginnings
-                </h1>
-                <p className="text-xs text-muted-foreground -mt-1">
-                  Handcrafted with Love
-                </p>
-              </div>
-            </div>
+            <img 
+              src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
+              alt="Beautiful Beginnings Logo" 
+              className="h-16 w-16 object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}
