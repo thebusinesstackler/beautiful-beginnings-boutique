@@ -20,7 +20,7 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50 border-b border-border">
+    <nav className="shadow-lg sticky top-0 z-50 border-b border-border" style={{ backgroundColor: '#faf6ee' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -96,7 +96,7 @@ const Navigation = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden animate-fade-in">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-border">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-border" style={{ backgroundColor: '#faf6ee' }}>
               {navItems.map((item) => (
                 <Link
                   key={item.name}
