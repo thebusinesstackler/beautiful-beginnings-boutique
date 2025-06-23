@@ -88,7 +88,7 @@ const FeaturedManager = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#7A7047' }}>Featured & Bestsellers</h2>
+        <h2 className="text-2xl font-bold mb-2 text-gray-800">Featured & Bestsellers</h2>
         <p className="text-gray-600">Manage featured products and bestsellers for homepage display</p>
       </div>
 
@@ -105,25 +105,25 @@ const FeaturedManager = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-yellow-200 bg-yellow-50">
+        <Card className="border-blue-200 bg-blue-50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-yellow-800">Featured</CardTitle>
-            <Star className="h-4 w-4 text-yellow-600" />
+            <CardTitle className="text-sm font-medium text-blue-800">Featured</CardTitle>
+            <Star className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-800">{featuredProducts.length}</div>
-            <p className="text-xs text-yellow-600">Featured products</p>
+            <div className="text-2xl font-bold text-blue-800">{featuredProducts.length}</div>
+            <p className="text-xs text-blue-600">Featured products</p>
           </CardContent>
         </Card>
 
-        <Card className="border-blue-200 bg-blue-50">
+        <Card className="border-green-200 bg-green-50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-blue-800">Bestsellers</CardTitle>
-            <Award className="h-4 w-4 text-blue-600" />
+            <CardTitle className="text-sm font-medium text-green-800">Bestsellers</CardTitle>
+            <Award className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-800">{bestsellerProducts.length}</div>
-            <p className="text-xs text-blue-600">Bestseller products</p>
+            <div className="text-2xl font-bold text-green-800">{bestsellerProducts.length}</div>
+            <p className="text-xs text-green-600">Bestseller products</p>
           </CardContent>
         </Card>
       </div>
@@ -149,8 +149,8 @@ const FeaturedManager = () => {
                   <div>
                     <h3 className="font-medium flex items-center space-x-2">
                       <span>{product.name}</span>
-                      {product.is_featured && <Star className="h-4 w-4 text-yellow-500" />}
-                      {product.is_bestseller && <Award className="h-4 w-4 text-blue-500" />}
+                      {product.is_featured && <Star className="h-4 w-4 text-blue-500" />}
+                      {product.is_bestseller && <Award className="h-4 w-4 text-green-500" />}
                     </h3>
                     <p className="text-sm text-gray-500">{product.category}</p>
                     <div className="flex items-center space-x-2 mt-1">

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -222,13 +221,12 @@ const ProductManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#7A7047' }}>Product Management</h2>
+          <h2 className="text-2xl font-bold text-gray-800" style={{ color: '#7A7047' }}>Product Management</h2>
           <p className="text-gray-600">Add, edit, and manage your product catalog</p>
         </div>
         <Button
           onClick={() => setShowForm(true)}
-          style={{ backgroundColor: '#E28F84' }}
-          className="hover:opacity-90"
+          className="bg-blue-600 hover:bg-blue-700 text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Product
@@ -383,7 +381,7 @@ const ProductManagement = () => {
               </div>
 
               <div className="flex space-x-2">
-                <Button type="submit" style={{ backgroundColor: '#E28F84' }}>
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
                   {editingProduct ? 'Update Product' : 'Create Product'}
                 </Button>
                 <Button
@@ -423,8 +421,8 @@ const ProductManagement = () => {
                   <div>
                     <h3 className="font-medium flex items-center space-x-2">
                       <span>{product.name}</span>
-                      {product.is_featured && <Star className="h-4 w-4 text-yellow-500" />}
-                      {product.is_bestseller && <Award className="h-4 w-4 text-blue-500" />}
+                      {product.is_featured && <Star className="h-4 w-4 text-blue-500" />}
+                      {product.is_bestseller && <Award className="h-4 w-4 text-green-500" />}
                     </h3>
                     <p className="text-sm text-gray-500">{product.category}</p>
                     <div className="flex items-center space-x-2 mt-1">
