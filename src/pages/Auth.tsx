@@ -69,7 +69,7 @@ const Auth = () => {
                   style={{ 
                     borderColor: '#A89B84',
                     backgroundColor: '#faf6ee',
-                    color: '#7A7047'
+                    color: '#000000'
                   }}
                   placeholder="Enter your email"
                 />
@@ -89,7 +89,7 @@ const Auth = () => {
                   style={{ 
                     borderColor: '#A89B84',
                     backgroundColor: '#faf6ee',
-                    color: '#7A7047'
+                    color: '#000000'
                   }}
                   placeholder="Enter your password"
                 />
