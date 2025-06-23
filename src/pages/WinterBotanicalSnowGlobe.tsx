@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Sparkles, Gift, Clock, Truck, Shield, Camera, Eye, Users, Award, ChevronRight } from 'lucide-react';
+import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Sparkles, Shield, Truck, RotateCcw, ChevronDown, ChevronUp, Gift, Clock, Camera, Eye, Users, Award, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
@@ -13,7 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 const WinterBotanicalSnowGlobe = () => {
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(0);
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
+  const [showPersonalization, setShowPersonalization] = useState(false);
+  const [showShipping, setShowShipping] = useState(false);
+  const [showFAQ, setShowFAQ] = useState<number | null>(null);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -24,7 +28,11 @@ const WinterBotanicalSnowGlobe = () => {
     id: 1,
     name: "Winter Botanical Snow Globe",
     price: 20.00,
-    image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
+    images: [
+      "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
+      "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
+      "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+    ],
     description: "Beautiful snow globe with winter botanical scene, perfect for holiday displays",
     fullDescription: "Capture the magic of winter with our enchanting Winter Botanical Snow Globe. This beautifully crafted piece features delicate winter botanicals suspended in swirling snow, creating a mesmerizing display that brings the serenity of a winter garden into your home. Each globe is carefully hand-assembled with premium materials to ensure lasting beauty and durability.",
     features: [
@@ -42,13 +50,12 @@ const WinterBotanicalSnowGlobe = () => {
       "Care: Dust with soft microfiber cloth",
       "Gift packaging included at no extra cost"
     ],
-    giftIdeas: [
-      "Perfect holiday gift for nature lovers",
-      "Thoughtful housewarming present",
-      "Beautiful centerpiece for winter weddings",
-      "Ideal teacher or coworker appreciation gift",
-      "Wonderful addition to holiday decorations",
-      "Great for creating cozy winter ambiance"
+    benefits: [
+      "Premium quality botanical elements",
+      "Long-lasting snow effect",
+      "Ships within 3 business days",
+      "Perfect for winter decorating",
+      "Ideal holiday gift for nature lovers"
     ]
   };
 
@@ -80,41 +87,19 @@ const WinterBotanicalSnowGlobe = () => {
       rating: 5,
       reviews: 45,
       href: "/products/necklaces"
-    },
-    {
-      id: 5,
-      name: "Slate Photo Keepsake",
-      price: 32.50,
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
-      rating: 5,
-      reviews: 19,
-      href: "/products/slate"
     }
   ];
 
-  // Product categories
-  const categories = [
-    {
-      name: "Snow Globes",
-      description: "Magical memories in glass",
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=300",
-      href: "/products/snow-globes",
-      count: "12 products"
-    },
-    {
-      name: "Memory Jewelry",
-      description: "Wear your memories close",
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=300",
-      href: "/products/necklaces",
-      count: "18 products"
-    },
-    {
-      name: "Keepsake Ornaments",
-      description: "Holiday memories forever",
-      image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=300",
-      href: "/products/ornaments",
-      count: "24 products"
-    }
+  const reviews = [
+    { name: "Emma T.", rating: 5, comment: "Absolutely beautiful! The botanical details are stunning and it arrived perfectly packaged.", date: "1 week ago" },
+    { name: "David K.", rating: 5, comment: "Perfect holiday decoration. The snow effect is mesmerizing and lasts a long time.", date: "2 weeks ago" },
+    { name: "Lisa P.", rating: 5, comment: "Gorgeous craftsmanship. This will be a treasured piece for years to come.", date: "1 month ago" }
+  ];
+
+  const faqs = [
+    { question: "How long does the snow effect last?", answer: "The premium snow in our globes swirls beautifully for 30+ seconds, much longer than typical snow globes." },
+    { question: "Are the botanicals real?", answer: "Yes! We use real preserved botanical elements that are carefully selected and treated for longevity." },
+    { question: "Is it safe to ship?", answer: "Absolutely. Each globe is carefully packaged with protective materials and insured during shipping." }
   ];
 
   const handleAddToCart = () => {
@@ -123,7 +108,7 @@ const WinterBotanicalSnowGlobe = () => {
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.image
+        image: product.images[0]
       });
     }
     toast({
@@ -134,61 +119,85 @@ const WinterBotanicalSnowGlobe = () => {
 
   const handlePhotoUpload = (file: File) => {
     setUploadedPhoto(file);
+    toast({
+      title: "Photo uploaded!",
+      description: "Your photo has been uploaded for reference.",
+    });
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{ backgroundColor: '#faf6ee' }}>
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm text-slate-600 mb-6">
-          <Link to="/" className="hover:text-primary">Home</Link>
-          <ChevronRight className="h-4 w-4" />
-          <Link to="/products/snow-globes" className="hover:text-primary">Snow Globes</Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-slate-900">{product.name}</span>
+        <div className="flex items-center space-x-2 text-sm mb-8" style={{ color: '#a48f4b' }}>
+          <Link to="/" className="hover:opacity-80">Home</Link>
+          <span>/</span>
+          <Link to="/products/snow-globes" className="hover:opacity-80">Snow Globes</Link>
+          <span>/</span>
+          <span style={{ color: '#2d3436' }}>{product.name}</span>
         </div>
 
-        {/* Main Product Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          {/* Product Image & Photo Upload */}
-          <div className="space-y-6">
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-8 border border-slate-200">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Product Images */}
+          <div className="space-y-4">
+            <div className="relative overflow-hidden rounded-2xl bg-white shadow-lg">
               <img
-                src={product.image}
+                src={product.images[selectedImage]}
                 alt={product.name}
-                className="w-full h-96 object-cover rounded-xl shadow-lg"
+                className="w-full h-96 object-cover"
               />
               <button
                 onClick={() => setIsLiked(!isLiked)}
-                className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors duration-200 shadow-lg"
+                className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors duration-200 shadow-md"
               >
                 <Heart
                   className={`h-6 w-6 transition-colors duration-200 ${
-                    isLiked ? 'text-pink-500 fill-current' : 'text-slate-600'
+                    isLiked ? 'fill-current' : ''
                   }`}
+                  style={{ color: isLiked ? '#E28F84' : '#a48f4b' }}
                 />
               </button>
               
               {/* Trust badges */}
               <div className="absolute bottom-4 left-4 flex space-x-2">
-                <div className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-medium">
+                <div className="text-xs px-2 py-1 rounded-full font-medium text-white" style={{ backgroundColor: '#a48f4b' }}>
                   <Award className="h-3 w-3 inline mr-1" />
                   Premium Quality
                 </div>
               </div>
             </div>
+            
+            {/* Image Thumbnails */}
+            <div className="flex space-x-4">
+              {product.images.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors shadow-sm ${
+                    selectedImage === index ? 'border-2' : 'border-gray-200'
+                  }`}
+                  style={{ borderColor: selectedImage === index ? '#E28F84' : '#e5e7eb' }}
+                >
+                  <img
+                    src={image}
+                    alt={`${product.name} view ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
 
             {/* Photo Upload Section */}
-            <Card className="border-2 border-dashed border-primary/20">
+            <Card className="border-2 border-dashed" style={{ borderColor: '#F6DADA' }}>
               <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Camera className="h-5 w-5 mr-2 text-primary" />
-                  Add Your Special Photo (Optional)
+                <CardTitle className="flex items-center text-lg" style={{ color: '#2d3436' }}>
+                  <Camera className="h-5 w-5 mr-2" style={{ color: '#a48f4b' }} />
+                  Add Inspiration Photo (Optional)
                 </CardTitle>
-                <p className="text-sm text-slate-600">
-                  Upload a photo to see how it would look with your snow globe for the perfect personalized gift!
+                <p className="text-sm" style={{ color: '#6c5548' }}>
+                  Upload a photo for inspiration or to show us your decor style!
                 </p>
               </CardHeader>
               <CardContent>
@@ -198,9 +207,9 @@ const WinterBotanicalSnowGlobe = () => {
                   className="mb-4"
                 />
                 {uploadedPhoto && (
-                  <div className="text-center p-4 bg-primary/10 rounded-lg">
-                    <p className="text-sm text-primary font-medium">
-                      ✨ Photo uploaded! This will look amazing with your snow globe.
+                  <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#F6DADA' }}>
+                    <p className="text-sm font-medium" style={{ color: '#a48f4b' }}>
+                      ✨ Photo uploaded! This will help us understand your style.
                     </p>
                   </div>
                 )}
@@ -208,15 +217,15 @@ const WinterBotanicalSnowGlobe = () => {
             </Card>
 
             {/* Social Proof */}
-            <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+            <div className="bg-white rounded-xl p-4 shadow-sm border" style={{ borderColor: '#F6DADA' }}>
               <div className="flex items-center justify-center space-x-6 text-sm">
-                <div className="flex items-center text-slate-700">
+                <div className="flex items-center" style={{ color: '#6c5548' }}>
                   <Eye className="h-4 w-4 mr-1" />
-                  <span className="font-medium">247 people viewed this today</span>
+                  <span className="font-medium">183 people viewed this today</span>
                 </div>
-                <div className="flex items-center text-slate-700">
+                <div className="flex items-center" style={{ color: '#6c5548' }}>
                   <Users className="h-4 w-4 mr-1" />
-                  <span className="font-medium">18 sold this week</span>
+                  <span className="font-medium">12 sold this week</span>
                 </div>
               </div>
             </div>
@@ -226,42 +235,51 @@ const WinterBotanicalSnowGlobe = () => {
           <div className="space-y-6">
             <div>
               <div className="flex items-center space-x-2 mb-2">
-                <Gift className="h-5 w-5 text-primary" />
-                <span className="text-sm text-primary font-medium bg-primary/10 px-2 py-1 rounded-full">Perfect Gift</span>
+                <Gift className="h-5 w-5" style={{ color: '#a48f4b' }} />
+                <span className="text-sm font-medium px-2 py-1 rounded-full" style={{ color: '#a48f4b', backgroundColor: '#F6DADA' }}>Perfect Gift</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-playfair font-bold text-slate-900 mb-3">
+              <h1 className="text-3xl font-playfair font-bold mb-2" style={{ color: '#2d3436' }}>
                 {product.name}
               </h1>
-              <div className="flex items-center space-x-3 mb-4">
+              <div className="flex items-center space-x-2 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                    <Star key={i} className="h-4 w-4 fill-current" style={{ color: '#E28F84' }} />
                   ))}
                 </div>
-                <span className="text-sm text-slate-600">(47 reviews)</span>
-                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">Bestseller</span>
+                <span className="text-sm" style={{ color: '#a48f4b' }}>(47 reviews)</span>
+                <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ backgroundColor: '#F6DADA', color: '#a48f4b' }}>Bestseller</span>
               </div>
               <div className="flex items-center space-x-4 mb-4">
-                <p className="text-4xl font-bold text-primary">
+                <p className="text-4xl font-bold" style={{ color: '#2d3436' }}>
                   ${product.price.toFixed(2)}
                 </p>
                 <div className="text-sm">
-                  <p className="text-pink-600 font-medium">Free shipping on orders over $35</p>
-                  <p className="text-slate-600">Gift wrapping included</p>
+                  <p className="font-medium" style={{ color: '#E28F84' }}>Free shipping on orders over $35</p>
+                  <p style={{ color: '#6c5548' }}>Gift wrapping included</p>
                 </div>
               </div>
             </div>
 
+            <p className="leading-relaxed text-lg" style={{ color: '#6c5548' }}>
+              {product.fullDescription}
+            </p>
+
             {/* Key Benefits */}
-            <div className="bg-gradient-to-r from-primary/10 to-pink-50 rounded-xl p-6 border border-primary/20">
-              <h3 className="font-semibold text-slate-900 mb-3 flex items-center">
-                <Sparkles className="h-5 w-5 mr-2 text-primary" />
+            <div className="bg-white rounded-xl p-6 shadow-sm border-2" style={{ borderColor: '#F6DADA' }}>
+              <h3 className="font-semibold mb-3 flex items-center" style={{ color: '#2d3436' }}>
+                <Sparkles className="h-5 w-5 mr-2" style={{ color: '#a48f4b' }} />
                 Why You'll Love This Snow Globe:
               </h3>
-              <p className="text-slate-700 leading-relaxed mb-4">
-                {product.fullDescription}
-              </p>
-              <p className="text-sm text-primary font-medium flex items-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {product.benefits.map((benefit, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: '#E28F84' }} />
+                    <span className="text-sm" style={{ color: '#6c5548' }}>{benefit}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm font-medium flex items-center mt-4" style={{ color: '#a48f4b' }}>
                 <Shield className="h-4 w-4 mr-1" />
                 Lifetime satisfaction guarantee included!
               </p>
@@ -270,190 +288,245 @@ const WinterBotanicalSnowGlobe = () => {
             {/* Delivery Information */}
             <div className="grid grid-cols-3 gap-4">
               <Card className="text-center p-4">
-                <Clock className="h-8 w-8 text-pink-600 mx-auto mb-2" />
-                <h4 className="font-semibold text-sm">Fast Processing</h4>
-                <p className="text-xs text-slate-600">Ships within 1-2 days</p>
+                <Clock className="h-8 w-8 mx-auto mb-2" style={{ color: '#E28F84' }} />
+                <h4 className="font-semibold text-sm" style={{ color: '#2d3436' }}>Fast Processing</h4>
+                <p className="text-xs" style={{ color: '#6c5548' }}>Ships within 1-2 days</p>
               </Card>
               <Card className="text-center p-4">
-                <Truck className="h-8 w-8 text-pink-600 mx-auto mb-2" />
-                <h4 className="font-semibold text-sm">Quick Delivery</h4>
-                <p className="text-xs text-slate-600">3-5 days standard</p>
+                <Truck className="h-8 w-8 mx-auto mb-2" style={{ color: '#E28F84' }} />
+                <h4 className="font-semibold text-sm" style={{ color: '#2d3436' }}>Quick Delivery</h4>
+                <p className="text-xs" style={{ color: '#6c5548' }}>3-5 days standard</p>
               </Card>
               <Card className="text-center p-4">
-                <Shield className="h-8 w-8 text-pink-600 mx-auto mb-2" />
-                <h4 className="font-semibold text-sm">Safe Packaging</h4>
-                <p className="text-xs text-slate-600">Insured delivery</p>
+                <Shield className="h-8 w-8 mx-auto mb-2" style={{ color: '#E28F84' }} />
+                <h4 className="font-semibold text-sm" style={{ color: '#2d3436' }}>Safe Packaging</h4>
+                <p className="text-xs" style={{ color: '#6c5548' }}>Insured delivery</p>
               </Card>
             </div>
 
-            {/* Quantity & Add to Cart */}
-            <div className="space-y-4 p-6 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Quantity:</span>
-                <div className="flex items-center border rounded-lg bg-white">
+            {/* Quantity and Add to Cart */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <span className="text-sm font-medium" style={{ color: '#2d3436' }}>Quantity:</span>
+                <div className="flex items-center border rounded-lg bg-white shadow-sm" style={{ borderColor: '#F6DADA' }}>
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-2 hover:bg-slate-100 transition-colors"
+                    className="p-2 hover:bg-gray-50 transition-colors"
                   >
-                    <Minus className="h-4 w-4" />
+                    <Minus className="h-4 w-4" style={{ color: '#a48f4b' }} />
                   </button>
-                  <span className="px-4 py-2 min-w-[3rem] text-center font-medium">{quantity}</span>
+                  <span className="px-4 py-2 min-w-[3rem] text-center" style={{ color: '#2d3436' }}>{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-2 hover:bg-slate-100 transition-colors"
+                    className="p-2 hover:bg-gray-50 transition-colors"
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-4 w-4" style={{ color: '#a48f4b' }} />
                   </button>
                 </div>
               </div>
 
+              {/* Primary Add to Cart Button */}
               <Button 
                 size="lg" 
-                className="btn-primary w-full text-lg py-4 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+                className="w-full font-semibold text-white hover:opacity-90 transition-opacity shadow-md text-lg py-4"
                 onClick={handleAddToCart}
+                style={{ backgroundColor: '#E28F84' }}
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 Add to Cart - ${(product.price * quantity).toFixed(2)}
               </Button>
 
-              <p className="text-center text-sm text-slate-600">
+              <p className="text-center text-sm" style={{ color: '#6c5548' }}>
                 🎁 Perfect for gifting • ⭐ 30-day money-back guarantee
               </p>
+            </div>
+
+            {/* Personalization Toggle */}
+            <div className="rounded-xl p-4 shadow-sm border-2 bg-white" style={{ borderColor: '#F6DADA' }}>
+              <button
+                onClick={() => setShowPersonalization(!showPersonalization)}
+                className="w-full flex items-center justify-between text-left"
+              >
+                <div className="flex items-center">
+                  <Sparkles className="h-5 w-5 mr-2" style={{ color: '#a48f4b' }} />
+                  <h3 className="font-semibold" style={{ color: '#2d3436' }}>Add Special Touch</h3>
+                </div>
+                {showPersonalization ? (
+                  <ChevronUp className="h-5 w-5" style={{ color: '#a48f4b' }} />
+                ) : (
+                  <ChevronDown className="h-5 w-5" style={{ color: '#a48f4b' }} />
+                )}
+              </button>
+              
+              {showPersonalization && (
+                <div className="mt-4 animate-fade-in">
+                  <p className="text-sm mb-4" style={{ color: '#6c5548' }}>
+                    Share your style preferences or special requests with us
+                  </p>
+                  <PhotoUpload onUpload={handlePhotoUpload} />
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Product Details Tabs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {/* Features */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Sparkles className="h-5 w-5 mr-2 text-primary" />
-                Product Features
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3">
-                {product.features.map((feature, index) => (
-                  <li key={index} className="flex items-start text-sm">
-                    <div className="w-2 h-2 bg-primary rounded-full mr-3 mt-2 flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Gift Ideas */}
-          <Card className="bg-gradient-to-br from-pink-50 to-slate-50 border-pink-200">
-            <CardHeader>
-              <CardTitle className="flex items-center text-pink-600">
-                <Gift className="h-5 w-5 mr-2" />
-                Perfect Gift Ideas
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {product.giftIdeas.map((idea, index) => (
-                  <li key={index} className="flex items-center text-sm text-slate-600">
-                    <div className="w-2 h-2 bg-pink-600 rounded-full mr-3 flex-shrink-0" />
-                    {idea}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* People Also Bought */}
-        <section className="mb-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-playfair font-bold text-slate-900">
-              People Also Bought
+        {/* Below the Fold Content */}
+        <div className="mt-20 space-y-16">
+          {/* Product Features */}
+          <section className="bg-white p-8 rounded-xl shadow-sm">
+            <h2 className="text-2xl font-playfair font-bold mb-6" style={{ color: '#2d3436' }}>
+              Premium Features
             </h2>
-            <Link to="/products/snow-globes" className="text-primary hover:underline text-sm font-medium">
-              View All
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((product) => (
-              <Card key={product.id} className="group hover:shadow-lg transition-all duration-300">
-                <div className="relative overflow-hidden rounded-t-lg">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {product.features.map((feature, index) => (
+                <div key={index} className="flex items-start space-x-3">
+                  <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: '#E28F84' }} />
+                  <span style={{ color: '#6c5548' }}>{feature}</span>
                 </div>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold text-sm mb-2 line-clamp-2">{product.name}</h3>
+              ))}
+            </div>
+          </section>
+
+          {/* Related Products */}
+          <section>
+            <h2 className="text-2xl font-playfair font-bold mb-8" style={{ color: '#2d3436' }}>
+              Customers Also Bought
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedProducts.map((item) => (
+                <div key={item.id} className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-48 object-cover rounded-lg mb-4"
+                  />
+                  <h3 className="font-semibold mb-2" style={{ color: '#2d3436' }}>{item.name}</h3>
                   <div className="flex items-center space-x-1 mb-2">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-3 w-3 text-yellow-400 fill-current" />
+                      <Star key={i} className="h-3 w-3 fill-current" style={{ color: '#E28F84' }} />
                     ))}
-                    <span className="text-xs text-slate-600">({product.reviews})</span>
+                    <span className="text-xs" style={{ color: '#a48f4b' }}>({item.reviews})</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-primary">${product.price.toFixed(2)}</span>
-                    <Link to={product.href}>
-                      <Button size="sm" variant="outline" className="text-xs">
-                        View
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+                  <p className="font-bold" style={{ color: '#E28F84' }}>${item.price.toFixed(2)}</p>
+                </div>
+              ))}
+            </div>
+          </section>
 
-        {/* Browse Categories */}
-        <section className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-playfair font-bold text-slate-900 mb-4">
-              Explore More Categories
+          {/* Customer Reviews */}
+          <section className="bg-white p-8 rounded-xl shadow-sm">
+            <h2 className="text-2xl font-playfair font-bold mb-8" style={{ color: '#2d3436' }}>
+              Customer Reviews
             </h2>
-            <p className="text-slate-600 max-w-2xl mx-auto">
-              Discover our full collection of personalized keepsakes and memory products
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {categories.map((category, index) => (
-              <Link key={index} to={category.href}>
-                <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <img
-                      src={category.image}
-                      alt={category.name}
-                      className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-slate-900/10 transition-colors" />
+            <div className="space-y-6">
+              {reviews.map((review, index) => (
+                <div key={index} className="border-b border-gray-100 pb-6 last:border-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold" style={{ color: '#2d3436' }}>{review.name}</span>
+                      <div className="flex items-center">
+                        {[...Array(review.rating)].map((_, i) => (
+                          <Star key={i} className="h-4 w-4 fill-current" style={{ color: '#E28F84' }} />
+                        ))}
+                      </div>
+                    </div>
+                    <span className="text-sm" style={{ color: '#a48f4b' }}>{review.date}</span>
                   </div>
-                  <CardContent className="p-6 text-center">
-                    <h3 className="font-playfair font-semibold text-lg mb-2">{category.name}</h3>
-                    <p className="text-sm text-slate-600 mb-2">{category.description}</p>
-                    <p className="text-xs text-primary font-medium">{category.count}</p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </section>
+                  <p style={{ color: '#6c5548' }}>{review.comment}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* FAQ Section */}
+          <section className="bg-white p-8 rounded-xl shadow-sm">
+            <h2 className="text-2xl font-playfair font-bold mb-8" style={{ color: '#2d3436' }}>
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-4">
+              {faqs.map((faq, index) => (
+                <div key={index} className="border-b border-gray-100 pb-4 last:border-0">
+                  <button
+                    onClick={() => setShowFAQ(showFAQ === index ? null : index)}
+                    className="w-full flex items-center justify-between text-left py-2"
+                  >
+                    <h3 className="font-semibold" style={{ color: '#2d3436' }}>{faq.question}</h3>
+                    {showFAQ === index ? (
+                      <ChevronUp className="h-5 w-5" style={{ color: '#a48f4b' }} />
+                    ) : (
+                      <ChevronDown className="h-5 w-5" style={{ color: '#a48f4b' }} />
+                    )}
+                  </button>
+                  {showFAQ === index && (
+                    <p className="mt-2 animate-fade-in" style={{ color: '#6c5548' }}>{faq.answer}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Shipping & Returns */}
+          <section className="bg-white p-8 rounded-xl shadow-sm">
+            <button
+              onClick={() => setShowShipping(!showShipping)}
+              className="w-full flex items-center justify-between text-left"
+            >
+              <div className="flex items-center space-x-3">
+                <Truck className="h-6 w-6" style={{ color: '#E28F84' }} />
+                <div>
+                  <h2 className="text-xl font-playfair font-bold" style={{ color: '#2d3436' }}>
+                    Shipping & Returns
+                  </h2>
+                  <p className="text-sm" style={{ color: '#a48f4b' }}>
+                    Ships in 3–5 business days · Free returns on defects
+                  </p>
+                </div>
+              </div>
+              {showShipping ? (
+                <ChevronUp className="h-5 w-5" style={{ color: '#a48f4b' }} />
+              ) : (
+                <ChevronDown className="h-5 w-5" style={{ color: '#a48f4b' }} />
+              )}
+            </button>
+            
+            {showShipping && (
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+                <div className="flex items-start space-x-3">
+                  <Truck className="h-5 w-5 mt-1" style={{ color: '#E28F84' }} />
+                  <div>
+                    <h4 className="font-semibold mb-1" style={{ color: '#2d3436' }}>Fast Shipping</h4>
+                    <p className="text-sm" style={{ color: '#6c5548' }}>Orders processed within 24 hours and shipped within 3-5 business days.</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <RotateCcw className="h-5 w-5 mt-1" style={{ color: '#E28F84' }} />
+                  <div>
+                    <h4 className="font-semibold mb-1" style={{ color: '#2d3436' }}>Easy Returns</h4>
+                    <p className="text-sm" style={{ color: '#6c5548' }}>Free returns within 30 days for manufacturing defects.</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Shield className="h-5 w-5 mt-1" style={{ color: '#E28F84' }} />
+                  <div>
+                    <h4 className="font-semibold mb-1" style={{ color: '#2d3436' }}>Quality Guarantee</h4>
+                    <p className="text-sm" style={{ color: '#6c5548' }}>100% satisfaction guarantee or your money back.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </section>
+        </div>
 
         {/* Back Navigation */}
-        <div className="flex justify-center space-x-4">
+        <div className="mt-16">
           <Link to="/products/snow-globes">
-            <Button variant="outline" className="px-8 py-3">
+            <Button 
+              variant="outline" 
+              className="px-6 py-3 border-2 font-medium hover:bg-white/50 transition-colors shadow-sm"
+              style={{ borderColor: '#E28F84', color: '#E28F84' }}
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Snow Globes
-            </Button>
-          </Link>
-          <Link to="/">
-            <Button variant="ghost" className="px-8 py-3">
-              Continue Shopping
             </Button>
           </Link>
         </div>
