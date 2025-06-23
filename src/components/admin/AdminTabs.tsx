@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, ShoppingCart, Tags, Star, FileText, Users, BarChart3, Settings, Megaphone, Layers } from 'lucide-react';
@@ -16,7 +15,7 @@ import MarketingTools from './MarketingTools';
 const AdminTabs = () => {
   return (
     <div className="w-full">
-      <style jsx>{`
+      <style>{`
         .tab-button:focus {
           outline: none !important;
           box-shadow: none !important;
