@@ -25,15 +25,15 @@
     --muted: 247 245 243; /* Beautiful Beginnings Cream - #FAF5EF */
     --muted-foreground: 91 76 55; /* Beautiful Beginnings Earthy Brown - #5B4C37 */
 
-    --accent: 59 130 246; /* Blue 500 - professional blue accent */
-    --accent-foreground: 255 255 255;
+    --accent: 169 178 143 !important; /* Beautiful Beginnings Sage Green - #A9B28F */
+    --accent-foreground: 91 76 55 !important; /* Beautiful Beginnings Earthy Brown - #5B4C37 */
 
     --destructive: 239 68 68; /* Red 500 */
     --destructive-foreground: 255 255 255;
 
     --border: 226 232 240; /* Slate 200 - subtle borders */
     --input: 255 255 255;
-    --ring: 59 130 246; /* Blue 500 focus ring */
+    --ring: 169 178 143 !important; /* Beautiful Beginnings Sage Green for focus rings */
 
     --radius: 0.5rem;
 
@@ -44,7 +44,7 @@
     --sidebar-accent: 247 245 243; /* Beautiful Beginnings Cream */
     --sidebar-accent-foreground: 91 76 55; /* Beautiful Beginnings Earthy Brown */
     --sidebar-border: 226 232 240;
-    --sidebar-ring: 59 130 246;
+    --sidebar-ring: 169 178 143 !important; /* Beautiful Beginnings Sage Green */
   }
 
   .dark {
@@ -66,15 +66,15 @@
     --muted: 30 41 59; /* Dark mode muted */
     --muted-foreground: 148 163 184;
 
-    --accent: 59 130 246;
-    --accent-foreground: 248 250 252;
+    --accent: 169 178 143 !important; /* Beautiful Beginnings Sage Green - same in dark mode */
+    --accent-foreground: 248 250 252 !important; /* Light text for dark mode */
 
     --destructive: 239 68 68;
     --destructive-foreground: 248 250 252;
 
     --border: 30 41 59;
     --input: 30 41 59;
-    --ring: 59 130 246;
+    --ring: 169 178 143 !important; /* Beautiful Beginnings Sage Green for focus rings */
     
     --sidebar-background: 2 6 23;
     --sidebar-foreground: 248 250 252;
@@ -83,7 +83,7 @@
     --sidebar-accent: 30 41 59;
     --sidebar-accent-foreground: 248 250 252;
     --sidebar-border: 30 41 59;
-    --sidebar-ring: 59 130 246;
+    --sidebar-ring: 169 178 143 !important; /* Beautiful Beginnings Sage Green */
   }
 }
 
@@ -185,5 +185,48 @@
   
   .hover\:bg-muted\/50:hover {
     background-color: rgba(247, 245, 243, 0.5) !important;
+  }
+
+  /* Critical accent color overrides to prevent ANY yellow */
+  .bg-accent {
+    background-color: rgb(169 178 143) !important; /* Beautiful Beginnings Sage Green */
+  }
+
+  .text-accent-foreground {
+    color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
+  }
+
+  .hover\:bg-accent:hover {
+    background-color: rgb(169 178 143) !important; /* Beautiful Beginnings Sage Green */
+  }
+
+  .hover\:text-accent-foreground:hover {
+    color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
+  }
+
+  /* Button variant overrides to ensure no yellow ever appears */
+  button[class*="outline"]:hover {
+    background-color: rgb(169 178 143) !important; /* Beautiful Beginnings Sage Green */
+    color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
+  }
+
+  button[class*="ghost"]:hover {
+    background-color: rgb(169 178 143) !important; /* Beautiful Beginnings Sage Green */
+    color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
+  }
+
+  /* Focus ring overrides */
+  *:focus-visible {
+    outline: 2px solid rgb(169 178 143) !important; /* Beautiful Beginnings Sage Green */
+    outline-offset: 2px !important;
+  }
+
+  /* Toggle component overrides */
+  .hover\:bg-stone-100:hover {
+    background-color: rgb(245 245 244) !important; /* Stone 100 instead of yellow */
+  }
+
+  .hover\:text-stone-800:hover {
+    color: rgb(41 37 36) !important; /* Stone 800 instead of yellow */
   }
 }
