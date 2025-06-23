@@ -1,8 +1,10 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Professional Design System - Beautiful Beginnings Brand Colors */
+/* ENHANCED ANTI-YELLOW PROTECTION */
 
 @layer base {
   :root {
@@ -44,6 +46,11 @@
     --sidebar-accent-foreground: 91 76 55; /* Beautiful Beginnings Earthy Brown */
     --sidebar-border: 226 232 240;
     --sidebar-ring: 100 116 139 !important; /* FORCE Slate 500 - NO YELLOW EVER */
+    
+    /* NUCLEAR ANTI-YELLOW CUSTOM PROPERTIES */
+    --tw-ring-color: 100 116 139 !important; /* Force slate ring always */
+    --tw-ring-opacity: 1 !important;
+    --tw-bg-opacity: 1 !important;
   }
 
   .dark {
@@ -83,18 +90,35 @@
     --sidebar-accent-foreground: 248 250 252;
     --sidebar-border: 30 41 59;
     --sidebar-ring: 100 116 139 !important; /* FORCE Slate 500 - NO YELLOW EVER */
+    
+    /* NUCLEAR ANTI-YELLOW CUSTOM PROPERTIES - DARK MODE */
+    --tw-ring-color: 100 116 139 !important;
+    --tw-ring-opacity: 1 !important;
+    --tw-bg-opacity: 1 !important;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    /* ENHANCED ANTI-YELLOW PROTECTION */
+    --tw-ring-color: rgb(100 116 139) !important;
+    accent-color: rgb(100 116 139) !important;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     line-height: 1.6;
     letter-spacing: -0.01em;
+    /* FORCE BODY BACKGROUND - NO YELLOW EVER */
+    background-color: rgb(255 255 255) !important;
+    background: rgb(255 255 255) !important;
+  }
+
+  html {
+    /* FORCE HTML BACKGROUND - NO YELLOW EVER */
+    background-color: rgb(255 255 255) !important;
+    background: rgb(255 255 255) !important;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -472,5 +496,56 @@
 
   .focus-visible\:ring-ring:focus-visible {
     --tw-ring-color: rgb(100 116 139) !important;
+  }
+
+  /* ===== ENHANCED BROWSER-SPECIFIC ANTI-YELLOW PROTECTION ===== */
+  
+  /* Chrome/Safari/WebKit protection */
+  @supports (-webkit-appearance: none) {
+    * {
+      --tw-ring-color: rgb(100 116 139) !important;
+      accent-color: rgb(100 116 139) !important;
+    }
+    
+    *:focus, *:focus-visible {
+      outline-color: rgb(100 116 139) !important;
+      -webkit-focus-ring-color: rgb(100 116 139) !important;
+    }
+  }
+  
+  /* Firefox protection */
+  @supports (-moz-appearance: none) {
+    * {
+      --tw-ring-color: rgb(100 116 139) !important;
+      accent-color: rgb(100 116 139) !important;
+    }
+    
+    *:focus, *:focus-visible {
+      outline-color: rgb(100 116 139) !important;
+      -moz-outline-color: rgb(100 116 139) !important;
+    }
+  }
+  
+  /* Edge protection */
+  @supports (-ms-ime-align: auto) {
+    * {
+      --tw-ring-color: rgb(100 116 139) !important;
+      accent-color: rgb(100 116 139) !important;
+    }
+  }
+  
+  /* High contrast mode protection */
+  @media (prefers-contrast: high) {
+    *:focus, *:focus-visible {
+      outline: 3px solid rgb(100 116 139) !important;
+      box-shadow: 0 0 0 3px rgb(100 116 139) !important;
+    }
+  }
+  
+  /* Reduced motion protection */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      --tw-ring-color: rgb(100 116 139) !important;
+    }
   }
 }

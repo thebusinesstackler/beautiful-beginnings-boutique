@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -9,6 +10,20 @@ export default {
 		"./src/**/*.{ts,tsx}",
 	],
 	prefix: "",
+	// Explicitly block ALL yellow color variants from being generated
+	safelist: [],
+	blocklist: [
+		'bg-yellow-*',
+		'text-yellow-*',
+		'border-yellow-*',
+		'ring-yellow-*',
+		'outline-yellow-*',
+		'hover:bg-yellow-*',
+		'focus:bg-yellow-*',
+		'active:bg-yellow-*',
+		'focus:ring-yellow-*',
+		'focus:outline-yellow-*'
+	],
 	theme: {
 		container: {
 			center: true,
@@ -19,6 +34,11 @@ export default {
 		},
 		extend: {
 			colors: {
+				// COMPLETELY REMOVE YELLOW FROM TAILWIND'S COLOR PALETTE
+				// Override any potential yellow references
+				yellow: undefined, // Explicitly remove yellow
+				amber: undefined,  // Remove amber (yellow-ish)
+				
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

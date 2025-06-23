@@ -19,6 +19,85 @@
 
     <!-- Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;500;600&display=swap">
+    
+    <!-- CRITICAL CSS - PREVENT YELLOW FLASH ON PAGE LOAD -->
+    <style>
+      /* IMMEDIATE NO-YELLOW ENFORCEMENT - LOADS BEFORE ANY OTHER CSS */
+      * {
+        /* Force override any potential yellow backgrounds */
+        --tw-bg-opacity: 1 !important;
+        --tw-ring-color: rgb(100 116 139) !important; /* Slate 500 - NO YELLOW EVER */
+      }
+      
+      /* BODY AND HTML IMMEDIATE BACKGROUND */
+      html, body {
+        background-color: rgb(255 255 255) !important; /* Pure white - NO YELLOW */
+        background: rgb(255 255 255) !important;
+        color: rgb(15 23 42) !important; /* Dark text */
+      }
+      
+      /* ROOT ELEMENT IMMEDIATE BACKGROUND */
+      #root {
+        background-color: rgb(255 255 255) !important;
+        background: rgb(255 255 255) !important;
+        min-height: 100vh;
+      }
+      
+      /* IMMEDIATE FOCUS STATE OVERRIDES - NO YELLOW FOCUS RINGS */
+      *:focus, *:focus-visible, *:focus-within {
+        outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
+        outline-offset: 2px !important;
+        box-shadow: 0 0 0 2px rgb(100 116 139) !important;
+        --tw-ring-color: rgb(100 116 139) !important;
+      }
+      
+      /* IMMEDIATE INPUT FIELD PROTECTION */
+      input, textarea, select, button {
+        background-color: rgb(255 255 255) !important;
+        background: rgb(255 255 255) !important;
+        color: rgb(15 23 42) !important;
+      }
+      
+      /* BROWSER AUTOFILL IMMEDIATE OVERRIDE */
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus,
+      input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px rgb(255 255 255) inset !important;
+        -webkit-text-fill-color: rgb(15 23 42) !important;
+        background-color: rgb(255 255 255) !important;
+        background: rgb(255 255 255) !important;
+      }
+      
+      /* IMMEDIATE BUTTON AND INTERACTIVE ELEMENT PROTECTION */
+      button:hover, button:focus, button:active,
+      a:hover, a:focus, a:active {
+        background-color: rgb(245 245 244) !important; /* Stone 100 - NEVER YELLOW */
+        color: rgb(68 64 60) !important; /* Stone 700 */
+        outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
+      }
+      
+      /* NUCLEAR OPTION - ELIMINATE ANY POSSIBLE YELLOW */
+      *[style*="yellow"], *[class*="yellow"], 
+      *[style*="#ffff"], *[style*="#fde047"],
+      *[style*="rgb(253, 224, 71)"] {
+        background-color: rgb(245 245 244) !important; /* Force stone */
+        color: rgb(68 64 60) !important;
+      }
+      
+      /* HIGH CONTRAST AND ACCESSIBILITY OVERRIDE */
+      @media (prefers-contrast: high) {
+        *:focus, *:focus-visible {
+          outline: 3px solid rgb(100 116 139) !important; /* Slate 500 - NO YELLOW */
+          box-shadow: 0 0 0 3px rgb(100 116 139) !important;
+        }
+      }
+      
+      /* FORCE SYSTEM COLORS TO NON-YELLOW */
+      * {
+        accent-color: rgb(100 116 139) !important; /* Force slate accent */
+      }
+    </style>
   </head>
 
   <body>
