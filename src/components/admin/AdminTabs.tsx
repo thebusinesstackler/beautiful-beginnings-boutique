@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, ShoppingCart, Tags, Star, FileText, Users, BarChart3, Settings, Megaphone, Layers } from 'lucide-react';
@@ -17,7 +16,7 @@ const AdminTabs = () => {
   return (
     <div className="w-full">
       <Tabs defaultValue="dashboard" className="w-full">
-        <div className="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden mb-6">
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
           <TabsList 
             className="grid w-full grid-cols-5 lg:grid-cols-10 h-auto p-1 bg-gradient-to-r from-cream to-stone-50 border-0"
           >
