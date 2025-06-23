@@ -8,30 +8,35 @@ const Categories = () => {
       name: "Keepsake Ornaments",
       description: "Transform memories into beautiful ornaments",
       href: "/products/ornaments",
+      image: "https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=400",
       featured: true
     },
     {
       name: "Memory Jewelry",
       description: "Wear your loved ones close to your heart",
       href: "/products/necklaces",
+      image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=400",
       featured: false
     },
     {
       name: "Slate Keepsakes",
       description: "Elegant slate pieces with lasting memories",
       href: "/products/slate",
+      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400",
       featured: false
     },
     {
       name: "Snow Globes",
       description: "Magical snow globes with your special moments",
       href: "/products/snow-globes",
+      image: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400",
       featured: false
     },
     {
       name: "Wood Art",
       description: "Rustic wood pieces with personalized touches",
       href: "/products/wood-sublimation",
+      image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400",
       featured: false
     }
   ];
@@ -69,13 +74,13 @@ const Categories = () => {
                 category.featured ? 'ring-2 ring-rose-200' : ''
               }`}
             >
-              {/* Placeholder image */}
-              <div className="aspect-square overflow-hidden bg-gradient-to-br from-rose-50 to-rose-100">
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="w-24 h-24 bg-rose-200/50 rounded-full flex items-center justify-center">
-                    <Heart className="w-8 h-8 text-rose-400" />
-                  </div>
-                </div>
+              {/* Image */}
+              <div className="aspect-square overflow-hidden">
+                <img
+                  src={category.image}
+                  alt={category.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               
               <div className="p-6">
