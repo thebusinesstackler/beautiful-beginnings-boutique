@@ -183,13 +183,12 @@ const ProductManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#5B4C37' }}>Product Management</h2>
-          <p className="text-gray-600">Manage your product catalog</p>
+          <h2 className="text-2xl font-bold text-charcoal mb-2">Product Management</h2>
+          <p className="text-stone">Manage your product catalog</p>
         </div>
         <Button 
           onClick={() => setShowAddForm(true)}
-          style={{ backgroundColor: '#E28F84' }}
-          className="text-white hover:opacity-90"
+          className="bg-sage hover:bg-sage/90 text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Product
@@ -198,44 +197,44 @@ const ProductManagement = () => {
 
       {/* Product Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card style={{ backgroundColor: '#FAF5EF' }}>
+        <Card className="bg-cream/50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Total Products</CardTitle>
-            <Package className="h-4 w-4" style={{ color: '#A89B84' }} />
+            <CardTitle className="text-sm font-medium text-charcoal">Total Products</CardTitle>
+            <Package className="h-4 w-4 text-stone" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{products.length}</div>
+            <div className="text-2xl font-bold text-charcoal">{products.length}</div>
           </CardContent>
         </Card>
 
-        <Card style={{ backgroundColor: '#F6DADA' }}>
+        <Card className="bg-blush/30 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Active Products</CardTitle>
+            <CardTitle className="text-sm font-medium text-charcoal">Active Products</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>
+            <div className="text-2xl font-bold text-charcoal">
               {products.filter(p => p.is_active).length}
             </div>
           </CardContent>
         </Card>
 
-        <Card style={{ backgroundColor: '#FAF5EF' }}>
+        <Card className="bg-cream/50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Categories</CardTitle>
+            <CardTitle className="text-sm font-medium text-charcoal">Categories</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>
+            <div className="text-2xl font-bold text-charcoal">
               {new Set(products.map(p => p.category)).size}
             </div>
           </CardContent>
         </Card>
 
-        <Card style={{ backgroundColor: '#F6DADA' }}>
+        <Card className="bg-blush/30 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Low Stock</CardTitle>
+            <CardTitle className="text-sm font-medium text-charcoal">Low Stock</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>
+            <div className="text-2xl font-bold text-charcoal">
               {products.filter(p => (p.inventory_quantity || 0) < 5).length}
             </div>
           </CardContent>
@@ -244,9 +243,9 @@ const ProductManagement = () => {
 
       {/* Add/Edit Product Form */}
       {showAddForm && (
-        <Card style={{ backgroundColor: '#FAF5EF' }}>
+        <Card className="bg-cream/30 border-0 shadow-sm">
           <CardHeader>
-            <CardTitle style={{ color: '#5B4C37' }}>
+            <CardTitle className="text-charcoal">
               {editingProduct ? 'Edit Product' : 'Add New Product'}
             </CardTitle>
           </CardHeader>
@@ -328,8 +327,7 @@ const ProductManagement = () => {
               <div className="flex space-x-2">
                 <Button 
                   type="submit"
-                  style={{ backgroundColor: '#E28F84' }}
-                  className="text-white hover:opacity-90"
+                  className="bg-sage hover:bg-sage/90 text-white"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   {editingProduct ? 'Update' : 'Create'} Product
@@ -345,15 +343,15 @@ const ProductManagement = () => {
       )}
 
       {/* Products List */}
-      <Card style={{ backgroundColor: '#F6DADA' }}>
+      <Card className="bg-blush/20 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle style={{ color: '#5B4C37' }}>Products ({products.length})</CardTitle>
+          <CardTitle className="text-charcoal">Products ({products.length})</CardTitle>
           <CardDescription>Your product catalog</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {products.map((product) => (
-              <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg" style={{ backgroundColor: 'white' }}>
+              <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm">
                 <div className="flex items-center space-x-4">
                   {product.image_url && (
                     <img
@@ -381,7 +379,7 @@ const ProductManagement = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(product)}
-                    style={{ borderColor: '#A89B84', color: '#5B4C37' }}
+                    className="border-stone text-charcoal hover:bg-cream/50"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>

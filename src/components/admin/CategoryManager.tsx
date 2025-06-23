@@ -158,13 +158,12 @@ const CategoryManager = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#5B4C37' }}>Category Manager</h2>
-          <p className="text-gray-600">Organize your products with categories</p>
+          <h2 className="text-2xl font-bold text-charcoal mb-2">Category Manager</h2>
+          <p className="text-stone">Organize your products with categories</p>
         </div>
         <Button
           onClick={() => setShowForm(true)}
-          style={{ backgroundColor: '#E28F84' }}
-          className="hover:opacity-90 text-white"
+          className="bg-sage hover:bg-sage/90 text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Category
@@ -172,9 +171,9 @@ const CategoryManager = () => {
       </div>
 
       {showForm && (
-        <Card style={{ backgroundColor: '#FAF5EF' }}>
+        <Card className="bg-cream/30 border-0 shadow-sm">
           <CardHeader>
-            <CardTitle style={{ color: '#5B4C37' }}>{editingCategory ? 'Edit Category' : 'Add New Category'}</CardTitle>
+            <CardTitle className="text-charcoal">{editingCategory ? 'Edit Category' : 'Add New Category'}</CardTitle>
             <CardDescription>
               {editingCategory ? 'Update category information' : 'Create a new product category'}
             </CardDescription>
@@ -230,7 +229,7 @@ const CategoryManager = () => {
               </div>
 
               <div className="flex space-x-2">
-                <Button type="submit" style={{ backgroundColor: '#E28F84' }} className="text-white hover:opacity-90">
+                <Button type="submit" className="bg-sage hover:bg-sage/90 text-white">
                   {editingCategory ? 'Update Category' : 'Create Category'}
                 </Button>
                 <Button
@@ -241,7 +240,7 @@ const CategoryManager = () => {
                     setEditingCategory(null);
                     resetForm();
                   }}
-                  style={{ borderColor: '#A89B84', color: '#5B4C37' }}
+                  className="border-stone text-charcoal hover:bg-cream/50"
                 >
                   Cancel
                 </Button>
@@ -251,15 +250,15 @@ const CategoryManager = () => {
         </Card>
       )}
 
-      <Card style={{ backgroundColor: '#F6DADA' }}>
+      <Card className="bg-blush/20 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle style={{ color: '#5B4C37' }}>Categories ({categories.length})</CardTitle>
+          <CardTitle className="text-charcoal">Categories ({categories.length})</CardTitle>
           <CardDescription>Manage your product categories</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {categories.map((category) => (
-              <div key={category.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={category.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm">
                 <div>
                   <h3 className="font-medium">{category.name}</h3>
                   <p className="text-sm text-gray-500">{category.slug}</p>
@@ -278,6 +277,7 @@ const CategoryManager = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(category)}
+                    className="border-stone text-charcoal hover:bg-cream/50"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -285,6 +285,7 @@ const CategoryManager = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDelete(category.id)}
+                    className="text-red-600 border-red-200 hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
