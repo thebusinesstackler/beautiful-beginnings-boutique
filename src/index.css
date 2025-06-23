@@ -1,551 +1,166 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Professional Design System - Beautiful Beginnings Brand Colors */
-/* ENHANCED ANTI-YELLOW PROTECTION */
-
 @layer base {
   :root {
-    --background: 255 255 255; /* Pure white background */
-    --foreground: 15 23 42; /* Slate 900 - professional dark text */
-
-    --card: 255 255 255; /* Pure white cards */
-    --card-foreground: 15 23 42;
-
-    --popover: 255 255 255;
-    --popover-foreground: 15 23 42;
-
-    --primary: 30 41 59; /* Slate 800 - sophisticated dark navy */
-    --primary-foreground: 255 255 255;
-
-    --secondary: 100 116 139; /* Slate 500 - professional gray */
-    --secondary-foreground: 255 255 255;
-
-    --muted: 247 245 243; /* Beautiful Beginnings Cream - #FAF5EF */
-    --muted-foreground: 91 76 55; /* Beautiful Beginnings Earthy Brown - #5B4C37 */
-
-    --accent: 169 178 143 !important; /* Beautiful Beginnings Sage Green - #A9B28F */
-    --accent-foreground: 91 76 55 !important; /* Beautiful Beginnings Earthy Brown - #5B4C37 */
-
-    --destructive: 239 68 68; /* Red 500 */
-    --destructive-foreground: 255 255 255;
-
-    --border: 226 232 240; /* Slate 200 - subtle borders */
-    --input: 255 255 255;
-    --ring: 100 116 139 !important; /* FORCE Slate 500 - NO YELLOW EVER */
-
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-
-    --sidebar-background: 255 255 255;
-    --sidebar-foreground: 15 23 42;
-    --sidebar-primary: 30 41 59;
-    --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 247 245 243; /* Beautiful Beginnings Cream */
-    --sidebar-accent-foreground: 91 76 55; /* Beautiful Beginnings Earthy Brown */
-    --sidebar-border: 226 232 240;
-    --sidebar-ring: 100 116 139 !important; /* FORCE Slate 500 - NO YELLOW EVER */
-    
-    /* NUCLEAR ANTI-YELLOW CUSTOM PROPERTIES */
-    --tw-ring-color: 100 116 139 !important; /* Force slate ring always */
-    --tw-ring-opacity: 1 !important;
-    --tw-bg-opacity: 1 !important;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 2 6 23;
-    --foreground: 248 250 252;
-
-    --card: 15 23 42;
-    --card-foreground: 248 250 252;
-
-    --popover: 15 23 42;
-    --popover-foreground: 248 250 252;
-
-    --primary: 248 250 252;
-    --primary-foreground: 15 23 42;
-
-    --secondary: 30 41 59;
-    --secondary-foreground: 248 250 252;
-
-    --muted: 30 41 59; /* Dark mode muted */
-    --muted-foreground: 148 163 184;
-
-    --accent: 169 178 143 !important; /* Beautiful Beginnings Sage Green - same in dark mode */
-    --accent-foreground: 248 250 252 !important; /* Light text for dark mode */
-
-    --destructive: 239 68 68;
-    --destructive-foreground: 248 250 252;
-
-    --border: 30 41 59;
-    --input: 30 41 59;
-    --ring: 100 116 139 !important; /* FORCE Slate 500 - NO YELLOW EVER */
-    
-    --sidebar-background: 2 6 23;
-    --sidebar-foreground: 248 250 252;
-    --sidebar-primary: 248 250 252;
-    --sidebar-primary-foreground: 15 23 42;
-    --sidebar-accent: 30 41 59;
-    --sidebar-accent-foreground: 248 250 252;
-    --sidebar-border: 30 41 59;
-    --sidebar-ring: 100 116 139 !important; /* FORCE Slate 500 - NO YELLOW EVER */
-    
-    /* NUCLEAR ANTI-YELLOW CUSTOM PROPERTIES - DARK MODE */
-    --tw-ring-color: 100 116 139 !important;
-    --tw-ring-opacity: 1 !important;
-    --tw-bg-opacity: 1 !important;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
-    /* ENHANCED ANTI-YELLOW PROTECTION */
-    --tw-ring-color: rgb(100 116 139) !important;
-    accent-color: rgb(100 116 139) !important;
   }
-
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    line-height: 1.6;
-    letter-spacing: -0.01em;
-    /* FORCE BODY BACKGROUND - NO YELLOW EVER */
-    background-color: rgb(255 255 255) !important;
-    background: rgb(255 255 255) !important;
-  }
-
-  html {
-    /* FORCE HTML BACKGROUND - NO YELLOW EVER */
-    background-color: rgb(255 255 255) !important;
-    background: rgb(255 255 255) !important;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-sans font-bold text-foreground;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
-  }
-
-  p {
-    line-height: 1.7;
-    letter-spacing: -0.01em;
+    @apply bg-background text-foreground;
   }
 }
 
-@layer components {
-  .btn-primary {
-    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:shadow-lg;
-  }
+.btn-primary {
+  @apply bg-sage hover:bg-sage/90 text-white font-medium px-6 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg;
+}
 
-  .btn-secondary {
-    @apply bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:shadow-lg;
-  }
+.btn-secondary {
+  @apply bg-white hover:bg-cream text-sage border border-sage/30 font-medium px-6 py-3 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md;
+}
 
-  .card-hover {
-    @apply transition-all duration-200 hover:shadow-xl;
-  }
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
 
-  .text-gradient {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-bold;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-  .shimmer {
-    @apply relative overflow-hidden;
-  }
+/* Remove ALL focus outlines globally */
+*, 
+*:focus, 
+*:focus-visible,
+*:active,
+button:focus,
+button:focus-visible,
+button:active,
+a:focus,
+a:focus-visible,
+a:active,
+input:focus,
+input:focus-visible,
+input:active,
+select:focus,
+select:focus-visible,
+select:active,
+textarea:focus,
+textarea:focus-visible,
+textarea:active,
+[role="button"]:focus,
+[role="button"]:focus-visible,
+[role="button"]:active,
+[data-state]:focus,
+[data-state]:focus-visible,
+[data-state]:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  ring: none !important;
+  ring-offset: none !important;
+}
 
-  .shimmer::after {
-    @apply absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent;
-    content: '';
-    animation: shimmer 2s infinite;
-  }
+/* Remove focus rings from all Radix UI components */
+[data-radix-collection-item]:focus,
+[data-radix-collection-item]:focus-visible,
+[data-radix-collection-item]:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
 
-  @keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(200%);
-    }
-  }
+/* Remove tab focus indicators */
+[role="tab"]:focus,
+[role="tab"]:focus-visible,
+[role="tab"]:active,
+[role="tabpanel"]:focus,
+[role="tabpanel"]:focus-visible,
+[role="tabpanel"]:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
 
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Brand-specific override classes */
-  .bg-brand-muted {
-    background-color: rgb(247 245 243) !important; /* Beautiful Beginnings Cream */
-  }
-  
-  .text-brand-muted {
-    color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
-  }
-  
-  .hover\:bg-brand-muted\/50:hover {
-    background-color: rgba(247, 245, 243, 0.5) !important;
-  }
-
-  /* High-specificity overrides to eliminate any yellow backgrounds */
-  .bg-muted {
-    background-color: rgb(247 245 243) !important;
-  }
-  
-  .text-muted-foreground {
-    color: rgb(91 76 55) !important;
-  }
-  
-  .hover\:bg-muted\/50:hover {
-    background-color: rgba(247, 245, 243, 0.5) !important;
-  }
-
-  /* Critical accent color overrides to prevent ANY yellow */
-  .bg-accent {
-    background-color: rgb(169 178 143) !important; /* Beautiful Beginnings Sage Green */
-  }
-
-  .text-accent-foreground {
-    color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
-  }
-
-  .hover\:bg-accent:hover {
-    background-color: rgb(169 178 143) !important; /* Beautiful Beginnings Sage Green */
-  }
-
-  .hover\:text-accent-foreground:hover {
-    color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
-  }
-
-  /* ===== COMPLETE BUTTON VARIANT OVERRIDES - NO YELLOW EVER ===== */
-  
-  /* Outline button overrides - FORCE stone colors */
-  button[class*="outline"]:hover,
-  .outline:hover,
-  [data-variant="outline"]:hover {
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-    color: rgb(68 64 60) !important; /* Stone 700 */
-    border-color: rgb(214 211 209) !important; /* Stone 300 */
-  }
-
-  button[class*="outline"]:focus,
-  .outline:focus,
-  [data-variant="outline"]:focus {
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-    color: rgb(68 64 60) !important; /* Stone 700 */
-    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
-  }
-
-  button[class*="outline"]:focus-visible,
-  .outline:focus-visible,
-  [data-variant="outline"]:focus-visible {
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-    color: rgb(68 64 60) !important; /* Stone 700 */
-    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
-    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
-  }
-
-  /* Ghost button overrides - FORCE stone colors */
-  button[class*="ghost"]:hover,
-  .ghost:hover,
-  [data-variant="ghost"]:hover {
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-    color: rgb(68 64 60) !important; /* Stone 700 */
-  }
-
-  button[class*="ghost"]:focus,
-  .ghost:focus,
-  [data-variant="ghost"]:focus {
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-    color: rgb(68 64 60) !important; /* Stone 700 */
-    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
-  }
-
-  button[class*="ghost"]:focus-visible,
-  .ghost:focus-visible,
-  [data-variant="ghost"]:focus-visible {
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-    color: rgb(68 64 60) !important; /* Stone 700 */
-    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
-    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
-  }
-
-  /* ===== SELECT COMPONENT OVERRIDES - NO YELLOW EVER ===== */
-  
-  /* Select trigger focus overrides */
-  [data-radix-collection-item]:focus,
-  [role="combobox"]:focus,
-  [role="button"][aria-haspopup="listbox"]:focus {
-    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
-    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
-    background-color: rgb(255 255 255) !important; /* Force white */
-  }
-
-  /* Select item focus overrides */
-  .focus\:bg-stone-100:focus,
-  [data-highlighted] {
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-    color: rgb(68 64 60) !important; /* Stone 700 */
-  }
-
-  .focus\:text-stone-900:focus {
-    color: rgb(28 25 23) !important; /* Stone 900 */
-  }
-
-  /* ===== TABS COMPONENT OVERRIDES - NO YELLOW EVER ===== */
-  
-  /* Tabs trigger focus overrides */
-  [role="tab"]:focus,
-  [role="tab"]:focus-visible {
-    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
-    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-    color: rgb(68 64 60) !important; /* Stone 700 */
-  }
-
-  /* ===== UNIVERSAL FOCUS OVERRIDES - NO YELLOW ANYWHERE ===== */
-  
-  /* Force ALL focus rings to be slate instead of yellow */
-  .focus-visible\:ring-2:focus-visible,
-  .focus-visible\:ring-ring:focus-visible,
-  .focus\:ring-2:focus,
-  .focus\:ring-ring:focus {
-    --tw-ring-color: rgb(100 116 139) !important; /* Slate 500 */
-    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
-  }
-
-  /* Force ALL focus-visible states */
-  *:focus-visible {
-    outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
-    outline-offset: 2px !important;
-    box-shadow: 0 0 0 2px rgb(100 116 139) !important; /* Slate 500 */
-  }
-
-  /* Override any remaining hover states that might use yellow */
-  .hover\:bg-stone-100:hover {
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-  }
-
-  .hover\:text-stone-800:hover {
-    color: rgb(41 37 36) !important; /* Stone 800 */
-  }
-
-  /* ===== RADIX UI COMPONENT STATE OVERRIDES ===== */
-  
-  /* Override any Radix component open/focus states */
-  [data-state="open"],
-  [data-state="active"] {
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-    color: rgb(68 64 60) !important; /* Stone 700 */
-  }
-
-  /* Override dropdown menu item states */
-  [role="menuitem"]:focus,
-  [role="menuitem"]:hover,
-  [role="option"]:focus,
-  [role="option"]:hover {
-    background-color: rgb(245 245 244) !important; /* Stone 100 */
-    color: rgb(68 64 60) !important; /* Stone 700 */
-  }
-
-  /* ===== CRITICAL INPUT FIELD OVERRIDES - NO YELLOW BACKGROUNDS ===== */
-  
-  input,
-  input[type="text"],
-  input[type="email"],
-  input[type="number"],
-  input[type="date"],
-  input[type="url"],
-  input[type="tel"],
-  input[type="search"],
-  input[type="password"],
-  textarea {
-    background-color: rgb(255 255 255) !important; /* Force white background */
-    background: rgb(255 255 255) !important; /* Backup declaration */
-    color: rgb(15 23 42) !important; /* Force dark text */
-  }
-
-  /* Dark mode input overrides */
-  .dark input,
-  .dark input[type="text"],
-  .dark input[type="email"],
-  .dark input[type="number"],
-  .dark input[type="date"],
-  .dark input[type="url"],
-  .dark input[type="tel"],
-  .dark input[type="search"],
-  .dark input[type="password"],
-  .dark textarea {
-    background-color: rgb(30 41 59) !important; /* Dark slate background */
-    background: rgb(30 41 59) !important; /* Backup declaration */
-    color: rgb(248 250 252) !important; /* Light text for dark mode */
-  }
-
-  /* Browser autocomplete override - prevents yellow autocomplete backgrounds */
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  input:-webkit-autofill:active,
-  textarea:-webkit-autofill,
-  textarea:-webkit-autofill:hover,
-  textarea:-webkit-autofill:focus,
-  textarea:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px rgb(255 255 255) inset !important; /* Cover yellow with white */
-    -webkit-text-fill-color: rgb(15 23 42) !important; /* Force dark text */
-    background-color: rgb(255 255 255) !important;
-    background: rgb(255 255 255) !important;
-    caret-color: rgb(15 23 42) !important; /* Dark cursor */
-  }
-
-  /* Dark mode autocomplete overrides */
-  .dark input:-webkit-autofill,
-  .dark input:-webkit-autofill:hover,
-  .dark input:-webkit-autofill:focus,
-  .dark input:-webkit-autofill:active,
-  .dark textarea:-webkit-autofill,
-  .dark textarea:-webkit-autofill:hover,
-  .dark textarea:-webkit-autofill:focus,
-  .dark textarea:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px rgb(30 41 59) inset !important; /* Cover with dark background */
-    -webkit-text-fill-color: rgb(248 250 252) !important; /* Light text for dark mode */
-    background-color: rgb(30 41 59) !important;
-    background: rgb(30 41 59) !important;
-    caret-color: rgb(248 250 252) !important; /* Light cursor */
-  }
-
-  /* Mozilla/Firefox specific overrides */
-  input:-moz-autofill,
-  textarea:-moz-autofill {
-    background-color: rgb(255 255 255) !important;
-    color: rgb(15 23 42) !important;
-  }
-
-  .dark input:-moz-autofill,
-  .dark textarea:-moz-autofill {
-    background-color: rgb(30 41 59) !important;
-    color: rgb(248 250 252) !important;
-  }
-
-  /* High specificity overrides for any missed cases */
-  .bg-background input,
-  .bg-card input,
-  .bg-white input,
-  form input,
-  div input,
-  .bg-background textarea,
-  .bg-card textarea,
-  .bg-white textarea,
-  form textarea,
-  div textarea {
-    background-color: rgb(255 255 255) !important;
-    background: rgb(255 255 255) !important;
-    color: rgb(15 23 42) !important;
-  }
-
-  /* Dark mode high specificity overrides */
-  .dark .bg-background input,
-  .dark .bg-card input,
-  .dark .bg-white input,
-  .dark form input,
-  .dark div input,
-  .dark .bg-background textarea,
-  .dark .bg-card textarea,
-  .dark .bg-white textarea,
-  .dark form textarea,
-  .dark div textarea {
-    background-color: rgb(30 41 59) !important;
-    background: rgb(30 41 59) !important;
-    color: rgb(248 250 252) !important;
-  }
-
-  /* ===== FINAL NUCLEAR OVERRIDES - ELIMINATE ALL REMAINING YELLOW ===== */
-  
-  /* Override ANY element that might still have yellow */
-  *[class*="yellow"],
-  *[style*="yellow"],
-  *[style*="#ffff"],
-  *[style*="#fde047"],
-  *[style*="rgb(253, 224, 71)"] {
-    background-color: rgb(245 245 244) !important; /* Force stone */
-    color: rgb(68 64 60) !important; /* Force stone text */
-  }
-
-  /* Override any CSS custom properties that might contain yellow */
-  * {
-    --tw-ring-color: rgb(100 116 139) !important; /* Force slate ring */
-  }
-
-  /* Force all Tailwind ring utilities to use slate */
-  .ring-ring {
-    --tw-ring-color: rgb(100 116 139) !important;
-  }
-
-  .focus\:ring-ring:focus {
-    --tw-ring-color: rgb(100 116 139) !important;
-  }
-
-  .focus-visible\:ring-ring:focus-visible {
-    --tw-ring-color: rgb(100 116 139) !important;
-  }
-
-  /* ===== ENHANCED BROWSER-SPECIFIC ANTI-YELLOW PROTECTION ===== */
-  
-  /* Chrome/Safari/WebKit protection */
-  @supports (-webkit-appearance: none) {
-    * {
-      --tw-ring-color: rgb(100 116 139) !important;
-      accent-color: rgb(100 116 139) !important;
-    }
-    
-    *:focus, *:focus-visible {
-      outline-color: rgb(100 116 139) !important;
-      -webkit-focus-ring-color: rgb(100 116 139) !important;
-    }
-  }
-  
-  /* Firefox protection */
-  @supports (-moz-appearance: none) {
-    * {
-      --tw-ring-color: rgb(100 116 139) !important;
-      accent-color: rgb(100 116 139) !important;
-    }
-    
-    *:focus, *:focus-visible {
-      outline-color: rgb(100 116 139) !important;
-      -moz-outline-color: rgb(100 116 139) !important;
-    }
-  }
-  
-  /* Edge protection */
-  @supports (-ms-ime-align: auto) {
-    * {
-      --tw-ring-color: rgb(100 116 139) !important;
-      accent-color: rgb(100 116 139) !important;
-    }
-  }
-  
-  /* High contrast mode protection */
-  @media (prefers-contrast: high) {
-    *:focus, *:focus-visible {
-      outline: 3px solid rgb(100 116 139) !important;
-      box-shadow: 0 0 0 3px rgb(100 116 139) !important;
-    }
-  }
-  
-  /* Reduced motion protection */
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      --tw-ring-color: rgb(100 116 139) !important;
-    }
-  }
+/* Remove navigation focus indicators */
+nav *:focus,
+nav *:focus-visible,
+nav *:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
 }

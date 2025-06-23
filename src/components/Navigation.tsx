@@ -24,7 +24,11 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0">
+          <Link 
+            to="/" 
+            className="flex-shrink-0"
+            style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
+          >
             <img 
               src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
               alt="Beautiful Beginnings Logo" 
@@ -40,7 +44,12 @@ const Navigation = () => {
                   key={item.name}
                   to={item.href}
                   className="px-3 py-2 text-sm font-medium transition-colors duration-200 relative group"
-                  style={{ color: '#a48f4b' }}
+                  style={{ 
+                    color: '#a48f4b',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    border: 'none'
+                  }}
                   onMouseEnter={(e) => e.currentTarget.style.color = '#E28F84'}
                   onMouseLeave={(e) => e.currentTarget.style.color = '#a48f4b'}
                 >
@@ -58,7 +67,12 @@ const Navigation = () => {
                 variant="ghost"
                 size="sm"
                 className="relative transition-colors duration-200"
-                style={{ color: '#a48f4b' }}
+                style={{ 
+                  color: '#a48f4b',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  border: 'none'
+                }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F6DADA'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
@@ -78,7 +92,12 @@ const Navigation = () => {
                 size="sm"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="transition-colors duration-200"
-                style={{ color: '#a48f4b' }}
+                style={{ 
+                  color: '#a48f4b',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  border: 'none'
+                }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F6DADA'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
@@ -101,7 +120,12 @@ const Navigation = () => {
                   key={item.name}
                   to={item.href}
                   className="block px-3 py-2 text-base font-medium transition-colors duration-200 rounded-md"
-                  style={{ color: '#a48f4b' }}
+                  style={{ 
+                    color: '#a48f4b',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    border: 'none'
+                  }}
                   onClick={() => setIsMenuOpen(false)}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#F6DADA';
