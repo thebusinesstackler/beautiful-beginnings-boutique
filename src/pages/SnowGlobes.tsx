@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Info, Sparkles, Palette } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -184,6 +185,7 @@ const SnowGlobes = () => {
                       size="lg" 
                       variant="outline" 
                       className="w-full text-base py-3 border-2 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-300 hover:scale-105"
+                      style={{ borderColor: '#E28F84' }}
                     >
                       <Info className="h-5 w-5 mr-2" />
                       Discover the Magic
