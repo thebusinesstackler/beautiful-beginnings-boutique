@@ -221,12 +221,13 @@ const ProductManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800" style={{ color: '#7A7047' }}>Product Management</h2>
+          <h2 className="text-2xl font-bold" style={{ color: '#5B4C37' }}>Product Management</h2>
           <p className="text-gray-600">Add, edit, and manage your product catalog</p>
         </div>
         <Button
           onClick={() => setShowForm(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          style={{ backgroundColor: '#E28F84' }}
+          className="hover:opacity-90 text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Product
@@ -234,9 +235,9 @@ const ProductManagement = () => {
       </div>
 
       {showForm && (
-        <Card>
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader>
-            <CardTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</CardTitle>
+            <CardTitle style={{ color: '#5B4C37' }}>{editingProduct ? 'Edit Product' : 'Add New Product'}</CardTitle>
             <CardDescription>
               {editingProduct ? 'Update product information' : 'Create a new product listing'}
             </CardDescription>
@@ -381,7 +382,7 @@ const ProductManagement = () => {
               </div>
 
               <div className="flex space-x-2">
-                <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button type="submit" style={{ backgroundColor: '#E28F84' }} className="text-white hover:opacity-90">
                   {editingProduct ? 'Update Product' : 'Create Product'}
                 </Button>
                 <Button
@@ -389,9 +390,10 @@ const ProductManagement = () => {
                   variant="outline"
                   onClick={() => {
                     setShowForm(false);
-                    setEditingProduct(null);
+                    setEditingCategory(null);
                     resetForm();
                   }}
+                  style={{ borderColor: '#A89B84', color: '#5B4C37' }}
                 >
                   Cancel
                 </Button>
@@ -401,9 +403,9 @@ const ProductManagement = () => {
         </Card>
       )}
 
-      <Card>
+      <Card style={{ backgroundColor: '#F6DADA' }}>
         <CardHeader>
-          <CardTitle>Products ({products.length})</CardTitle>
+          <CardTitle style={{ color: '#5B4C37' }}>Products ({products.length})</CardTitle>
           <CardDescription>Manage your product catalog</CardDescription>
         </CardHeader>
         <CardContent>

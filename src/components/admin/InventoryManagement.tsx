@@ -126,51 +126,51 @@ const InventoryManagement = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#7A7047' }}>Inventory Management</h2>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: '#5B4C37' }}>Inventory Management</h2>
         <p className="text-gray-600">Monitor and manage your product inventory levels</p>
       </div>
 
       {/* Inventory Alerts */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Total Products</CardTitle>
+            <Package className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{products.length}</div>
-            <p className="text-xs text-muted-foreground">In inventory</p>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{products.length}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>In inventory</p>
           </CardContent>
         </Card>
 
-        <Card className="border-orange-200 bg-orange-50">
+        <Card style={{ backgroundColor: '#FFF8F0', borderColor: '#E6A23C' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-orange-800">Low Stock</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-orange-600" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#B8860B' }}>Low Stock</CardTitle>
+            <AlertTriangle className="h-4 w-4" style={{ color: '#E6A23C' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-800">{lowStockProducts.length}</div>
-            <p className="text-xs text-orange-600">Less than 5 items</p>
+            <div className="text-2xl font-bold" style={{ color: '#B8860B' }}>{lowStockProducts.length}</div>
+            <p className="text-xs" style={{ color: '#8B6914' }}>Less than 5 items</p>
           </CardContent>
         </Card>
 
-        <Card className="border-red-200 bg-red-50">
+        <Card style={{ backgroundColor: '#FEF2F2', borderColor: '#F87171' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-red-800">Out of Stock</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#DC2626' }}>Out of Stock</CardTitle>
+            <AlertTriangle className="h-4 w-4" style={{ color: '#F87171' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-800">{outOfStockProducts.length}</div>
-            <p className="text-xs text-red-600">0 items remaining</p>
+            <div className="text-2xl font-bold" style={{ color: '#DC2626' }}>{outOfStockProducts.length}</div>
+            <p className="text-xs" style={{ color: '#B91C1C' }}>0 items remaining</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Low Stock Alert */}
       {lowStockProducts.length > 0 && (
-        <Card className="border-orange-200">
+        <Card style={{ backgroundColor: '#FFF8F0', borderColor: '#E6A23C' }}>
           <CardHeader>
-            <CardTitle className="text-orange-800 flex items-center">
+            <CardTitle className="flex items-center" style={{ color: '#B8860B' }}>
               <AlertTriangle className="h-5 w-5 mr-2" />
               Low Stock Alert
             </CardTitle>
@@ -204,9 +204,9 @@ const InventoryManagement = () => {
       )}
 
       {/* All Products Inventory */}
-      <Card>
+      <Card style={{ backgroundColor: '#F6DADA' }}>
         <CardHeader>
-          <CardTitle>Product Inventory</CardTitle>
+          <CardTitle style={{ color: '#5B4C37' }}>Product Inventory</CardTitle>
           <CardDescription>Manage stock levels for all products</CardDescription>
         </CardHeader>
         <CardContent>

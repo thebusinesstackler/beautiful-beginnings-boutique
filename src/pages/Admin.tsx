@@ -39,7 +39,7 @@ const Admin = () => {
       <main className="flex-1 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold flex items-center text-gray-800">
+            <h1 className="text-3xl font-bold flex items-center" style={{ color: '#5B4C37' }}>
               🛠️ Beautiful Beginnings Admin Panel
             </h1>
             <p className="text-gray-600 mt-2">Comprehensive management dashboard for your handcrafted business</p>

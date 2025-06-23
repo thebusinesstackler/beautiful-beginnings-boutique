@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -109,15 +108,15 @@ const CustomerManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#7A7047' }}>Customer Management</h2>
+          <h2 className="text-2xl font-bold" style={{ color: '#5B4C37' }}>Customer Management</h2>
           <p className="text-gray-600">View and manage your customer base</p>
         </div>
         <div className="flex space-x-2">
-          <Button onClick={exportNewsletterSubscribers} variant="outline">
+          <Button onClick={exportNewsletterSubscribers} variant="outline" style={{ borderColor: '#A89B84', color: '#5B4C37' }}>
             <Mail className="h-4 w-4 mr-2" />
             Export Newsletter
           </Button>
-          <Button onClick={exportCustomers} variant="outline">
+          <Button onClick={exportCustomers} variant="outline" style={{ borderColor: '#A89B84', color: '#5B4C37' }}>
             <Download className="h-4 w-4 mr-2" />
             Export All
           </Button>
@@ -126,54 +125,54 @@ const CustomerManagement = () => {
 
       {/* Customer Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Total Customers</CardTitle>
+            <Users className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{customerStats.total}</div>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{customerStats.total}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ backgroundColor: '#F6DADA' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Newsletter Subscribers</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Newsletter Subscribers</CardTitle>
+            <Mail className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{customerStats.newsletter}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{customerStats.newsletter}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>
               {customerStats.total > 0 ? Math.round((customerStats.newsletter / customerStats.total) * 100) : 0}% of customers
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">High-Value Customers</CardTitle>
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>High-Value Customers</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{customerStats.highValue}</div>
-            <p className="text-xs text-muted-foreground">Spent over $100</p>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{customerStats.highValue}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>Spent over $100</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ backgroundColor: '#F6DADA' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Customer Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Customer Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${customerStats.totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">Total customer value</p>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>${customerStats.totalRevenue.toFixed(2)}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>Total customer value</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Search */}
-      <Card>
+      <Card style={{ backgroundColor: '#FAF5EF' }}>
         <CardHeader>
-          <CardTitle>Search Customers</CardTitle>
+          <CardTitle style={{ color: '#5B4C37' }}>Search Customers</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="relative">
@@ -189,9 +188,9 @@ const CustomerManagement = () => {
       </Card>
 
       {/* Customers List */}
-      <Card>
+      <Card style={{ backgroundColor: '#F6DADA' }}>
         <CardHeader>
-          <CardTitle>Customers ({filteredCustomers.length})</CardTitle>
+          <CardTitle style={{ color: '#5B4C37' }}>Customers ({filteredCustomers.length})</CardTitle>
           <CardDescription>Customer database and order history</CardDescription>
         </CardHeader>
         <CardContent>

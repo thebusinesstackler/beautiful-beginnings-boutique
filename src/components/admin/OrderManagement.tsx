@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -124,10 +123,10 @@ const OrderManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#7A7047' }}>Order Management</h2>
+          <h2 className="text-2xl font-bold" style={{ color: '#5B4C37' }}>Order Management</h2>
           <p className="text-gray-600">View and manage customer orders</p>
         </div>
-        <Button onClick={exportOrders} variant="outline">
+        <Button onClick={exportOrders} variant="outline" style={{ borderColor: '#A89B84', color: '#5B4C37' }}>
           <Download className="h-4 w-4 mr-2" />
           Export CSV
         </Button>
@@ -135,57 +134,57 @@ const OrderManagement = () => {
 
       {/* Order Stats */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card>
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Total Orders</CardTitle>
+            <Package className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{orderStats.total}</div>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{orderStats.total}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ backgroundColor: '#FFF8F0' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Pending</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{orderStats.pending}</div>
+            <div className="text-2xl font-bold" style={{ color: '#E6A23C' }}>{orderStats.pending}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ backgroundColor: '#F0F8FF' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Paid</CardTitle>
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Paid</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{orderStats.paid}</div>
+            <div className="text-2xl font-bold" style={{ color: '#4F8AC7' }}>{orderStats.paid}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ backgroundColor: '#F0FDF4' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Fulfilled</CardTitle>
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Fulfilled</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{orderStats.fulfilled}</div>
+            <div className="text-2xl font-bold" style={{ color: '#16A34A' }}>{orderStats.fulfilled}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ backgroundColor: '#F6DADA' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${orderStats.revenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>${orderStats.revenue.toFixed(2)}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Filter Controls */}
-      <Card>
+      <Card style={{ backgroundColor: '#FAF5EF' }}>
         <CardHeader>
-          <CardTitle>Filter Orders</CardTitle>
+          <CardTitle style={{ color: '#5B4C37' }}>Filter Orders</CardTitle>
         </CardHeader>
         <CardContent>
           <Select value={filterStatus} onValueChange={setFilterStatus}>
@@ -204,15 +203,15 @@ const OrderManagement = () => {
       </Card>
 
       {/* Orders List */}
-      <Card>
+      <Card style={{ backgroundColor: '#F6DADA' }}>
         <CardHeader>
-          <CardTitle>Orders ({filteredOrders.length})</CardTitle>
+          <CardTitle style={{ color: '#5B4C37' }}>Orders ({filteredOrders.length})</CardTitle>
           <CardDescription>Manage customer orders and fulfillment</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {filteredOrders.map((order) => (
-              <div key={order.id} className="border rounded-lg p-4">
+              <div key={order.id} className="border rounded-lg p-4" style={{ backgroundColor: 'white' }}>
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="font-medium">Order #{order.id.slice(0, 8)}</h3>
@@ -256,6 +255,7 @@ const OrderManagement = () => {
                         size="sm"
                         variant="outline"
                         onClick={() => updateOrderStatus(order.id, 'paid')}
+                        style={{ borderColor: '#A89B84', color: '#5B4C37' }}
                       >
                         Mark Paid
                       </Button>
@@ -265,6 +265,7 @@ const OrderManagement = () => {
                         size="sm"
                         onClick={() => updateOrderStatus(order.id, 'fulfilled')}
                         style={{ backgroundColor: '#E28F84' }}
+                        className="text-white hover:opacity-90"
                       >
                         <CheckCircle className="h-4 w-4 mr-1" />
                         Fulfill

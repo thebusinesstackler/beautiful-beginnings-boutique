@@ -158,13 +158,13 @@ const CategoryManager = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#7A7047' }}>Category Manager</h2>
+          <h2 className="text-2xl font-bold" style={{ color: '#5B4C37' }}>Category Manager</h2>
           <p className="text-gray-600">Organize your products with categories</p>
         </div>
         <Button
           onClick={() => setShowForm(true)}
           style={{ backgroundColor: '#E28F84' }}
-          className="hover:opacity-90"
+          className="hover:opacity-90 text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Category
@@ -172,9 +172,9 @@ const CategoryManager = () => {
       </div>
 
       {showForm && (
-        <Card>
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader>
-            <CardTitle>{editingCategory ? 'Edit Category' : 'Add New Category'}</CardTitle>
+            <CardTitle style={{ color: '#5B4C37' }}>{editingCategory ? 'Edit Category' : 'Add New Category'}</CardTitle>
             <CardDescription>
               {editingCategory ? 'Update category information' : 'Create a new product category'}
             </CardDescription>
@@ -230,7 +230,7 @@ const CategoryManager = () => {
               </div>
 
               <div className="flex space-x-2">
-                <Button type="submit" style={{ backgroundColor: '#E28F84' }}>
+                <Button type="submit" style={{ backgroundColor: '#E28F84' }} className="text-white hover:opacity-90">
                   {editingCategory ? 'Update Category' : 'Create Category'}
                 </Button>
                 <Button
@@ -241,6 +241,7 @@ const CategoryManager = () => {
                     setEditingCategory(null);
                     resetForm();
                   }}
+                  style={{ borderColor: '#A89B84', color: '#5B4C37' }}
                 >
                   Cancel
                 </Button>
@@ -250,9 +251,9 @@ const CategoryManager = () => {
         </Card>
       )}
 
-      <Card>
+      <Card style={{ backgroundColor: '#F6DADA' }}>
         <CardHeader>
-          <CardTitle>Categories ({categories.length})</CardTitle>
+          <CardTitle style={{ color: '#5B4C37' }}>Categories ({categories.length})</CardTitle>
           <CardDescription>Manage your product categories</CardDescription>
         </CardHeader>
         <CardContent>

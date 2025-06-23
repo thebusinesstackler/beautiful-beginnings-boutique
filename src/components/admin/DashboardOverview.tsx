@@ -86,68 +86,68 @@ const DashboardOverview = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#7A7047' }}>Dashboard Overview</h2>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: '#5B4C37' }}>Dashboard Overview</h2>
         <p className="text-gray-600">Welcome to your Beautiful Beginnings admin panel</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Total Revenue</CardTitle>
+            <DollarSign className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">All time earnings</p>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>${stats.totalRevenue.toFixed(2)}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>All time earnings</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ backgroundColor: '#F6DADA' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Total Orders</CardTitle>
+            <ShoppingCart className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalOrders}</div>
-            <p className="text-xs text-muted-foreground">Orders received</p>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{stats.totalOrders}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>Orders received</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Products</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Products</CardTitle>
+            <Package className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalProducts}</div>
-            <p className="text-xs text-muted-foreground">In catalog</p>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{stats.totalProducts}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>In catalog</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ backgroundColor: '#F6DADA' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Customers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium" style={{ color: '#5B4C37' }}>Customers</CardTitle>
+            <Users className="h-4 w-4" style={{ color: '#A89B84' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalCustomers}</div>
-            <p className="text-xs text-muted-foreground">Registered customers</p>
+            <div className="text-2xl font-bold" style={{ color: '#5B4C37' }}>{stats.totalCustomers}</div>
+            <p className="text-xs" style={{ color: '#A89B84' }}>Registered customers</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Alerts */}
       {stats.lowStockProducts > 0 && (
-        <Card className="border-orange-200 bg-orange-50">
+        <Card className="border-orange-200" style={{ backgroundColor: '#FFF8F0' }}>
           <CardHeader>
-            <CardTitle className="flex items-center text-orange-800">
+            <CardTitle className="flex items-center" style={{ color: '#B8860B' }}>
               <AlertTriangle className="h-5 w-5 mr-2" />
               Low Stock Alert
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-orange-700">
+            <p style={{ color: '#8B6914' }}>
               You have {stats.lowStockProducts} product(s) with low inventory (less than 5 items)
             </p>
           </CardContent>
@@ -156,15 +156,15 @@ const DashboardOverview = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Orders */}
-        <Card>
+        <Card style={{ backgroundColor: '#FAF5EF' }}>
           <CardHeader>
-            <CardTitle>Recent Orders</CardTitle>
+            <CardTitle style={{ color: '#5B4C37' }}>Recent Orders</CardTitle>
             <CardDescription>Latest customer orders</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {stats.recentOrders.map((order, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg" style={{ backgroundColor: 'white' }}>
                   <div>
                     <p className="font-medium">{order.customer_email}</p>
                     <p className="text-sm text-gray-500">
@@ -187,15 +187,15 @@ const DashboardOverview = () => {
         </Card>
 
         {/* Top Products */}
-        <Card>
+        <Card style={{ backgroundColor: '#F6DADA' }}>
           <CardHeader>
-            <CardTitle>Product Catalog</CardTitle>
+            <CardTitle style={{ color: '#5B4C37' }}>Product Catalog</CardTitle>
             <CardDescription>Your current products</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {stats.topProducts.map((product, index) => (
-                <div key={product.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div key={product.id} className="flex items-center justify-between p-3 border rounded-lg" style={{ backgroundColor: 'white' }}>
                   <div className="flex items-center space-x-3">
                     {product.image_url && (
                       <img 
