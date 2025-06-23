@@ -124,36 +124,36 @@ const PhotoUpload = ({
             relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200
             ${isDragging 
               ? 'border-primary bg-primary/5 scale-105' 
-              : 'border-muted hover:border-primary hover:bg-primary/5'
+              : 'border-stone-300 hover:border-primary hover:bg-primary/5 bg-cream/50'
             }
           `}
         >
           <div className="flex flex-col items-center space-y-4">
             <div className={`
               p-4 rounded-full transition-colors duration-200
-              ${isDragging ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}
+              ${isDragging ? 'bg-primary text-primary-foreground' : 'bg-stone-200 text-stone-600'}
             `}>
               <Upload className="h-8 w-8" />
             </div>
             
             <div>
-              <h3 className="text-lg font-playfair font-semibold text-foreground mb-2">
+              <h3 className="text-lg font-playfair font-semibold text-charcoal mb-2">
                 Upload Your Photo
               </h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-stone-600 mb-4">
                 Drag and drop your image here, or click to browse
               </p>
               <Button variant="outline" className="mb-2">
                 Choose File
               </Button>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-stone-500">
                 JPG, PNG up to {maxSizeMB}MB
               </p>
             </div>
           </div>
         </div>
       ) : (
-        <div className="relative bg-white rounded-xl border border-muted p-4">
+        <div className="relative bg-white rounded-xl border border-stone-300 p-4">
           <div className="flex items-start space-x-4">
             {/* Preview */}
             <div className="flex-shrink-0">
@@ -161,21 +161,21 @@ const PhotoUpload = ({
                 <img
                   src={preview}
                   alt="Preview"
-                  className="w-20 h-20 object-cover rounded-lg border border-muted"
+                  className="w-20 h-20 object-cover rounded-lg border border-stone-300"
                 />
               ) : (
-                <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center">
-                  <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                <div className="w-20 h-20 bg-stone-200 rounded-lg flex items-center justify-center">
+                  <ImageIcon className="h-8 w-8 text-stone-600" />
                 </div>
               )}
             </div>
 
             {/* File Info */}
             <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-medium text-foreground truncate">
+              <h4 className="text-sm font-medium text-charcoal truncate">
                 {selectedFile.name}
               </h4>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-stone-600 mt-1">
                 {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
               </p>
               <div className="mt-2 flex space-x-2">
@@ -193,9 +193,9 @@ const PhotoUpload = ({
             {/* Remove Button */}
             <button
               onClick={removeFile}
-              className="flex-shrink-0 p-1 hover:bg-muted rounded-full transition-colors duration-200"
+              className="flex-shrink-0 p-1 hover:bg-stone-100 rounded-full transition-colors duration-200"
             >
-              <X className="h-4 w-4 text-muted-foreground" />
+              <X className="h-4 w-4 text-stone-600" />
             </button>
           </div>
         </div>

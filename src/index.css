@@ -3,7 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Professional Design System - Modern Color Palette */
+/* Professional Design System - Beautiful Beginnings Brand Colors */
 
 @layer base {
   :root {
@@ -22,8 +22,8 @@
     --secondary: 100 116 139; /* Slate 500 - professional gray */
     --secondary-foreground: 255 255 255;
 
-    --muted: 248 250 252; /* Slate 50 - subtle background */
-    --muted-foreground: 71 85 105; /* Slate 600 - readable muted text */
+    --muted: 247 245 243; /* Beautiful Beginnings Cream - #FAF5EF */
+    --muted-foreground: 91 76 55; /* Beautiful Beginnings Earthy Brown - #5B4C37 */
 
     --accent: 59 130 246; /* Blue 500 - professional blue accent */
     --accent-foreground: 255 255 255;
@@ -41,8 +41,8 @@
     --sidebar-foreground: 15 23 42;
     --sidebar-primary: 30 41 59;
     --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 248 250 252;
-    --sidebar-accent-foreground: 71 85 105;
+    --sidebar-accent: 247 245 243; /* Beautiful Beginnings Cream */
+    --sidebar-accent-foreground: 91 76 55; /* Beautiful Beginnings Earthy Brown */
     --sidebar-border: 226 232 240;
     --sidebar-ring: 59 130 246;
   }
@@ -63,7 +63,7 @@
     --secondary: 30 41 59;
     --secondary-foreground: 248 250 252;
 
-    --muted: 30 41 59;
+    --muted: 30 41 59; /* Dark mode muted */
     --muted-foreground: 148 163 184;
 
     --accent: 59 130 246;
@@ -159,5 +159,31 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  /* Brand-specific override classes */
+  .bg-brand-muted {
+    background-color: rgb(247 245 243) !important; /* Beautiful Beginnings Cream */
+  }
+  
+  .text-brand-muted {
+    color: rgb(91 76 55) !important; /* Beautiful Beginnings Earthy Brown */
+  }
+  
+  .hover\:bg-brand-muted\/50:hover {
+    background-color: rgba(247, 245, 243, 0.5) !important;
+  }
+
+  /* High-specificity overrides to eliminate any yellow backgrounds */
+  .bg-muted {
+    background-color: rgb(247 245 243) !important;
+  }
+  
+  .text-muted-foreground {
+    color: rgb(91 76 55) !important;
+  }
+  
+  .hover\:bg-muted\/50:hover {
+    background-color: rgba(247, 245, 243, 0.5) !important;
   }
 }
