@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, Star, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
@@ -192,17 +191,17 @@ const FeaturedProducts = () => {
           <Button 
             className="px-10 py-4 text-lg group font-semibold rounded-lg border-2 transition-all duration-200"
             style={{ 
-              borderColor: '#7A7047', 
-              color: '#7A7047',
+              borderColor: '#a48f4b', 
+              color: '#a48f4b',
               backgroundColor: 'transparent'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#F6DADA';
-              e.currentTarget.style.borderColor = '#7A7047';
+              e.currentTarget.style.borderColor = '#a48f4b';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.borderColor = '#7A7047';
+              e.currentTarget.style.borderColor = '#a48f4b';
             }}
           >
             View All Products
