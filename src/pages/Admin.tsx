@@ -18,10 +18,13 @@ const Admin = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#faf6ee' }}>
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream to-pearl">
         <Navigation />
         <main className="flex-1 flex items-center justify-center">
-          <div className="text-center text-gray-800">Loading...</div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
+            <div className="text-charcoal font-medium">Loading admin panel...</div>
+          </div>
         </main>
         <Footer />
       </div>
@@ -33,16 +36,26 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#faf6ee' }}>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream to-pearl">
       <Navigation />
       
       <main className="flex-1 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold flex items-center" style={{ color: '#5B4C37' }}>
-              🛠️ Beautiful Beginnings Admin Panel
+          {/* Header Section */}
+          <div className="mb-8 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-sage/10 rounded-full mb-4">
+              <span className="text-2xl">🛠️</span>
+            </div>
+            <h1 className="text-3xl font-bold text-charcoal mb-2">
+              Beautiful Beginnings
             </h1>
-            <p className="text-gray-600 mt-2">Comprehensive management dashboard for your handcrafted business</p>
+            <h2 className="text-xl font-medium text-chocolate mb-3">
+              Admin Dashboard
+            </h2>
+            <p className="text-stone max-w-2xl mx-auto leading-relaxed">
+              Manage your handcrafted keepsake business with our comprehensive dashboard. 
+              Monitor orders, update inventory, and grow your beautiful brand.
+            </p>
           </div>
 
           <AdminTabs />
