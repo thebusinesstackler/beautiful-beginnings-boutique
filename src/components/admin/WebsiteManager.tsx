@@ -8,6 +8,8 @@ import { Save, Eye, EyeOff } from 'lucide-react';
 import HeroContentManager from './HeroContentManager';
 import BackgroundImagesManager from './BackgroundImagesManager';
 import FAQManager from './FAQManager';
+import FeaturedManager from './FeaturedManager';
+import HomepagePreview from './HomepagePreview';
 
 interface WebsiteContent {
   id: string;
@@ -163,6 +165,7 @@ const WebsiteManager = () => {
         </div>
       </div>
 
+      {/* Hero and Background Images Management */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <HeroContentManager
           content={content}
@@ -177,10 +180,16 @@ const WebsiteManager = () => {
         />
       </div>
 
+      {/* Featured Products & Bestsellers Management */}
+      <FeaturedManager />
+
+      {/* Homepage Preview */}
+      <HomepagePreview />
+
       {/* FAQ Management Section */}
       <FAQManager />
 
-      {/* Preview Section */}
+      {/* Live Preview Section */}
       {showPreview && (
         <Card className="bg-stone/10 border-0 shadow-sm">
           <CardHeader>
