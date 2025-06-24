@@ -100,7 +100,7 @@ const Shop = () => {
 
   const handleAddToCart = (product: Product) => {
     addToCart({
-      id: product.id,
+      id: parseInt(product.id.replace(/-/g, '').substring(0, 8), 16), // Convert UUID to number
       name: product.name,
       price: product.price,
       image: getProductImage(product),
