@@ -79,6 +79,12 @@
   }
 }
 
+/* Accessible focus outline removal - only removes on mouse clicks, preserves keyboard navigation */
+body:not(.user-is-tabbing) *:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 .btn-primary {
   @apply bg-sage hover:bg-sage/90 text-white font-medium px-6 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg;
 }

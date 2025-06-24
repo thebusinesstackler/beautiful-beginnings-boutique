@@ -103,5 +103,19 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Accessible focus outline detection script -->
+    <script>
+      // JavaScript to detect if user is navigating via keyboard
+      document.body.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+          document.body.classList.add('user-is-tabbing');
+        }
+      });
+
+      document.body.addEventListener('mousedown', function() {
+        document.body.classList.remove('user-is-tabbing');
+      });
+    </script>
   </body>
 </html>
