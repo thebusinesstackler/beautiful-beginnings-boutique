@@ -66,7 +66,7 @@ const Hero = () => {
         <div className="absolute -bottom-8 left-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-xl" style={{ backgroundColor: '#F4A79B' }}></div>
       </div>
       
-      <div className="relative w-full px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Content */}
           <div className="text-center lg:text-left animate-fade-in">
