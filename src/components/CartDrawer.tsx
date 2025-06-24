@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -49,7 +48,7 @@ const CartDrawer = ({ children }: CartDrawerProps) => {
       <DrawerTrigger asChild>
         {children}
       </DrawerTrigger>
-      <DrawerContent className="max-w-md mx-auto">
+      <DrawerContent className="max-w-2xl mx-auto">
         <DrawerHeader>
           <DrawerTitle className="flex items-center space-x-2">
             <ShoppingCart className="h-5 w-5" />
