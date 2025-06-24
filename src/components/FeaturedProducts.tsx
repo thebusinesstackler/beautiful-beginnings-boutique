@@ -1,61 +1,58 @@
+
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, Star, ArrowRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image_url: string;
+  gallery_images: string[];
+  category: string;
+  description: string;
+  is_featured: boolean;
+  featured_order: number;
+}
 
 const FeaturedProducts = () => {
-  const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
+  const [likedProducts, setLikedProducts] = useState<Set<string>>(new Set());
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  const products = [
-    {
-      id: 1,
-      name: "Personalized Snow Globe",
-      price: 22.50,
-      originalPrice: 25.00,
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      category: "Snow Globes",
-      description: "Beautiful snow globe with your favorite photo, perfect for holiday displays",
-      href: "/products/snow-globes",
-      rating: 5,
-      reviews: 24
-    },
-    {
-      id: 2,
-      name: "Photo Memory Necklace",
-      price: 15.00,
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      category: "Necklaces",
-      description: "Keep your loved ones close with this personalized photo necklace",
-      href: "/products/necklaces",
-      rating: 5,
-      reviews: 18
-    },
-    {
-      id: 3,
-      name: "Custom Photo Ornament",
-      price: 12.00,
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      category: "Ornaments",
-      description: "Transform your favorite memory into a beautiful keepsake ornament",
-      href: "/products/ornaments",
-      rating: 5,
-      reviews: 32
-    },
-    {
-      id: 4,
-      name: "Slate Photo Keepsake",
-      price: 32.50,
-      originalPrice: 40.00,
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      category: "Slate Products",
-      description: "Elegant slate piece with your photo, perfect for home décor",
-      href: "/products/slate",
-      rating: 5,
-      reviews: 15
+  useEffect(() => {
+    fetchFeaturedProducts();
+  }, []);
+
+  const fetchFeaturedProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, price, image_url, gallery_images, category, description, is_featured, featured_order')
+        .eq('is_featured', true)
+        .eq('is_active', true)
+        .order('featured_order', { ascending: true })
+        .limit(4);
+
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching featured products:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load featured products",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  const toggleLike = (productId: number) => {
+  const toggleLike = (productId: string) => {
     const newLiked = new Set(likedProducts);
     if (newLiked.has(productId)) {
       newLiked.delete(productId);
@@ -64,6 +61,34 @@ const FeaturedProducts = () => {
     }
     setLikedProducts(newLiked);
   };
+
+  const getProductImage = (product: Product) => {
+    return product.image_url || (product.gallery_images && product.gallery_images[0]) || "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400";
+  };
+
+  const getProductHref = (category: string) => {
+    const categoryMap: { [key: string]: string } = {
+      'Snow Globes': '/products/snow-globes',
+      'Necklaces': '/products/necklaces',
+      'Ornaments': '/products/ornaments',
+      'Slate': '/products/slate',
+      'Wood Sublimation': '/products/wood-sublimation'
+    };
+    return categoryMap[category] || '/products';
+  };
+
+  if (loading) {
+    return (
+      <section className="py-20" style={{ backgroundColor: '#FAF5EF' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
+            <div className="text-charcoal font-medium">Loading featured products...</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20" style={{ backgroundColor: '#FAF5EF' }}>
@@ -86,105 +111,93 @@ const FeaturedProducts = () => {
         <div className="w-full h-px mb-12" style={{ backgroundColor: '#F6DADA' }}></div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map((product, index) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 group animate-fade-in"
-              style={{ borderColor: '#F6DADA', borderWidth: '1px' }}
-            >
-              {/* Product Image */}
-              <div className="relative overflow-hidden rounded-t-2xl">
-                <Link to={product.href}>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                </Link>
-                
-                {/* Sale Badge */}
-                {product.originalPrice && (
-                  <div className="absolute top-4 left-4 text-white px-3 py-1 rounded-full text-xs font-bold" style={{ backgroundColor: '#E28F84' }}>
-                    SALE
-                  </div>
-                )}
-                
-                {/* Like Button */}
-                <button
-                  onClick={() => toggleLike(product.id)}
-                  className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 hover:scale-110"
-                >
-                  <Heart
-                    className={`h-5 w-5 transition-colors duration-200 ${
-                      likedProducts.has(product.id)
-                        ? 'text-red-500 fill-current'
-                        : 'text-gray-600'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Product Info */}
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
-                    {product.category}
-                  </span>
-                  <div className="flex items-center space-x-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-3 w-3 ${
-                          i < product.rating
-                            ? 'fill-current'
-                            : 'text-gray-300'
-                        }`}
-                        style={{ color: i < product.rating ? '#E28F84' : undefined }}
-                      />
-                    ))}
-                    <span className="text-xs ml-1" style={{ color: '#A89B84' }}>
-                      ({product.reviews})
-                    </span>
-                  </div>
-                </div>
-                
-                <Link to={product.href}>
-                  <h3 className="font-playfair font-bold text-xl mb-3 line-clamp-2 hover:text-primary transition-colors leading-tight" style={{ color: '#5B4C37' }}>
-                    {product.name}
-                  </h3>
-                </Link>
-                
-                <p className="text-sm mb-4 line-clamp-2 leading-relaxed" style={{ color: '#A89B84' }}>
-                  {product.description}
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold" style={{ color: '#5B4C37' }}>
-                      ${product.price.toFixed(2)}
-                    </span>
-                    {product.originalPrice && (
-                      <span className="text-sm line-through" style={{ color: '#A89B84' }}>
-                        ${product.originalPrice.toFixed(2)}
-                      </span>
-                    )}
-                  </div>
-                  <Button
-                    size="sm"
-                    className="opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 text-white font-semibold"
-                    style={{ backgroundColor: '#E28F84' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
+        {products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 group animate-fade-in"
+                style={{ borderColor: '#F6DADA', borderWidth: '1px' }}
+              >
+                {/* Product Image */}
+                <div className="relative overflow-hidden rounded-t-2xl">
+                  <Link to={getProductHref(product.category)}>
+                    <img
+                      src={getProductImage(product)}
+                      alt={product.name}
+                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </Link>
+                  
+                  {/* Like Button */}
+                  <button
+                    onClick={() => toggleLike(product.id)}
+                    className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 hover:scale-110"
                   >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
-                  </Button>
+                    <Heart
+                      className={`h-5 w-5 transition-colors duration-200 ${
+                        likedProducts.has(product.id)
+                          ? 'text-red-500 fill-current'
+                          : 'text-gray-600'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Product Info */}
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
+                      {product.category}
+                    </span>
+                    <div className="flex items-center space-x-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-3 w-3 fill-current"
+                          style={{ color: '#E28F84' }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <Link to={getProductHref(product.category)}>
+                    <h3 className="font-playfair font-bold text-xl mb-3 line-clamp-2 hover:text-primary transition-colors leading-tight" style={{ color: '#5B4C37' }}>
+                      {product.name}
+                    </h3>
+                  </Link>
+                  
+                  <p className="text-sm mb-4 line-clamp-2 leading-relaxed" style={{ color: '#A89B84' }}>
+                    {product.description}
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl font-bold" style={{ color: '#5B4C37' }}>
+                        ${product.price.toFixed(2)}
+                      </span>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 text-white font-semibold"
+                      style={{ backgroundColor: '#E28F84' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Add to Cart
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <p className="text-xl text-stone mb-4">No featured products available</p>
+            <p className="text-stone">Products can be featured from the admin dashboard</p>
+          </div>
+        )}
 
         {/* View All Button */}
         <div className="text-center mt-16">

@@ -407,6 +407,9 @@ export type Database = {
           category: string
           created_at: string | null
           description: string | null
+          featured_order: number | null
+          featured_until: string | null
+          gallery_images: string[] | null
           id: string
           image_url: string | null
           images: string[] | null
@@ -417,6 +420,8 @@ export type Database = {
           name: string
           personalization_options: Json | null
           price: number | null
+          seo_description: string | null
+          seo_title: string | null
           shipping_time_days: number | null
           shipping_weight: number | null
           sku: string | null
@@ -429,6 +434,9 @@ export type Database = {
           category: string
           created_at?: string | null
           description?: string | null
+          featured_order?: number | null
+          featured_until?: string | null
+          gallery_images?: string[] | null
           id?: string
           image_url?: string | null
           images?: string[] | null
@@ -439,6 +447,8 @@ export type Database = {
           name: string
           personalization_options?: Json | null
           price?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
           shipping_time_days?: number | null
           shipping_weight?: number | null
           sku?: string | null
@@ -451,6 +461,9 @@ export type Database = {
           category?: string
           created_at?: string | null
           description?: string | null
+          featured_order?: number | null
+          featured_until?: string | null
+          gallery_images?: string[] | null
           id?: string
           image_url?: string | null
           images?: string[] | null
@@ -461,6 +474,8 @@ export type Database = {
           name?: string
           personalization_options?: Json | null
           price?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
           shipping_time_days?: number | null
           shipping_weight?: number | null
           sku?: string | null

@@ -7,9 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Plus, Edit, Trash2, Save, X, Upload } from 'lucide-react';
+import { Package, Plus, Edit, Trash2, Save, X, Star, Award, ArrowUp, ArrowDown } from 'lucide-react';
+import ProductImageManager from './ProductImageManager';
+import HomepagePreview from './HomepagePreview';
 
 interface Product {
   id: string;
@@ -18,9 +21,14 @@ interface Product {
   price: number;
   category: string;
   image_url: string;
-  images: string[];
+  gallery_images: string[];
   is_active: boolean;
+  is_featured: boolean;
+  is_bestseller: boolean;
+  featured_order: number;
   inventory_quantity: number;
+  seo_title: string;
+  seo_description: string;
   created_at: string;
   updated_at: string;
 }
@@ -38,8 +46,13 @@ const ProductManagement = () => {
     price: '',
     category: '',
     image_url: '',
+    gallery_images: [] as string[],
     inventory_quantity: '',
-    is_active: true
+    is_active: true,
+    is_featured: false,
+    is_bestseller: false,
+    seo_title: '',
+    seo_description: ''
   });
 
   useEffect(() => {
@@ -51,7 +64,7 @@ const ProductManagement = () => {
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('featured_order', { ascending: true });
 
       if (error) throw error;
       setProducts(data || []);
@@ -77,8 +90,13 @@ const ProductManagement = () => {
         price: parseFloat(formData.price),
         category: formData.category,
         image_url: formData.image_url,
+        gallery_images: formData.gallery_images,
         inventory_quantity: parseInt(formData.inventory_quantity) || 0,
-        is_active: formData.is_active
+        is_active: formData.is_active,
+        is_featured: formData.is_featured,
+        is_bestseller: formData.is_bestseller,
+        seo_title: formData.seo_title,
+        seo_description: formData.seo_description
       };
 
       if (editingProduct) {
@@ -126,8 +144,13 @@ const ProductManagement = () => {
       price: product.price.toString(),
       category: product.category,
       image_url: product.image_url || '',
+      gallery_images: product.gallery_images || [],
       inventory_quantity: product.inventory_quantity?.toString() || '0',
-      is_active: product.is_active
+      is_active: product.is_active,
+      is_featured: product.is_featured || false,
+      is_bestseller: product.is_bestseller || false,
+      seo_title: product.seo_title || '',
+      seo_description: product.seo_description || ''
     });
     setShowAddForm(true);
   };
@@ -159,6 +182,50 @@ const ProductManagement = () => {
     }
   };
 
+  const updateFeaturedOrder = async (productId: string, direction: 'up' | 'down') => {
+    const product = products.find(p => p.id === productId);
+    if (!product || !product.is_featured) return;
+
+    const featuredProducts = products
+      .filter(p => p.is_featured)
+      .sort((a, b) => a.featured_order - b.featured_order);
+    
+    const currentIndex = featuredProducts.findIndex(p => p.id === productId);
+    if (currentIndex === -1) return;
+
+    let newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (newIndex < 0 || newIndex >= featuredProducts.length) return;
+
+    // Swap the featured_order values
+    const currentProduct = featuredProducts[currentIndex];
+    const swapProduct = featuredProducts[newIndex];
+
+    try {
+      await supabase
+        .from('products')
+        .update({ featured_order: swapProduct.featured_order })
+        .eq('id', currentProduct.id);
+
+      await supabase
+        .from('products')
+        .update({ featured_order: currentProduct.featured_order })
+        .eq('id', swapProduct.id);
+
+      fetchProducts();
+      toast({
+        title: "Success",
+        description: "Product order updated",
+      });
+    } catch (error) {
+      console.error('Error updating product order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update product order",
+        variant: "destructive",
+      });
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -166,8 +233,13 @@ const ProductManagement = () => {
       price: '',
       category: '',
       image_url: '',
+      gallery_images: [],
       inventory_quantity: '',
-      is_active: true
+      is_active: true,
+      is_featured: false,
+      is_bestseller: false,
+      seo_title: '',
+      seo_description: ''
     });
     setEditingProduct(null);
     setShowAddForm(false);
@@ -179,12 +251,15 @@ const ProductManagement = () => {
     return <div className="text-center py-8">Loading products...</div>;
   }
 
+  const featuredProducts = products.filter(p => p.is_featured);
+  const bestsellerProducts = products.filter(p => p.is_bestseller);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-charcoal mb-2">Product Management</h2>
-          <p className="text-stone">Manage your product catalog</p>
+          <p className="text-stone">Manage your product catalog and homepage featured products</p>
         </div>
         <Button 
           onClick={() => setShowAddForm(true)}
@@ -196,7 +271,7 @@ const ProductManagement = () => {
       </div>
 
       {/* Product Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card className="bg-cream/50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-charcoal">Total Products</CardTitle>
@@ -220,16 +295,25 @@ const ProductManagement = () => {
 
         <Card className="bg-cream/50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-charcoal">Categories</CardTitle>
+            <CardTitle className="text-sm font-medium text-charcoal">Featured</CardTitle>
+            <Star className="h-4 w-4 text-stone" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-charcoal">
-              {new Set(products.map(p => p.category)).size}
-            </div>
+            <div className="text-2xl font-bold text-charcoal">{featuredProducts.length}</div>
           </CardContent>
         </Card>
 
         <Card className="bg-blush/30 border-0 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-charcoal">Bestsellers</CardTitle>
+            <Award className="h-4 w-4 text-stone" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-charcoal">{bestsellerProducts.length}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-cream/50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-charcoal">Low Stock</CardTitle>
           </CardHeader>
@@ -241,6 +325,9 @@ const ProductManagement = () => {
         </Card>
       </div>
 
+      {/* Homepage Preview */}
+      <HomepagePreview />
+
       {/* Add/Edit Product Form */}
       {showAddForm && (
         <Card className="bg-cream/30 border-0 shadow-sm">
@@ -250,7 +337,7 @@ const ProductManagement = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="name">Product Name</Label>
@@ -297,6 +384,7 @@ const ProductManagement = () => {
                   />
                 </div>
               </div>
+
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea
@@ -306,24 +394,65 @@ const ProductManagement = () => {
                   rows={3}
                 />
               </div>
-              <div>
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                />
+
+              {/* SEO Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="seo_title">SEO Title</Label>
+                  <Input
+                    id="seo_title"
+                    value={formData.seo_title}
+                    onChange={(e) => setFormData({ ...formData, seo_title: e.target.value })}
+                    placeholder="SEO optimized title"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="seo_description">SEO Description</Label>
+                  <Input
+                    id="seo_description"
+                    value={formData.seo_description}
+                    onChange={(e) => setFormData({ ...formData, seo_description: e.target.value })}
+                    placeholder="SEO meta description"
+                  />
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="is_active"
-                  checked={formData.is_active}
-                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                />
-                <Label htmlFor="is_active">Product is active</Label>
+
+              {/* Product Images */}
+              <ProductImageManager
+                imageUrl={formData.image_url}
+                galleryImages={formData.gallery_images}
+                onImageUrlChange={(url) => setFormData({ ...formData, image_url: url })}
+                onGalleryImagesChange={(images) => setFormData({ ...formData, gallery_images: images })}
+              />
+
+              {/* Product Status Toggles */}
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="is_active"
+                    checked={formData.is_active}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                  />
+                  <Label htmlFor="is_active">Product is active</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="is_featured"
+                    checked={formData.is_featured}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
+                  />
+                  <Label htmlFor="is_featured">Featured on homepage</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="is_bestseller"
+                    checked={formData.is_bestseller}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_bestseller: checked })}
+                  />
+                  <Label htmlFor="is_bestseller">Bestseller</Label>
+                </div>
               </div>
+
               <div className="flex space-x-2">
                 <Button 
                   type="submit"
@@ -346,22 +475,26 @@ const ProductManagement = () => {
       <Card className="bg-blush/20 border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="text-charcoal">Products ({products.length})</CardTitle>
-          <CardDescription>Your product catalog</CardDescription>
+          <CardDescription>Your product catalog with homepage controls</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {products.map((product) => (
               <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm">
                 <div className="flex items-center space-x-4">
-                  {product.image_url && (
+                  {(product.image_url || (product.gallery_images && product.gallery_images[0])) && (
                     <img
-                      src={product.image_url}
+                      src={product.image_url || product.gallery_images[0]}
                       alt={product.name}
                       className="w-16 h-16 object-cover rounded"
                     />
                   )}
                   <div>
-                    <h3 className="font-medium">{product.name}</h3>
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h3 className="font-medium">{product.name}</h3>
+                      {product.is_featured && <Star className="h-4 w-4 text-terracotta" />}
+                      {product.is_bestseller && <Award className="h-4 w-4 text-sage" />}
+                    </div>
                     <p className="text-sm text-gray-600">{product.category}</p>
                     <div className="flex items-center space-x-2 mt-1">
                       <span className="text-sm font-medium">${product.price?.toFixed(2)}</span>
@@ -371,10 +504,35 @@ const ProductManagement = () => {
                       <Badge variant="outline">
                         Stock: {product.inventory_quantity || 0}
                       </Badge>
+                      {product.is_featured && (
+                        <Badge className="bg-terracotta text-white">
+                          Featured #{product.featured_order}
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex items-center space-x-2">
+                  {product.is_featured && (
+                    <div className="flex flex-col space-y-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => updateFeaturedOrder(product.id, 'up')}
+                        className="p-1"
+                      >
+                        <ArrowUp className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => updateFeaturedOrder(product.id, 'down')}
+                        className="p-1"
+                      >
+                        <ArrowDown className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
