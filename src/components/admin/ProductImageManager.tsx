@@ -21,30 +21,44 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({
   const [uploading, setUploading] = useState(false);
 
   const handleImageUploaded = (newImageUrl: string) => {
-    const allImages = [imageUrl, ...galleryImages].filter(Boolean);
+    console.log('New image uploaded:', newImageUrl);
     
-    if (!allImages.includes(newImageUrl)) {
-      if (!imageUrl) {
-        // If no primary image set, make this the primary
-        onImageUrlChange(newImageUrl);
-      } else {
-        // Add to gallery
+    if (!imageUrl) {
+      // If no primary image set, make this the primary
+      console.log('Setting as primary image');
+      onImageUrlChange(newImageUrl);
+    } else {
+      // Add to gallery if not already there
+      if (!galleryImages.includes(newImageUrl)) {
+        console.log('Adding to gallery');
         onGalleryImagesChange([...galleryImages, newImageUrl]);
       }
     }
   };
 
   const handleImagesReorder = (reorderedImages: string[]) => {
-    onGalleryImagesChange(reorderedImages);
+    // The reordered images include the primary image, so we need to separate them
+    const primaryIndex = reorderedImages.findIndex(img => img === imageUrl);
+    
+    if (primaryIndex === -1) {
+      // Primary image not in the list, just update gallery
+      onGalleryImagesChange(reorderedImages);
+    } else {
+      // Remove primary from the list to get the gallery images
+      const newGallery = [...reorderedImages];
+      newGallery.splice(primaryIndex, 1);
+      onGalleryImagesChange(newGallery);
+    }
   };
 
   const handleImageRemove = (imageUrlToRemove: string) => {
+    console.log('Removing image:', imageUrlToRemove);
+    
     if (imageUrlToRemove === imageUrl) {
       // If removing primary image, promote first gallery image to primary
-      const remainingGallery = galleryImages.filter(img => img !== imageUrlToRemove);
-      if (remainingGallery.length > 0) {
-        onImageUrlChange(remainingGallery[0]);
-        onGalleryImagesChange(remainingGallery.slice(1));
+      if (galleryImages.length > 0) {
+        onImageUrlChange(galleryImages[0]);
+        onGalleryImagesChange(galleryImages.slice(1));
       } else {
         onImageUrlChange('');
       }
@@ -55,9 +69,13 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({
   };
 
   const handleSetPrimary = (newPrimaryUrl: string) => {
-    // If the new primary is currently in gallery, swap it with current primary
+    console.log('Setting new primary:', newPrimaryUrl);
+    
+    // Remove the new primary from gallery
     const updatedGallery = galleryImages.filter(img => img !== newPrimaryUrl);
-    if (imageUrl) {
+    
+    // Add the current primary to gallery if it exists
+    if (imageUrl && imageUrl !== newPrimaryUrl) {
       updatedGallery.unshift(imageUrl);
     }
     

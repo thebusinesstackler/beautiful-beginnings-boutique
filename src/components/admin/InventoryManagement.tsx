@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { AlertTriangle, Package, Edit } from 'lucide-react';
+import { AlertTriangle, Package, Edit, Save, X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
@@ -25,6 +25,7 @@ const InventoryManagement = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingStock, setEditingStock] = useState<{ [key: string]: string }>({});
+  const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -106,14 +107,25 @@ const InventoryManagement = () => {
     }
   };
 
-  const handleStockEdit = (productId: string, value: string) => {
-    setEditingStock({ ...editingStock, [productId]: value });
+  const handleStockEdit = (productId: string) => {
+    setEditingProduct(productId);
+    setEditingStock({ [productId]: products.find(p => p.id === productId)?.inventory_quantity.toString() || '0' });
   };
 
-  const handleStockUpdate = (productId: string) => {
+  const handleStockSave = async (productId: string) => {
     const newQuantity = parseInt(editingStock[productId]) || 0;
-    updateStock(productId, newQuantity);
-    setEditingStock({ ...editingStock, [productId]: '' });
+    await updateStock(productId, newQuantity);
+    setEditingProduct(null);
+    setEditingStock({});
+  };
+
+  const handleStockCancel = () => {
+    setEditingProduct(null);
+    setEditingStock({});
+  };
+
+  const handleStockChange = (productId: string, value: string) => {
+    setEditingStock({ ...editingStock, [productId]: value });
   };
 
   const lowStockProducts = products.filter(p => p.inventory_quantity < 5);
@@ -249,27 +261,51 @@ const InventoryManagement = () => {
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    <Input
-                      type="number"
-                      min="0"
-                      className="w-20 bg-white"
-                      value={editingStock[product.id] || product.inventory_quantity}
-                      onChange={(e) => handleStockEdit(product.id, e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          handleStockUpdate(product.id);
-                        }
-                      }}
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleStockUpdate(product.id)}
-                      disabled={!editingStock[product.id] || editingStock[product.id] === product.inventory_quantity.toString()}
-                      className="text-charcoal hover:bg-cream/50"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
+                    {editingProduct === product.id ? (
+                      <>
+                        <Input
+                          type="number"
+                          min="0"
+                          className="w-20 bg-white"
+                          value={editingStock[product.id] || ''}
+                          onChange={(e) => handleStockChange(product.id, e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              handleStockSave(product.id);
+                            }
+                          }}
+                          autoFocus
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => handleStockSave(product.id)}
+                          className="bg-sage hover:bg-sage/90 text-white"
+                        >
+                          <Save className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleStockCancel}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="w-20 text-center font-medium">
+                          {product.inventory_quantity}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleStockEdit(product.id)}
+                          className="text-charcoal hover:bg-cream/50"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
