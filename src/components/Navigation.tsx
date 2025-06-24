@@ -1,5 +1,4 @@
 
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Menu, X } from 'lucide-react';
@@ -23,7 +22,7 @@ const Navigation = () => {
 
   return (
     <nav className="shadow-lg sticky top-0 z-50" style={{ backgroundColor: '#faf6ee', borderBottom: '1px solid #F6DADA' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-28">
           {/* Logo */}
           <Link 
@@ -39,8 +38,8 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+          <div className="hidden md:block flex-1">
+            <div className="flex items-center justify-center space-x-8">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
