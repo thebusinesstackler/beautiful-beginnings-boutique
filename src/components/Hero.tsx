@@ -1,7 +1,60 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Star, Heart, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface WebsiteContent {
+  id: string;
+  hero_main_image: string;
+  hero_secondary_images: string[];
+  hero_title: string;
+  hero_subtitle: string;
+  hero_description: string;
+}
 
 const Hero = () => {
+  const [content, setContent] = useState<WebsiteContent | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchWebsiteContent();
+  }, []);
+
+  const fetchWebsiteContent = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('website_content')
+        .select('*')
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      if (data) {
+        setContent(data as WebsiteContent);
+      }
+    } catch (error) {
+      console.error('Error fetching website content:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fallback content if database content is not available
+  const fallbackContent = {
+    hero_main_image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=800",
+    hero_secondary_images: [
+      "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
+      "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+    ],
+    hero_title: "Where Memories Begin",
+    hero_subtitle: "and Beauty Lasts",
+    hero_description: "Capture the magic of your favorite moments—handcrafted photo keepsakes made with love and lasting brilliance. From shimmering ornaments to heartfelt jewelry, Beautiful Beginnings brings your memories to life."
+  };
+
+  const displayContent = content || fallbackContent;
+
   return (
     <section className="relative py-20 md:py-32 overflow-hidden" style={{ backgroundColor: '#FAF5EF' }}>
       {/* Subtle background pattern */}
@@ -21,13 +74,13 @@ const Hero = () => {
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              <span style={{ color: '#5B4C37' }}>Where Memories Begin</span>
+              <span style={{ color: '#5B4C37' }}>{displayContent.hero_title}</span>
               <br />
-              <span className="bg-gradient-to-r from-[#E28F84] to-[#F4A79B] bg-clip-text text-transparent font-bold">and Beauty Lasts</span>
+              <span className="bg-gradient-to-r from-[#E28F84] to-[#F4A79B] bg-clip-text text-transparent font-bold">{displayContent.hero_subtitle}</span>
             </h1>
             
             <p className="text-xl mb-8 max-w-2xl leading-relaxed" style={{ color: '#A89B84' }}>
-              Capture the magic of your favorite moments—handcrafted photo keepsakes made with love and lasting brilliance. From shimmering ornaments to heartfelt jewelry, Beautiful Beginnings brings your memories to life.
+              {displayContent.hero_description}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
@@ -113,38 +166,66 @@ const Hero = () => {
 
           {/* Updated Image Gallery */}
           <div className="relative lg:order-2 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <div className="grid grid-cols-2 gap-4">
-              {/* Main large image */}
-              <div className="col-span-2 relative rounded-2xl overflow-hidden shadow-2xl card-hover">
-                <img
-                  src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=800"
-                  alt="Beautiful handcrafted ornaments"
-                  className="w-full h-64 md:h-80 object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-                <div className="absolute bottom-4 left-4 text-white">
-                  <p className="text-sm font-semibold">Holiday Collection</p>
-                  <p className="text-xs opacity-90">Personalized Ornaments</p>
+            {loading ? (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 bg-gray-200 animate-pulse rounded-2xl h-64 md:h-80"></div>
+                <div className="bg-gray-200 animate-pulse rounded-xl h-32 md:h-40"></div>
+                <div className="bg-gray-200 animate-pulse rounded-xl h-32 md:h-40"></div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                {/* Main large image */}
+                <div className="col-span-2 relative rounded-2xl overflow-hidden shadow-2xl card-hover">
+                  <img
+                    src={displayContent.hero_main_image}
+                    alt="Beautiful handcrafted ornaments"
+                    className="w-full h-64 md:h-80 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=800";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <p className="text-sm font-semibold">Holiday Collection</p>
+                    <p className="text-xs opacity-90">Personalized Ornaments</p>
+                  </div>
                 </div>
+                
+                {/* Smaller images */}
+                {displayContent.hero_secondary_images && displayContent.hero_secondary_images.length > 0 ? (
+                  displayContent.hero_secondary_images.slice(0, 2).map((image, index) => (
+                    <div key={index} className="relative rounded-xl overflow-hidden shadow-lg card-hover">
+                      <img
+                        src={image}
+                        alt={`Handcrafted product ${index + 1}`}
+                        className="w-full h-32 md:h-40 object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400";
+                        }}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="relative rounded-xl overflow-hidden shadow-lg card-hover">
+                      <img
+                        src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+                        alt="Handcrafted jewelry"
+                        className="w-full h-32 md:h-40 object-cover"
+                      />
+                    </div>
+                    
+                    <div className="relative rounded-xl overflow-hidden shadow-lg card-hover">
+                      <img
+                        src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+                        alt="Custom slate products"
+                        className="w-full h-32 md:h-40 object-cover"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
-              
-              {/* Smaller images */}
-              <div className="relative rounded-xl overflow-hidden shadow-lg card-hover">
-                <img
-                  src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
-                  alt="Handcrafted jewelry"
-                  className="w-full h-32 md:h-40 object-cover"
-                />
-              </div>
-              
-              <div className="relative rounded-xl overflow-hidden shadow-lg card-hover">
-                <img
-                  src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
-                  alt="Custom slate products"
-                  className="w-full h-32 md:h-40 object-cover"
-                />
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
