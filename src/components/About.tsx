@@ -29,23 +29,9 @@ const About = () => {
 
   const fetchFeaturedProducts = async () => {
     try {
-      // Use a more specific query to avoid TypeScript issues
       const { data, error } = await supabase
         .from('featured_products')
-        .select(`
-          id,
-          name,
-          price,
-          original_price,
-          image,
-          description,
-          href,
-          rating,
-          reviews,
-          customer_quote,
-          is_active,
-          sort_order
-        `)
+        .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
@@ -96,7 +82,7 @@ const About = () => {
           }
         ]);
       } else {
-        setFeaturedProducts(data);
+        setFeaturedProducts(data as FeaturedProduct[]);
       }
     } catch (error) {
       console.error('Error fetching featured products:', error);

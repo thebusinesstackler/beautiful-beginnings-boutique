@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Heart, Star, Filter } from 'lucide-react';
@@ -250,7 +249,7 @@ const Shop = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <span className="text-2xl font-bold" style={{ color: '#5B4C37' }}>
-                          ${typeof product.price === 'number' ? product.price.toFixed(2) : '0.00'}
+                          ${product.price.toFixed(2)}
                         </span>
                       </div>
                       <Button

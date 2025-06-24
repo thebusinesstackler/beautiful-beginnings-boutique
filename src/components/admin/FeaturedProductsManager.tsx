@@ -55,26 +55,11 @@ const FeaturedProductsManager = () => {
     try {
       const { data, error } = await supabase
         .from('featured_products')
-        .select(`
-          id,
-          name,
-          price,
-          original_price,
-          image,
-          description,
-          href,
-          rating,
-          reviews,
-          customer_quote,
-          is_active,
-          sort_order,
-          created_at,
-          updated_at
-        `)
+        .select('*')
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      setFeaturedProducts(data || []);
+      setFeaturedProducts((data as FeaturedProduct[]) || []);
     } catch (error) {
       console.error('Error fetching featured products:', error);
       toast({
