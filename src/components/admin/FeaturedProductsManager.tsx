@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -54,12 +53,12 @@ const FeaturedProductsManager = () => {
   const fetchFeaturedProducts = async () => {
     try {
       const { data, error } = await supabase
-        .from('featured_products')
+        .from('featured_products' as any)
         .select('*')
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      setFeaturedProducts(data || []);
+      setFeaturedProducts((data || []) as FeaturedProduct[]);
     } catch (error) {
       console.error('Error fetching featured products:', error);
       toast({
@@ -92,7 +91,7 @@ const FeaturedProductsManager = () => {
 
       if (editingId) {
         const { error } = await supabase
-          .from('featured_products')
+          .from('featured_products' as any)
           .update({
             ...productData,
             updated_at: new Date().toISOString()
@@ -107,7 +106,7 @@ const FeaturedProductsManager = () => {
         });
       } else {
         const { error } = await supabase
-          .from('featured_products')
+          .from('featured_products' as any)
           .insert([productData]);
 
         if (error) throw error;
@@ -153,7 +152,7 @@ const FeaturedProductsManager = () => {
 
     try {
       const { error } = await supabase
-        .from('featured_products')
+        .from('featured_products' as any)
         .delete()
         .eq('id', id);
 

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Heart, Star, ShoppingCart, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,7 +30,7 @@ const About = () => {
   const fetchFeaturedProducts = async () => {
     try {
       const { data, error } = await supabase
-        .from('featured_products')
+        .from('featured_products' as any)
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
@@ -83,7 +82,7 @@ const About = () => {
           }
         ]);
       } else {
-        setFeaturedProducts(data);
+        setFeaturedProducts(data as FeaturedProduct[]);
       }
     } catch (error) {
       console.error('Error fetching featured products:', error);

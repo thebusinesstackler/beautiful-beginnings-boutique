@@ -263,6 +263,57 @@ export type Database = {
         }
         Relationships: []
       }
+      featured_products: {
+        Row: {
+          created_at: string | null
+          customer_quote: string
+          description: string
+          href: string
+          id: string
+          image: string
+          is_active: boolean | null
+          name: string
+          original_price: number | null
+          price: number
+          rating: number
+          reviews: number
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_quote: string
+          description: string
+          href: string
+          id?: string
+          image: string
+          is_active?: boolean | null
+          name: string
+          original_price?: number | null
+          price: number
+          rating?: number
+          reviews?: number
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_quote?: string
+          description?: string
+          href?: string
+          id?: string
+          image?: string
+          is_active?: boolean | null
+          name?: string
+          original_price?: number | null
+          price?: number
+          rating?: number
+          reviews?: number
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string | null
