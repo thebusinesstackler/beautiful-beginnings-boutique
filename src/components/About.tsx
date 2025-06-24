@@ -146,9 +146,9 @@ const About = () => {
 
   return (
     <section className="py-20 bg-white">
-      <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-20 animate-fade-in max-w-7xl mx-auto">
+        <div className="text-center mb-20 animate-fade-in">
           <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
             <Heart className="h-4 w-4 mr-2" />
             Handmade with Heart
@@ -169,7 +169,7 @@ const About = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
           {[
             { icon: Sparkles, title: "Sublimated Keepsakes", desc: "Ornaments, jewelry, and keepsakes" },
             { icon: Heart, title: "Holiday & Fall Décor", desc: "Seasonal themed decorations" },
@@ -189,7 +189,7 @@ const About = () => {
         </div>
 
         {/* Zigzag Product Layout */}
-        <div className="space-y-24 max-w-7xl mx-auto">
+        <div className="space-y-24">
           {featuredProducts.map((product, index) => (
             <div
               key={product.id}
@@ -309,7 +309,7 @@ const About = () => {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-20 rounded-3xl p-12 max-w-7xl mx-auto" style={{ background: 'linear-gradient(135deg, #F6DADA 0%, #F4A79B 100%)' }}>
+        <div className="text-center mt-20 rounded-3xl p-12" style={{ background: 'linear-gradient(135deg, #F6DADA 0%, #F4A79B 100%)' }}>
           <h3 className="text-3xl font-bold mb-4" style={{ color: '#5B4C37' }}>
             Your Memories Deserve to Shine
           </h3>

@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { ArrowRight, Heart } from 'lucide-react';
 
@@ -45,8 +46,8 @@ const Categories = () => {
         <div className="absolute bottom-20 right-24 w-20 h-20 bg-rose-100 rounded-full blur-lg"></div>
       </div>
 
-      <div className="w-full px-4 sm:px-6 lg:px-8 relative">
-        <div className="text-center mb-16 max-w-7xl mx-auto">
+      <div className="container mx-auto px-4 relative">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center px-4 py-2 bg-rose-100 rounded-full text-sm font-medium text-rose-700 mb-6">
             <Heart className="h-4 w-4 mr-2" />
             Handcrafted Collections
@@ -59,7 +60,7 @@ const Categories = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {categories.map((category, index) => (
             <Link
               key={index}
