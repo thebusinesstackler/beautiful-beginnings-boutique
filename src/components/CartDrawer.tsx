@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Drawer,
@@ -11,7 +12,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-import { ShoppingCart, X } from 'lucide-react';
+import { ShoppingCart, X, Eye } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import PhotoUpload from '@/components/PhotoUpload';
 import { toast } from '@/hooks/use-toast';
@@ -23,6 +24,7 @@ interface CartDrawerProps {
 const CartDrawer = ({ children }: CartDrawerProps) => {
   const { items, removeFromCart, getCartTotal, updatePhoto } = useCart();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handlePhotoUpload = (itemId: number, file: File) => {
     updatePhoto(itemId, file);
@@ -32,11 +34,14 @@ const CartDrawer = ({ children }: CartDrawerProps) => {
     });
   };
 
+  const handleViewCart = () => {
+    setIsOpen(false);
+    navigate('/checkout');
+  };
+
   const handleCheckout = () => {
-    toast({
-      title: "Checkout",
-      description: "Checkout functionality would be implemented here.",
-    });
+    setIsOpen(false);
+    navigate('/checkout');
   };
 
   return (
@@ -123,9 +128,15 @@ const CartDrawer = ({ children }: CartDrawerProps) => {
                   ${getCartTotal().toFixed(2)}
                 </span>
               </div>
-              <Button onClick={handleCheckout} className="w-full btn-primary">
-                Proceed to Checkout
-              </Button>
+              <div className="space-y-2">
+                <Button onClick={handleViewCart} variant="outline" className="w-full">
+                  <Eye className="h-4 w-4 mr-2" />
+                  View Cart
+                </Button>
+                <Button onClick={handleCheckout} className="w-full btn-primary">
+                  Proceed to Checkout
+                </Button>
+              </div>
             </>
           )}
           <DrawerClose asChild>

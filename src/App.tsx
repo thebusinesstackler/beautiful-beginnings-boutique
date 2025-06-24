@@ -4,6 +4,7 @@ import Index from './pages/Index';
 import Auth from './pages/Auth';
 import Admin from './pages/Admin';
 import Shop from './pages/Shop';
+import Checkout from './pages/Checkout';
 import Ornaments from './pages/Ornaments';
 import OrnamentDetail from './pages/OrnamentDetail';
 import Necklaces from './pages/Necklaces';
@@ -33,6 +34,7 @@ function App() {
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/checkout" element={<Checkout />} />
             <Route path="/products/ornaments" element={<Ornaments />} />
             <Route path="/products/ornaments/:id" element={<OrnamentDetail />} />
             <Route path="/products/necklaces" element={<Necklaces />} />
