@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -35,7 +36,7 @@ const CartDrawer = ({ children }: CartDrawerProps) => {
 
   const handleViewCart = () => {
     setIsOpen(false);
-    navigate('/checkout');
+    navigate('/cart');
   };
 
   const handleCheckout = () => {
@@ -130,7 +131,7 @@ const CartDrawer = ({ children }: CartDrawerProps) => {
               <div className="space-y-2">
                 <Button onClick={handleViewCart} variant="outline" className="w-full">
                   <Eye className="h-4 w-4 mr-2" />
-                  View Cart
+                  View Full Cart
                 </Button>
                 <Button onClick={handleCheckout} className="w-full btn-primary">
                   Proceed to Checkout
