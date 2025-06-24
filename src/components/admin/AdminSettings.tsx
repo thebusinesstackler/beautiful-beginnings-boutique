@@ -1,13 +1,37 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Settings, Store, CreditCard, Truck, Mail } from 'lucide-react';
+import { useSettings } from '@/hooks/useSettings';
 
 const AdminSettings = () => {
+  const { settings, updateSettings, loading } = useSettings();
+  const [formData, setFormData] = useState(settings);
+
+  React.useEffect(() => {
+    setFormData(settings);
+  }, [settings]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSaveStoreInfo = () => {
+    updateSettings({
+      store_name: formData.store_name,
+      store_email: formData.store_email,
+      store_phone: formData.store_phone,
+      store_website: formData.store_website,
+      store_address: formData.store_address
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -22,33 +46,58 @@ const AdminSettings = () => {
             <Store className="h-5 w-5 mr-2 text-stone" />
             Store Information
           </CardTitle>
-          <CardDescription>Basic information about your store</CardDescription>
+          <CardDescription>Basic information about your store (appears in footer)</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="store_name" className="text-charcoal">Store Name</Label>
-              <Input id="store_name" defaultValue="Beautiful Beginnings" />
+              <Input 
+                id="store_name" 
+                value={formData.store_name}
+                onChange={(e) => handleInputChange('store_name', e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="store_email" className="text-charcoal">Contact Email</Label>
-              <Input id="store_email" type="email" defaultValue="contact@beautifulbeginnings.com" />
+              <Input 
+                id="store_email" 
+                type="email" 
+                value={formData.store_email}
+                onChange={(e) => handleInputChange('store_email', e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="store_phone" className="text-charcoal">Phone Number</Label>
-              <Input id="store_phone" defaultValue="+1 (555) 123-4567" />
+              <Input 
+                id="store_phone" 
+                value={formData.store_phone}
+                onChange={(e) => handleInputChange('store_phone', e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="store_website" className="text-charcoal">Website URL</Label>
-              <Input id="store_website" defaultValue="https://beautifulbeginnings.com" />
+              <Input 
+                id="store_website" 
+                value={formData.store_website}
+                onChange={(e) => handleInputChange('store_website', e.target.value)}
+              />
             </div>
           </div>
           <div>
             <Label htmlFor="store_address" className="text-charcoal">Store Address</Label>
-            <Textarea id="store_address" defaultValue="123 Craft Lane, Creative City, CC 12345" />
+            <Textarea 
+              id="store_address" 
+              value={formData.store_address}
+              onChange={(e) => handleInputChange('store_address', e.target.value)}
+            />
           </div>
-          <Button className="bg-sage hover:bg-sage/90 text-white">
-            Save Store Information
+          <Button 
+            className="bg-sage hover:bg-sage/90 text-white"
+            onClick={handleSaveStoreInfo}
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save Store Information'}
           </Button>
         </CardContent>
       </Card>

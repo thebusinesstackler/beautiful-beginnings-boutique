@@ -1,11 +1,12 @@
-
 import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Mail, Phone, MapPin, Award, Star, LogIn, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { useSettings } from '@/hooks/useSettings';
 
 const Footer = () => {
   const { user, profile, signOut } = useAuth();
+  const { settings } = useSettings();
 
   const handleSignOut = async () => {
     await signOut();
@@ -33,7 +34,7 @@ const Footer = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-charcoal font-playfair">
-                  Beautiful Beginnings
+                  {settings.store_name}
                 </h3>
                 <p className="text-sm text-sage font-medium">
                   Handcrafted with Love
@@ -123,7 +124,7 @@ const Footer = () => {
                   <Phone className="h-4 w-4 text-sage" />
                 </div>
                 <span className="text-sm text-charcoal/70 group-hover:text-charcoal transition-colors duration-300">
-                  (555) 123-4567
+                  {settings.store_phone}
                 </span>
               </div>
               
@@ -132,7 +133,7 @@ const Footer = () => {
                   <Mail className="h-4 w-4 text-sage" />
                 </div>
                 <span className="text-sm text-charcoal/70 group-hover:text-charcoal transition-colors duration-300">
-                  hello@beautifulbeginnings.com
+                  {settings.store_email}
                 </span>
               </div>
               
@@ -141,8 +142,12 @@ const Footer = () => {
                   <MapPin className="h-4 w-4 text-sage" />
                 </div>
                 <span className="text-sm text-charcoal/70 group-hover:text-charcoal transition-colors duration-300">
-                  123 Craft Lane<br />
-                  Artisan Village, AV 12345
+                  {settings.store_address.split('\n').map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index < settings.store_address.split('\n').length - 1 && <br />}
+                    </span>
+                  ))}
                 </span>
               </div>
             </div>
@@ -214,7 +219,7 @@ const Footer = () => {
         <div className="pt-8 border-t border-stone-200">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-charcoal/70">
-              © 2024 Beautiful Beginnings. All rights reserved.
+              © 2024 {settings.store_name}. All rights reserved.
             </div>
             <div className="flex space-x-6 text-sm">
               <Link 
