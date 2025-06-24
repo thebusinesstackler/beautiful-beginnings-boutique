@@ -23,8 +23,7 @@ const Testimonials = () => {
 
   const fetchTestimonials = async () => {
     try {
-      // Use type assertion to bypass TypeScript checking for now
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('testimonials')
         .select('*')
         .eq('is_active', true)

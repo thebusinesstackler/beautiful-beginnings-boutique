@@ -44,8 +44,7 @@ const TestimonialsManager = () => {
 
   const fetchTestimonials = async () => {
     try {
-      // Use type assertion to bypass TypeScript checking for now
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('testimonials')
         .select('*')
         .order('sort_order', { ascending: true });
@@ -69,7 +68,7 @@ const TestimonialsManager = () => {
     
     try {
       if (editingId) {
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('testimonials')
           .update({
             ...formData,
@@ -84,7 +83,7 @@ const TestimonialsManager = () => {
           description: "Testimonial updated successfully",
         });
       } else {
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('testimonials')
           .insert([formData]);
 
@@ -126,7 +125,7 @@ const TestimonialsManager = () => {
     if (!confirm('Are you sure you want to delete this testimonial?')) return;
 
     try {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('testimonials')
         .delete()
         .eq('id', id);
