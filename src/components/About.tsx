@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, Star, ArrowRight, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { Heart, Star, ShoppingCart, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -136,7 +136,7 @@ const About = () => {
   if (loading) {
     return (
       <section className="py-20 bg-white">
-        <div className="w-full px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
           <div className="text-charcoal font-medium">Loading featured products...</div>
         </div>
@@ -146,7 +146,7 @@ const About = () => {
 
   return (
     <section className="py-20 bg-white">
-      <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-20 animate-fade-in">
           <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
