@@ -133,9 +133,12 @@ const Footer = () => {
                 <div className="p-2 rounded-lg bg-sage/10 group-hover:bg-sage/20 transition-colors duration-300">
                   <Mail className="h-4 w-4 text-sage" />
                 </div>
-                <span className="text-sm text-charcoal/70 group-hover:text-charcoal transition-colors duration-300">
-                  {settings.store_email}
-                </span>
+                <Link 
+                  to="/contact"
+                  className="text-sm text-charcoal/70 group-hover:text-charcoal transition-colors duration-300 hover:underline underline-offset-2"
+                >
+                  Contact Us
+                </Link>
               </div>
               
               <div className="flex items-start space-x-3 group">

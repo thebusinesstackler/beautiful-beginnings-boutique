@@ -19,6 +19,7 @@ import CustomPhotoSnowGlobe from './pages/CustomPhotoSnowGlobe';
 import ShippingReturns from './pages/ShippingReturns';
 import OurStory from './pages/OurStory';
 import About from './pages/About';
+import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
@@ -52,6 +53,7 @@ function App() {
             <Route path="/shipping-returns" element={<ShippingReturns />} />
             <Route path="/our-story" element={<OurStory />} />
             <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
