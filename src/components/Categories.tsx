@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { ArrowRight, Heart } from 'lucide-react';
 
@@ -64,8 +65,8 @@ const Categories = () => {
             <Link
               key={index}
               to={category.href}
-              className={`group block bg-white rounded-2xl shadow-sm hover:shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-2 relative border border-rose-100 ${
-                category.featured ? 'ring-2 ring-rose-200' : ''
+              className={`group block bg-white rounded-2xl shadow-sm hover:shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-2 relative border ${
+                category.featured ? 'border-rose-200' : 'border-rose-100'
               }`}
             >
               {/* Updated image */}
