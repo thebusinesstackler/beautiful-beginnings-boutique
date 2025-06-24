@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Menu, X } from 'lucide-react';
@@ -18,6 +17,7 @@ const Navigation = () => {
     { name: 'Ornaments', href: '/products/ornaments' },
     { name: 'Slate Products', href: '/products/slate' },
     { name: 'Wood Pictures', href: '/products/wood-sublimation' },
+    { name: 'About', href: '/about' },
     { name: 'Our Story', href: '/our-story' },
   ];
 
