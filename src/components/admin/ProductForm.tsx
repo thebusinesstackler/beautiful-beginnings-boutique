@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, X } from 'lucide-react';
+import ProductImageManager from './ProductImageManager';
 
 interface Product {
   id: string;
@@ -16,7 +16,7 @@ interface Product {
   price: number;
   category: string;
   image_url: string;
-  images: string[];
+  gallery_images: string[];
   is_active: boolean;
 }
 
@@ -27,11 +27,11 @@ interface ProductFormProps {
 }
 
 const categories = [
-  'snow-globes',
-  'necklaces',
-  'ornaments',
-  'slate',
-  'wood-sublimation'
+  'Snow Globes',
+  'Necklaces',
+  'Ornaments',
+  'Slate',
+  'Wood Sublimation'
 ];
 
 const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) => {
@@ -42,11 +42,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
     price: '',
     category: '',
     image_url: '',
-    images: [] as string[],
+    gallery_images: [] as string[],
     is_active: true,
   });
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -56,7 +55,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
         price: product.price?.toString() || '',
         category: product.category || '',
         image_url: product.image_url || '',
-        images: product.images || [],
+        gallery_images: product.gallery_images || [],
         is_active: product.is_active,
       });
     }
@@ -64,58 +63,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleImageUpload = async (file: File) => {
-    setUploading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const filePath = `products/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(filePath);
-
-      return data.publicUrl;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      toast({
-        title: "Error",
-        description: "Failed to upload image",
-        variant: "destructive",
-      });
-      return null;
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const imageUrl = await handleImageUpload(file);
-    if (imageUrl) {
-      if (!formData.image_url) {
-        handleInputChange('image_url', imageUrl);
-      }
-      handleInputChange('images', [...formData.images, imageUrl]);
-    }
-  };
-
-  const removeImage = (imageUrl: string) => {
-    if (formData.image_url === imageUrl) {
-      const remainingImages = formData.images.filter(url => url !== imageUrl);
-      handleInputChange('image_url', remainingImages[0] || '');
-    }
-    handleInputChange('images', formData.images.filter(url => url !== imageUrl));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -129,7 +76,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
         price: parseFloat(formData.price),
         category: formData.category,
         image_url: formData.image_url,
-        images: formData.images,
+        gallery_images: formData.gallery_images,
         is_active: formData.is_active,
       };
 
@@ -193,7 +140,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
             <SelectContent>
               {categories.map((category) => (
                 <SelectItem key={category} value={category}>
-                  {category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  {category}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -223,56 +170,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
         />
       </div>
 
-      <div className="space-y-4">
-        <Label>Product Images</Label>
-        
-        <div className="flex items-center space-x-4">
-          <Button
-            type="button"
-            variant="outline"
-            disabled={uploading}
-            onClick={() => document.getElementById('image-upload')?.click()}
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            {uploading ? 'Uploading...' : 'Upload Image'}
-          </Button>
-          <input
-            id="image-upload"
-            type="file"
-            accept="image/*"
-            onChange={handleFileSelect}
-            className="hidden"
-          />
-        </div>
-
-        {formData.images.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {formData.images.map((imageUrl, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={imageUrl}
-                  alt={`Product ${index + 1}`}
-                  className="w-full h-32 object-cover rounded-lg"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  className="absolute top-2 right-2"
-                  onClick={() => removeImage(imageUrl)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-                {imageUrl === formData.image_url && (
-                  <div className="absolute bottom-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs">
-                    Main
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Enhanced Image Management */}
+      <ProductImageManager
+        imageUrl={formData.image_url}
+        galleryImages={formData.gallery_images}
+        onImageUrlChange={(url) => handleInputChange('image_url', url)}
+        onGalleryImagesChange={(images) => handleInputChange('gallery_images', images)}
+      />
 
       <div className="flex justify-end space-x-4">
         <Button type="button" variant="outline" onClick={onCancel}>

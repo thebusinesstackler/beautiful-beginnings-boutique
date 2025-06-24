@@ -1,11 +1,9 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { X, Plus, GripVertical, Eye } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+import ProductImageUploader from './ProductImageUploader';
+import ProductImageGallery from './ProductImageGallery';
 
 interface ProductImageManagerProps {
   imageUrl: string;
@@ -20,160 +18,88 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({
   onImageUrlChange,
   onGalleryImagesChange,
 }) => {
-  const [newImageUrl, setNewImageUrl] = useState('');
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
-  const addGalleryImage = () => {
-    if (newImageUrl.trim()) {
-      const updatedImages = [...galleryImages, newImageUrl.trim()];
-      onGalleryImagesChange(updatedImages);
-      setNewImageUrl('');
+  const handleImageUploaded = (newImageUrl: string) => {
+    const allImages = [imageUrl, ...galleryImages].filter(Boolean);
+    
+    if (!allImages.includes(newImageUrl)) {
+      if (!imageUrl) {
+        // If no primary image set, make this the primary
+        onImageUrlChange(newImageUrl);
+      } else {
+        // Add to gallery
+        onGalleryImagesChange([...galleryImages, newImageUrl]);
+      }
     }
   };
 
-  const removeGalleryImage = (index: number) => {
-    const updatedImages = galleryImages.filter((_, i) => i !== index);
-    onGalleryImagesChange(updatedImages);
+  const handleImagesReorder = (reorderedImages: string[]) => {
+    onGalleryImagesChange(reorderedImages);
   };
 
-  const moveImage = (fromIndex: number, toIndex: number) => {
-    const updatedImages = [...galleryImages];
-    const [movedImage] = updatedImages.splice(fromIndex, 1);
-    updatedImages.splice(toIndex, 0, movedImage);
-    onGalleryImagesChange(updatedImages);
+  const handleImageRemove = (imageUrlToRemove: string) => {
+    if (imageUrlToRemove === imageUrl) {
+      // If removing primary image, promote first gallery image to primary
+      const remainingGallery = galleryImages.filter(img => img !== imageUrlToRemove);
+      if (remainingGallery.length > 0) {
+        onImageUrlChange(remainingGallery[0]);
+        onGalleryImagesChange(remainingGallery.slice(1));
+      } else {
+        onImageUrlChange('');
+      }
+    } else {
+      // Remove from gallery
+      onGalleryImagesChange(galleryImages.filter(img => img !== imageUrlToRemove));
+    }
   };
 
-  const setAsPrimary = (imageUrl: string, index: number) => {
-    // Set the clicked image as primary
-    onImageUrlChange(imageUrl);
-    // Remove it from gallery and add the old primary to gallery
-    const updatedImages = [...galleryImages];
-    updatedImages.splice(index, 1);
+  const handleSetPrimary = (newPrimaryUrl: string) => {
+    // If the new primary is currently in gallery, swap it with current primary
+    const updatedGallery = galleryImages.filter(img => img !== newPrimaryUrl);
     if (imageUrl) {
-      updatedImages.unshift(imageUrl);
+      updatedGallery.unshift(imageUrl);
     }
-    onGalleryImagesChange(updatedImages);
+    
+    onImageUrlChange(newPrimaryUrl);
+    onGalleryImagesChange(updatedGallery);
   };
+
+  // Combine all images for display
+  const allImages = [imageUrl, ...galleryImages].filter(Boolean);
 
   return (
     <Card className="bg-cream/30 border-0 shadow-sm">
       <CardHeader>
         <CardTitle className="text-charcoal">Product Images</CardTitle>
+        <p className="text-sm text-stone">
+          Upload and manage your product images. Drag to reorder, click star to set as primary.
+        </p>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Primary Image */}
+      <CardContent className="space-y-6">
         <div>
-          <Label htmlFor="primary-image">Primary Image URL</Label>
-          <div className="flex space-x-2">
-            <Input
-              id="primary-image"
-              value={imageUrl}
-              onChange={(e) => onImageUrlChange(e.target.value)}
-              placeholder="https://example.com/image.jpg"
-            />
-            {imageUrl && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setPreviewImage(imageUrl)}
-              >
-                <Eye className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-          {imageUrl && (
-            <div className="mt-2">
-              <img
-                src={imageUrl}
-                alt="Primary product image"
-                className="w-20 h-20 object-cover rounded border-2 border-sage"
-              />
-              <Badge variant="default" className="mt-1">Primary</Badge>
-            </div>
-          )}
+          <Label className="text-base font-medium text-charcoal mb-4 block">
+            Upload New Images
+          </Label>
+          <ProductImageUploader
+            onImageUploaded={handleImageUploaded}
+            uploading={uploading}
+            setUploading={setUploading}
+          />
         </div>
 
-        {/* Gallery Images */}
-        <div>
-          <Label>Gallery Images</Label>
-          <div className="space-y-2">
-            {galleryImages.map((image, index) => (
-              <div key={index} className="flex items-center space-x-2 p-2 bg-white rounded border">
-                <GripVertical className="w-4 h-4 text-gray-400 cursor-move" />
-                <img
-                  src={image}
-                  alt={`Gallery image ${index + 1}`}
-                  className="w-12 h-12 object-cover rounded"
-                />
-                <div className="flex-1 text-sm text-gray-600 truncate">
-                  {image}
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setAsPrimary(image, index)}
-                >
-                  Set Primary
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPreviewImage(image)}
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => removeGalleryImage(index)}
-                  className="text-red-600 hover:bg-red-50"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-
-          {/* Add New Gallery Image */}
-          <div className="flex space-x-2 mt-2">
-            <Input
-              value={newImageUrl}
-              onChange={(e) => setNewImageUrl(e.target.value)}
-              placeholder="Add gallery image URL"
+        {allImages.length > 0 && (
+          <div>
+            <Label className="text-base font-medium text-charcoal mb-4 block">
+              Product Gallery ({allImages.length} images)
+            </Label>
+            <ProductImageGallery
+              images={allImages}
+              primaryImage={imageUrl}
+              onImagesReorder={handleImagesReorder}
+              onImageRemove={handleImageRemove}
+              onSetPrimary={handleSetPrimary}
             />
-            <Button
-              type="button"
-              onClick={addGalleryImage}
-              size="sm"
-              className="bg-sage hover:bg-sage/90"
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Add
-            </Button>
-          </div>
-        </div>
-
-        {/* Image Preview Modal */}
-        {previewImage && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div className="relative max-w-4xl max-h-4xl">
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="max-w-full max-h-full object-contain"
-              />
-              <Button
-                onClick={() => setPreviewImage(null)}
-                className="absolute top-4 right-4 bg-white text-black hover:bg-gray-100"
-                size="sm"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         )}
       </CardContent>
