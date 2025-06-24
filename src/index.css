@@ -79,10 +79,24 @@
   }
 }
 
-/* Accessible focus outline removal - only removes on mouse clicks, preserves keyboard navigation */
-body:not(.user-is-tabbing) *:focus {
+/* FORCEFUL CSS RESET - REMOVE ALL FOCUS OUTLINES */
+* {
   outline: none !important;
   box-shadow: none !important;
+}
+
+*:focus,
+*:focus-visible,
+*:focus-within,
+*:active,
+button:focus,
+input:focus,
+textarea:focus,
+select:focus,
+a:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
 }
 
 .btn-primary {

@@ -27,6 +27,9 @@
         /* Force override any potential yellow backgrounds */
         --tw-bg-opacity: 1 !important;
         --tw-ring-color: rgb(100 116 139) !important; /* Slate 500 - NO YELLOW EVER */
+        /* NUCLEAR FOCUS OUTLINE REMOVAL */
+        outline: none !important;
+        box-shadow: none !important;
       }
       
       /* BODY AND HTML IMMEDIATE BACKGROUND */
@@ -43,12 +46,12 @@
         min-height: 100vh;
       }
       
-      /* IMMEDIATE FOCUS STATE OVERRIDES - NO YELLOW FOCUS RINGS */
-      *:focus, *:focus-visible, *:focus-within {
-        outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
-        outline-offset: 2px !important;
-        box-shadow: 0 0 0 2px rgb(100 116 139) !important;
-        --tw-ring-color: rgb(100 116 139) !important;
+      /* IMMEDIATE FOCUS STATE OVERRIDES - NO OUTLINES EVER */
+      *:focus, *:focus-visible, *:focus-within, *:active,
+      button:focus, input:focus, textarea:focus, select:focus, a:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        border-color: inherit !important;
       }
       
       /* IMMEDIATE INPUT FIELD PROTECTION */
@@ -56,6 +59,7 @@
         background-color: rgb(255 255 255) !important;
         background: rgb(255 255 255) !important;
         color: rgb(15 23 42) !important;
+        outline: none !important;
       }
       
       /* BROWSER AUTOFILL IMMEDIATE OVERRIDE */
@@ -67,6 +71,7 @@
         -webkit-text-fill-color: rgb(15 23 42) !important;
         background-color: rgb(255 255 255) !important;
         background: rgb(255 255 255) !important;
+        outline: none !important;
       }
       
       /* IMMEDIATE BUTTON AND INTERACTIVE ELEMENT PROTECTION */
@@ -74,7 +79,8 @@
       a:hover, a:focus, a:active {
         background-color: rgb(245 245 244) !important; /* Stone 100 - NEVER YELLOW */
         color: rgb(68 64 60) !important; /* Stone 700 */
-        outline: 2px solid rgb(100 116 139) !important; /* Slate 500 */
+        outline: none !important;
+        box-shadow: none !important;
       }
       
       /* NUCLEAR OPTION - ELIMINATE ANY POSSIBLE YELLOW */
@@ -83,19 +89,21 @@
       *[style*="rgb(253, 224, 71)"] {
         background-color: rgb(245 245 244) !important; /* Force stone */
         color: rgb(68 64 60) !important;
+        outline: none !important;
       }
       
       /* HIGH CONTRAST AND ACCESSIBILITY OVERRIDE */
       @media (prefers-contrast: high) {
         *:focus, *:focus-visible {
-          outline: 3px solid rgb(100 116 139) !important; /* Slate 500 - NO YELLOW */
-          box-shadow: 0 0 0 3px rgb(100 116 139) !important;
+          outline: none !important;
+          box-shadow: none !important;
         }
       }
       
       /* FORCE SYSTEM COLORS TO NON-YELLOW */
       * {
         accent-color: rgb(100 116 139) !important; /* Force slate accent */
+        outline: none !important;
       }
     </style>
   </head>
@@ -103,19 +111,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Accessible focus outline detection script -->
-    <script>
-      // JavaScript to detect if user is navigating via keyboard
-      document.body.addEventListener('keydown', function(e) {
-        if (e.key === 'Tab') {
-          document.body.classList.add('user-is-tabbing');
-        }
-      });
-
-      document.body.addEventListener('mousedown', function() {
-        document.body.classList.remove('user-is-tabbing');
-      });
-    </script>
   </body>
 </html>
