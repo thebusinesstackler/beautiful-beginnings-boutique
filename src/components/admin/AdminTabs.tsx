@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Package, ShoppingCart, Tags, Star, FileText, Users, BarChart3, Settings, Megaphone, Layers } from 'lucide-react';
+import { Package, ShoppingCart, Tags, Star, FileText, Users, BarChart3, Settings, Megaphone, Layers, Globe } from 'lucide-react';
 import ProductManagement from './ProductManagement';
 import InventoryManagement from './InventoryManagement';
 import CategoryManager from './CategoryManager';
@@ -12,6 +12,7 @@ import CustomerManagement from './CustomerManagement';
 import DashboardOverview from './DashboardOverview';
 import AdminSettings from './AdminSettings';
 import MarketingTools from './MarketingTools';
+import WebsiteManager from './WebsiteManager';
 
 const AdminTabs = () => {
   return (
@@ -19,7 +20,7 @@ const AdminTabs = () => {
       <Tabs defaultValue="dashboard" className="w-full">
         <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
           <TabsList 
-            className="grid w-full grid-cols-5 lg:grid-cols-10 h-auto p-1 bg-gradient-to-r from-cream to-stone-50"
+            className="grid w-full grid-cols-5 lg:grid-cols-11 h-auto p-1 bg-gradient-to-r from-cream to-stone-50"
           >
             <TabsTrigger 
               value="dashboard" 
@@ -74,6 +75,17 @@ const AdminTabs = () => {
             >
               <Star className="h-4 w-4 mb-1" />
               <span className="hidden sm:block">Featured</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="website" 
+              className="flex flex-col items-center p-3 text-xs font-medium transition-all duration-200
+                         text-charcoal hover:text-chocolate hover:bg-white/70
+                         data-[state=active]:bg-sage data-[state=active]:text-white
+                         data-[state=active]:shadow-sm rounded-md mx-1"
+            >
+              <Globe className="h-4 w-4 mb-1" />
+              <span className="hidden sm:block">Website</span>
             </TabsTrigger>
             
             <TabsTrigger 
@@ -148,6 +160,9 @@ const AdminTabs = () => {
           </TabsContent>
           <TabsContent value="featured" className="mt-0">
             <FeaturedManager />
+          </TabsContent>
+          <TabsContent value="website" className="mt-0">
+            <WebsiteManager />
           </TabsContent>
           <TabsContent value="blog" className="mt-0">
             <BlogManager />
