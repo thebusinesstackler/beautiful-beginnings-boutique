@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,14 +14,15 @@ interface Collection {
   name: string;
   slug: string;
   description: string | null;
-  image_url: string | null;
   is_active: boolean;
-  is_featured: boolean;
   sort_order: number;
-  seo_title: string | null;
-  seo_description: string | null;
   created_at: string;
   updated_at: string;
+  // Optional fields that may not exist in current schema
+  image_url?: string | null;
+  is_featured?: boolean;
+  seo_title?: string | null;
+  seo_description?: string | null;
 }
 
 const CollectionsManager = () => {
@@ -55,7 +55,8 @@ const CollectionsManager = () => {
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      setCollections(data || []);
+      // Type assertion to handle optional fields
+      setCollections((data || []) as Collection[]);
     } catch (error) {
       console.error('Error fetching collections:', error);
       toast({
@@ -72,11 +73,20 @@ const CollectionsManager = () => {
     e.preventDefault();
     
     try {
+      // Only include fields that exist in the current schema
+      const baseData = {
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description || null,
+        is_active: formData.is_active,
+        sort_order: formData.sort_order,
+      };
+
       if (editingId) {
         const { error } = await supabase
           .from('collections')
           .update({
-            ...formData,
+            ...baseData,
             updated_at: new Date().toISOString()
           })
           .eq('id', editingId);
@@ -90,7 +100,7 @@ const CollectionsManager = () => {
       } else {
         const { error } = await supabase
           .from('collections')
-          .insert([formData]);
+          .insert([baseData]);
 
         if (error) throw error;
         
@@ -119,7 +129,7 @@ const CollectionsManager = () => {
       description: collection.description || '',
       image_url: collection.image_url || '',
       is_active: collection.is_active,
-      is_featured: collection.is_featured,
+      is_featured: collection.is_featured || false,
       sort_order: collection.sort_order,
       seo_title: collection.seo_title || '',
       seo_description: collection.seo_description || ''
@@ -247,62 +257,22 @@ const CollectionsManager = () => {
               </div>
 
               <div>
-                <Label htmlFor="image_url">Collection Image URL</Label>
+                <Label htmlFor="sort_order">Sort Order</Label>
                 <Input
-                  id="image_url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
+                  id="sort_order"
+                  type="number"
+                  value={formData.sort_order}
+                  onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="seo_title">SEO Title</Label>
-                  <Input
-                    id="seo_title"
-                    value={formData.seo_title}
-                    onChange={(e) => setFormData({ ...formData, seo_title: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="sort_order">Sort Order</Label>
-                  <Input
-                    id="sort_order"
-                    type="number"
-                    value={formData.sort_order}
-                    onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="seo_description">SEO Description</Label>
-                <Textarea
-                  id="seo_description"
-                  value={formData.seo_description}
-                  onChange={(e) => setFormData({ ...formData, seo_description: e.target.value })}
-                  rows={2}
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="is_active"
+                  checked={formData.is_active}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
                 />
-              </div>
-
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_active"
-                    checked={formData.is_active}
-                    onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                  />
-                  <Label htmlFor="is_active">Active</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_featured"
-                    checked={formData.is_featured}
-                    onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
-                  />
-                  <Label htmlFor="is_featured">Featured</Label>
-                </div>
+                <Label htmlFor="is_active">Active</Label>
               </div>
 
               <div className="flex space-x-2">
@@ -329,36 +299,19 @@ const CollectionsManager = () => {
                 <div className="flex-1">
                   <div className="flex items-center space-x-4 mb-2">
                     <h4 className="text-lg font-semibold text-charcoal">{collection.name}</h4>
-                    <div className="flex space-x-2">
-                      {collection.is_featured && (
-                        <span className="bg-accent/10 text-accent px-2 py-1 rounded-full text-xs font-medium">
-                          Featured
-                        </span>
-                      )}
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        collection.is_active 
-                          ? 'bg-green-100 text-green-700' 
-                          : 'bg-red-100 text-red-700'
-                      }`}>
-                        {collection.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      collection.is_active 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-red-100 text-red-700'
+                    }`}>
+                      {collection.is_active ? 'Active' : 'Inactive'}
+                    </span>
                   </div>
                   
                   <p className="text-stone text-sm mb-2">Slug: {collection.slug}</p>
                   
                   {collection.description && (
                     <p className="text-charcoal mb-3">{collection.description}</p>
-                  )}
-                  
-                  {collection.image_url && (
-                    <div className="mb-3">
-                      <img
-                        src={collection.image_url}
-                        alt={collection.name}
-                        className="w-20 h-20 object-cover rounded-lg"
-                      />
-                    </div>
                   )}
                   
                   <div className="text-xs text-stone">
