@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Mail, Phone, MapPin, Award, Star, LogIn, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,7 +18,7 @@ const Footer = () => {
       {/* Decorative top border */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sage via-terracotta to-sage"></div>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-12">
           
