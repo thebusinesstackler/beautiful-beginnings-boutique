@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -47,7 +46,7 @@ const WebsiteManager = () => {
       }
 
       if (data) {
-        setContent(data as WebsiteContent);
+        setContent(data as unknown as WebsiteContent);
       } else {
         // Create default content if none exists
         const defaultContent = {
@@ -71,7 +70,7 @@ const WebsiteManager = () => {
           .single();
 
         if (insertError) throw insertError;
-        setContent(newData as WebsiteContent);
+        setContent(newData as unknown as WebsiteContent);
       }
     } catch (error) {
       console.error('Error fetching website content:', error);
