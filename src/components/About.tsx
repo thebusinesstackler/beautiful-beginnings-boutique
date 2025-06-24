@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, Star, ArrowRight } from 'lucide-react';
+import { Heart, ShoppingCart, Star, ArrowRight, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
