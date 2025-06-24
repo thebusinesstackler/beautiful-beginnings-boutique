@@ -37,7 +37,9 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({
   };
 
   const handleImagesReorder = (reorderedImages: string[]) => {
-    // The reordered images include the primary image, so we need to separate them
+    console.log('Reordering images:', reorderedImages);
+    
+    // Find the current primary image in the reordered list
     const primaryIndex = reorderedImages.findIndex(img => img === imageUrl);
     
     if (primaryIndex === -1) {
@@ -71,14 +73,23 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({
   const handleSetPrimary = (newPrimaryUrl: string) => {
     console.log('Setting new primary:', newPrimaryUrl);
     
-    // Remove the new primary from gallery
-    const updatedGallery = galleryImages.filter(img => img !== newPrimaryUrl);
+    if (newPrimaryUrl === imageUrl) {
+      console.log('Image is already primary');
+      return;
+    }
     
-    // Add the current primary to gallery if it exists
+    // Create new gallery array
+    let updatedGallery = [...galleryImages];
+    
+    // Remove the new primary from gallery if it exists there
+    updatedGallery = updatedGallery.filter(img => img !== newPrimaryUrl);
+    
+    // Add the current primary to gallery if it exists and is different
     if (imageUrl && imageUrl !== newPrimaryUrl) {
       updatedGallery.unshift(imageUrl);
     }
     
+    // Update state
     onImageUrlChange(newPrimaryUrl);
     onGalleryImagesChange(updatedGallery);
   };

@@ -29,13 +29,17 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      console.log('Uploading file:', fileName);
+
+      const { error: uploadError, data: uploadData } = await supabase.storage
         .from('product-images')
         .upload(filePath, file);
 
       if (uploadError) {
+        console.error('Upload error:', uploadError);
         // If bucket doesn't exist, create it first
         if (uploadError.message.includes('Bucket not found')) {
+          console.log('Creating bucket...');
           await supabase.storage.createBucket('product-images', { public: true });
           // Retry upload
           const { error: retryError } = await supabase.storage
@@ -51,6 +55,8 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
         .from('product-images')
         .getPublicUrl(filePath);
 
+      console.log('Image uploaded successfully:', data.publicUrl);
+      
       onImageUploaded(data.publicUrl);
       toast({
         title: "Success",
@@ -69,30 +75,34 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Error",
-        description: "Please select an image file",
-        variant: "destructive",
-      });
-      return;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Error",
+          description: "Please select image files only",
+          variant: "destructive",
+        });
+        continue;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Error",
+          description: `${file.name} is too large (max 5MB)`,
+          variant: "destructive",
+        });
+        continue;
+      }
+
+      await handleImageUpload(file);
     }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "Error",
-        description: "File size must be less than 5MB",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    await handleImageUpload(file);
     
     // Reset file input
     if (fileInputRef.current) {
@@ -102,6 +112,7 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
 
   const handleUrlAdd = () => {
     if (imageUrl.trim()) {
+      console.log('Adding image URL:', imageUrl.trim());
       onImageUploaded(imageUrl.trim());
       setImageUrl('');
       toast({
