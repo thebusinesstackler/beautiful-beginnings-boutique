@@ -103,7 +103,7 @@ const Shop = () => {
         case 'price-desc':
           return (b.price || 0) - (a.price || 0);
         case 'newest':
-          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+          return 0; // Remove created_at sorting since it doesn't exist
         default:
           return 0;
       }
