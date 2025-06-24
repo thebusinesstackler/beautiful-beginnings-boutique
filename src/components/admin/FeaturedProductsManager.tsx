@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Edit, Trash2, Save, X, Upload } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
+import FeaturedProductImageUploader from './FeaturedProductImageUploader';
 
 interface FeaturedProduct {
   id: string;
@@ -53,12 +54,27 @@ const FeaturedProductsManager = () => {
   const fetchFeaturedProducts = async () => {
     try {
       const { data, error } = await supabase
-        .from('featured_products' as any)
-        .select('*')
+        .from('featured_products')
+        .select(`
+          id,
+          name,
+          price,
+          original_price,
+          image,
+          description,
+          href,
+          rating,
+          reviews,
+          customer_quote,
+          is_active,
+          sort_order,
+          created_at,
+          updated_at
+        `)
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      setFeaturedProducts((data || []) as FeaturedProduct[]);
+      setFeaturedProducts(data || []);
     } catch (error) {
       console.error('Error fetching featured products:', error);
       toast({
@@ -91,7 +107,7 @@ const FeaturedProductsManager = () => {
 
       if (editingId) {
         const { error } = await supabase
-          .from('featured_products' as any)
+          .from('featured_products')
           .update({
             ...productData,
             updated_at: new Date().toISOString()
@@ -106,7 +122,7 @@ const FeaturedProductsManager = () => {
         });
       } else {
         const { error } = await supabase
-          .from('featured_products' as any)
+          .from('featured_products')
           .insert([productData]);
 
         if (error) throw error;
@@ -152,7 +168,7 @@ const FeaturedProductsManager = () => {
 
     try {
       const { error } = await supabase
-        .from('featured_products' as any)
+        .from('featured_products')
         .delete()
         .eq('id', id);
 
@@ -223,7 +239,7 @@ const FeaturedProductsManager = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="name">Product Name</Label>
@@ -280,14 +296,12 @@ const FeaturedProductsManager = () => {
                 </div>
               </div>
 
+              {/* Enhanced Image Upload Section */}
               <div>
-                <Label htmlFor="image">Image URL</Label>
-                <Input
-                  id="image"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="https://..."
-                  required
+                <Label className="text-base font-medium text-charcoal mb-4 block">Product Image</Label>
+                <FeaturedProductImageUploader
+                  currentImage={formData.image}
+                  onImageChange={(imageUrl) => setFormData({ ...formData, image: imageUrl })}
                 />
               </div>
 
