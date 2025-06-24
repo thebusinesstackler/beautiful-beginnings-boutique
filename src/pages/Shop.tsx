@@ -109,7 +109,7 @@ const Shop = () => {
       
       {/* Hero Section */}
       <section className="py-20" style={{ backgroundColor: '#faf6ee' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="w-full px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-playfair font-bold mb-6" style={{ color: '#5B4C37' }}>
             Shop All Products
           </h1>
@@ -120,7 +120,7 @@ const Shop = () => {
       </section>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-16">
         {/* Products Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4" style={{ color: '#5B4C37' }}>
