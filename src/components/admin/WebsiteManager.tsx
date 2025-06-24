@@ -1,13 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Upload, Save, Eye, EyeOff } from 'lucide-react';
-import ProductImageUploader from './ProductImageUploader';
+import { Save, Eye, EyeOff } from 'lucide-react';
+import HeroContentManager from './HeroContentManager';
+import BackgroundImagesManager from './BackgroundImagesManager';
+import FAQManager from './FAQManager';
 
 interface WebsiteContent {
   id: string;
@@ -37,7 +37,7 @@ const WebsiteManager = () => {
   const fetchWebsiteContent = async () => {
     try {
       const { data, error } = await supabase
-        .from('website_content' as any)
+        .from('website_content')
         .select('*')
         .single();
 
@@ -64,7 +64,7 @@ const WebsiteManager = () => {
         };
 
         const { data: newData, error: insertError } = await supabase
-          .from('website_content' as any)
+          .from('website_content')
           .insert([defaultContent])
           .select()
           .single();
@@ -90,7 +90,7 @@ const WebsiteManager = () => {
     setSaving(true);
     try {
       const { error } = await supabase
-        .from('website_content' as any)
+        .from('website_content')
         .update({
           hero_main_image: content.hero_main_image,
           hero_secondary_images: content.hero_secondary_images,
@@ -120,46 +120,6 @@ const WebsiteManager = () => {
     } finally {
       setSaving(false);
     }
-  };
-
-  const handleImageUpload = (imageUrl: string, field: string) => {
-    if (!content) return;
-
-    setContent({
-      ...content,
-      [field]: imageUrl
-    });
-  };
-
-  const handleSecondaryImageUpload = (imageUrl: string, index: number) => {
-    if (!content) return;
-
-    const newSecondaryImages = [...content.hero_secondary_images];
-    newSecondaryImages[index] = imageUrl;
-
-    setContent({
-      ...content,
-      hero_secondary_images: newSecondaryImages
-    });
-  };
-
-  const addSecondaryImage = () => {
-    if (!content) return;
-
-    setContent({
-      ...content,
-      hero_secondary_images: [...content.hero_secondary_images, ""]
-    });
-  };
-
-  const removeSecondaryImage = (index: number) => {
-    if (!content) return;
-
-    const newSecondaryImages = content.hero_secondary_images.filter((_, i) => i !== index);
-    setContent({
-      ...content,
-      hero_secondary_images: newSecondaryImages
-    });
   };
 
   if (loading) {
@@ -204,159 +164,21 @@ const WebsiteManager = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Hero Section */}
-        <Card className="bg-cream/30 border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-charcoal">Hero Section</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label className="text-base font-medium text-charcoal">Hero Title</Label>
-              <Input
-                value={content.hero_title}
-                onChange={(e) => setContent({ ...content, hero_title: e.target.value })}
-                placeholder="Main hero title"
-              />
-            </div>
+        <HeroContentManager
+          content={content}
+          onContentChange={setContent}
+          uploading={uploading}
+          setUploading={setUploading}
+        />
 
-            <div>
-              <Label className="text-base font-medium text-charcoal">Hero Subtitle</Label>
-              <Input
-                value={content.hero_subtitle}
-                onChange={(e) => setContent({ ...content, hero_subtitle: e.target.value })}
-                placeholder="Hero subtitle"
-              />
-            </div>
-
-            <div>
-              <Label className="text-base font-medium text-charcoal">Hero Description</Label>
-              <Textarea
-                value={content.hero_description}
-                onChange={(e) => setContent({ ...content, hero_description: e.target.value })}
-                placeholder="Hero description text"
-                rows={4}
-              />
-            </div>
-
-            <div>
-              <Label className="text-base font-medium text-charcoal mb-2 block">Main Hero Image</Label>
-              {content.hero_main_image && (
-                <div className="mb-4">
-                  <img
-                    src={content.hero_main_image}
-                    alt="Hero main"
-                    className="w-full h-32 object-cover rounded-lg"
-                  />
-                </div>
-              )}
-              <ProductImageUploader
-                onImageUploaded={(url) => handleImageUpload(url, 'hero_main_image')}
-                uploading={uploading}
-                setUploading={setUploading}
-              />
-            </div>
-
-            <div>
-              <Label className="text-base font-medium text-charcoal mb-2 block">Secondary Hero Images</Label>
-              {content.hero_secondary_images.map((image, index) => (
-                <div key={index} className="mb-4 p-4 border rounded-lg">
-                  {image && (
-                    <img
-                      src={image}
-                      alt={`Hero secondary ${index + 1}`}
-                      className="w-full h-24 object-cover rounded mb-2"
-                    />
-                  )}
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      value={image}
-                      onChange={(e) => handleSecondaryImageUpload(e.target.value, index)}
-                      placeholder="Image URL"
-                      className="flex-1"
-                    />
-                    <Button
-                      onClick={() => removeSecondaryImage(index)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              <Button
-                onClick={addSecondaryImage}
-                variant="outline"
-                size="sm"
-              >
-                Add Secondary Image
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Background Images */}
-        <Card className="bg-blush/20 border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-charcoal">Section Background Images</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <Label className="text-base font-medium text-charcoal mb-2 block">About Section Background</Label>
-              {content.about_background_image && (
-                <div className="mb-4">
-                  <img
-                    src={content.about_background_image}
-                    alt="About background"
-                    className="w-full h-24 object-cover rounded-lg"
-                  />
-                </div>
-              )}
-              <Input
-                value={content.about_background_image}
-                onChange={(e) => handleImageUpload(e.target.value, 'about_background_image')}
-                placeholder="About section background image URL"
-              />
-            </div>
-
-            <div>
-              <Label className="text-base font-medium text-charcoal mb-2 block">Featured Products Background</Label>
-              {content.featured_background_image && (
-                <div className="mb-4">
-                  <img
-                    src={content.featured_background_image}
-                    alt="Featured background"
-                    className="w-full h-24 object-cover rounded-lg"
-                  />
-                </div>
-              )}
-              <Input
-                value={content.featured_background_image}
-                onChange={(e) => handleImageUpload(e.target.value, 'featured_background_image')}
-                placeholder="Featured section background image URL"
-              />
-            </div>
-
-            <div>
-              <Label className="text-base font-medium text-charcoal mb-2 block">Testimonials Background</Label>
-              {content.testimonials_background_image && (
-                <div className="mb-4">
-                  <img
-                    src={content.testimonials_background_image}
-                    alt="Testimonials background"
-                    className="w-full h-24 object-cover rounded-lg"
-                  />
-                </div>
-              )}
-              <Input
-                value={content.testimonials_background_image}
-                onChange={(e) => handleImageUpload(e.target.value, 'testimonials_background_image')}
-                placeholder="Testimonials section background image URL"
-              />
-            </div>
-          </CardContent>
-        </Card>
+        <BackgroundImagesManager
+          content={content}
+          onContentChange={setContent}
+        />
       </div>
+
+      {/* FAQ Management Section */}
+      <FAQManager />
 
       {/* Preview Section */}
       {showPreview && (

@@ -1,48 +1,75 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface FAQ {
+  id: string;
+  question: string;
+  answer: string;
+  sort_order: number;
+  is_active: boolean;
+}
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const faqs = [
-    {
-      question: "How do I upload my photo for personalization?",
-      answer: "Simply click on any product, then use our easy upload tool to select your photo from your device. We accept JPG, PNG, and HEIC formats. For best results, use high-resolution images."
-    },
-    {
-      question: "How long does it take to receive my personalized item?",
-      answer: "Most orders are handcrafted and shipped within 3-5 business days. Standard shipping takes an additional 5-7 business days. Rush orders are available for an additional fee."
-    },
-    {
-      question: "What if I'm not satisfied with my order?",
-      answer: "We offer a 100% satisfaction guarantee! If you're not completely happy with your personalized item, contact us within 30 days for a full refund or replacement."
-    },
-    {
-      question: "Can I see a preview before my item is made?",
-      answer: "Yes! After uploading your photo, you'll see a digital preview of how your item will look. You can make adjustments to text, positioning, and colors before we begin crafting."
-    },
-    {
-      question: "Do you offer gift wrapping?",
-      answer: "Absolutely! We offer elegant gift wrapping and can include a personalized note with your order. Gift wrapping is currently complimentary for a limited time."
-    },
-    {
-      question: "What materials do you use for your products?",
-      answer: "We use only premium materials including genuine leather, high-quality metals, natural slate, and durable wood. All materials are chosen for their longevity and beauty."
-    },
-    {
-      question: "Can I order in bulk for special events?",
-      answer: "Yes! We offer bulk discounts for orders of 10 or more items. Perfect for weddings, corporate gifts, or family reunions. Contact us for special pricing."
-    },
-    {
-      question: "How do I care for my personalized items?",
-      answer: "Each item comes with specific care instructions. Generally, avoid direct sunlight and moisture. For jewelry, store in a dry place. For ornaments, handle gently and store safely when not displayed."
+  useEffect(() => {
+    fetchFAQs();
+  }, []);
+
+  const fetchFAQs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('faqs')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      setFaqs(data || []);
+    } catch (error) {
+      console.error('Error fetching FAQs:', error);
+      // Fall back to default FAQs if database query fails
+      setFaqs([
+        {
+          id: '1',
+          question: "How do I upload my photo for personalization?",
+          answer: "Simply click on any product, then use our easy upload tool to select your photo from your device. We accept JPG, PNG, and HEIC formats. For best results, use high-resolution images.",
+          sort_order: 1,
+          is_active: true
+        },
+        {
+          id: '2',
+          question: "How long does it take to receive my personalized item?",
+          answer: "Most orders are handcrafted and shipped within 3-5 business days. Standard shipping takes an additional 5-7 business days. Rush orders are available for an additional fee.",
+          sort_order: 2,
+          is_active: true
+        }
+      ]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-white to-primary/5">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto mb-4"></div>
+            <div className="text-foreground font-medium">Loading FAQs...</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-gradient-to-b from-white to-primary/5">
@@ -59,7 +86,7 @@ const FAQ = () => {
         <div className="space-y-4">
           {faqs.map((faq, index) => (
             <div
-              key={index}
+              key={faq.id}
               className="bg-white rounded-xl shadow-sm border border-primary/10 overflow-hidden"
             >
               <button
