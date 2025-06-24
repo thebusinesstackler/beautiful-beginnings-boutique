@@ -103,8 +103,7 @@ const Shop = () => {
       id: parseInt(product.id.replace(/-/g, '').substring(0, 8), 16), // Convert UUID to number
       name: product.name,
       price: product.price,
-      image: getProductImage(product),
-      quantity: 1
+      image: getProductImage(product)
     });
     toast({
       title: "Added to Cart",
