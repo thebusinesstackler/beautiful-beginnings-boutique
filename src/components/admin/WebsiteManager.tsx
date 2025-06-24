@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import FeaturedManager from './FeaturedManager';
 import HomepagePreview from './HomepagePreview';
 import TestimonialsManager from './TestimonialsManager';
 import CollectionsManager from './CollectionsManager';
+import FeaturedProductsManager from './FeaturedProductsManager';
 
 interface WebsiteContent {
   id: string;
@@ -180,6 +182,16 @@ const WebsiteManager = () => {
           onContentChange={setContent}
         />
       </div>
+
+      {/* Featured Products Section Management */}
+      <Card className="bg-blush/10 border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-charcoal">Featured Products (About Section)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FeaturedProductsManager />
+        </CardContent>
+      </Card>
 
       {/* Featured Products & Bestsellers Management */}
       <FeaturedManager />

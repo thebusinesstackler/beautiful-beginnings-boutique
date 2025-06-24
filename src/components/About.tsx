@@ -1,45 +1,150 @@
 
+import { useState, useEffect } from 'react';
 import { Heart, Star, ShoppingCart, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+
+interface FeaturedProduct {
+  id: string;
+  name: string;
+  price: number;
+  original_price?: number;
+  image: string;
+  description: string;
+  href: string;
+  rating: number;
+  reviews: number;
+  customer_quote: string;
+  is_active: boolean;
+  sort_order: number;
+}
 
 const About = () => {
-  const featuredProducts = [
-    {
-      id: 1,
-      name: "Holiday Sparkle Ornaments",
-      price: 22.50,
-      originalPrice: 25.00,
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=600",
-      description: "A shimmering memory you can hang with love. These glossy, vibrant photo ornaments are perfect for Christmas trees, mantle displays, or gift tags.",
-      href: "/products/ornaments",
-      rating: 5,
-      reviews: 24,
-      customerQuote: "A picture is worth a thousand words—ours are worth a lifetime!"
-    },
-    {
-      id: 2,
-      name: "Heartfelt Wearables",
-      price: 15.00,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=600",
-      description: "Keep love close with beautiful charm bracelets, lockets, and keychains. Each piece is sublimated with your chosen photo and finished with a polished, durable gloss.",
-      href: "/products/necklaces",
-      rating: 5,
-      reviews: 18,
-      customerQuote: "Keepsakes that feel like hugs from home."
-    },
-    {
-      id: 3,
-      name: "Whimsy Wood Decor",
-      price: 12.00,
-      image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=600",
-      description: "Bring a little merry to every corner with playful countdowns, rustic wreaths, and timeless accents made to charm.",
-      href: "/products/wood-sublimation",
-      rating: 5,
-      reviews: 32,
-      customerQuote: "We don't just make gifts—we make stories that stay."
+  const [featuredProducts, setFeaturedProducts] = useState<FeaturedProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchFeaturedProducts();
+  }, []);
+
+  const fetchFeaturedProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('featured_products')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      
+      // If no data from DB, use default hardcoded products
+      if (!data || data.length === 0) {
+        setFeaturedProducts([
+          {
+            id: '1',
+            name: "Holiday Sparkle Ornaments",
+            price: 22.50,
+            original_price: 25.00,
+            image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=600",
+            description: "A shimmering memory you can hang with love. These glossy, vibrant photo ornaments are perfect for Christmas trees, mantle displays, or gift tags.",
+            href: "/products/ornaments",
+            rating: 5,
+            reviews: 24,
+            customer_quote: "A picture is worth a thousand words—ours are worth a lifetime!",
+            is_active: true,
+            sort_order: 1
+          },
+          {
+            id: '2',
+            name: "Heartfelt Wearables",
+            price: 15.00,
+            image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=600",
+            description: "Keep love close with beautiful charm bracelets, lockets, and keychains. Each piece is sublimated with your chosen photo and finished with a polished, durable gloss.",
+            href: "/products/necklaces",
+            rating: 5,
+            reviews: 18,
+            customer_quote: "Keepsakes that feel like hugs from home.",
+            is_active: true,
+            sort_order: 2
+          },
+          {
+            id: '3',
+            name: "Whimsy Wood Decor",
+            price: 12.00,
+            image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=600",
+            description: "Bring a little merry to every corner with playful countdowns, rustic wreaths, and timeless accents made to charm.",
+            href: "/products/wood-sublimation",
+            rating: 5,
+            reviews: 32,
+            customer_quote: "We don't just make gifts—we make stories that stay.",
+            is_active: true,
+            sort_order: 3
+          }
+        ]);
+      } else {
+        setFeaturedProducts(data);
+      }
+    } catch (error) {
+      console.error('Error fetching featured products:', error);
+      // Fallback to default products on error
+      setFeaturedProducts([
+        {
+          id: '1',
+          name: "Holiday Sparkle Ornaments",
+          price: 22.50,
+          original_price: 25.00,
+          image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=600",
+          description: "A shimmering memory you can hang with love. These glossy, vibrant photo ornaments are perfect for Christmas trees, mantle displays, or gift tags.",
+          href: "/products/ornaments",
+          rating: 5,
+          reviews: 24,
+          customer_quote: "A picture is worth a thousand words—ours are worth a lifetime!",
+          is_active: true,
+          sort_order: 1
+        },
+        {
+          id: '2',
+          name: "Heartfelt Wearables",
+          price: 15.00,
+          image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=600",
+          description: "Keep love close with beautiful charm bracelets, lockets, and keychains. Each piece is sublimated with your chosen photo and finished with a polished, durable gloss.",
+          href: "/products/necklaces",
+          rating: 5,
+          reviews: 18,
+          customer_quote: "Keepsakes that feel like hugs from home.",
+          is_active: true,
+          sort_order: 2
+        },
+        {
+          id: '3',
+          name: "Whimsy Wood Decor",
+          price: 12.00,
+          image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=600",
+          description: "Bring a little merry to every corner with playful countdowns, rustic wreaths, and timeless accents made to charm.",
+          href: "/products/wood-sublimation",
+          rating: 5,
+          reviews: 32,
+          customer_quote: "We don't just make gifts—we make stories that stay.",
+          is_active: true,
+          sort_order: 3
+        }
+      ]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
+          <div className="text-charcoal font-medium">Loading featured products...</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-white">
@@ -106,9 +211,9 @@ const About = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                   
                   {/* Sale Badge */}
-                  {product.originalPrice && (
+                  {product.original_price && (
                     <div className="absolute top-6 left-6 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg" style={{ backgroundColor: '#E28F84' }}>
-                      SAVE ${(product.originalPrice - product.price).toFixed(2)}
+                      SAVE ${(product.original_price - product.price).toFixed(2)}
                     </div>
                   )}
                   
@@ -124,8 +229,8 @@ const About = () => {
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold" style={{ color: '#E28F84' }}>${product.price}</div>
-                          {product.originalPrice && (
-                            <div className="text-sm text-gray-500 line-through">${product.originalPrice}</div>
+                          {product.original_price && (
+                            <div className="text-sm text-gray-500 line-through">${product.original_price}</div>
                           )}
                         </div>
                       </div>
@@ -156,7 +261,7 @@ const About = () => {
                 {/* Customer Quote */}
                 <div className="rounded-2xl p-6 border-l-4 mb-8" style={{ backgroundColor: '#F6DADA', borderColor: '#E28F84' }}>
                   <p className="text-lg italic mb-2" style={{ color: '#5B4C37' }}>
-                    "{product.customerQuote}"
+                    "{product.customer_quote}"
                   </p>
                   <p className="text-sm font-medium" style={{ color: '#E28F84' }}>— Verified Customer</p>
                 </div>
