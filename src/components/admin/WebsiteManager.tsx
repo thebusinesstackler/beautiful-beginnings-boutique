@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,6 +32,7 @@ const WebsiteManager = () => {
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -89,11 +89,18 @@ const WebsiteManager = () => {
     }
   };
 
+  const handleContentChange = (newContent: WebsiteContent) => {
+    setContent(newContent);
+    setHasUnsavedChanges(true);
+  };
+
   const handleSave = async () => {
     if (!content) return;
 
     setSaving(true);
     try {
+      console.log('Saving website content:', content);
+      
       const { error } = await supabase
         .from('website_content')
         .update({
@@ -109,8 +116,14 @@ const WebsiteManager = () => {
         })
         .eq('id', content.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving website content:', error);
+        throw error;
+      }
 
+      setHasUnsavedChanges(false);
+      console.log('Website content saved successfully');
+      
       toast({
         title: "Success",
         description: "Website content updated successfully",
@@ -159,27 +172,35 @@ const WebsiteManager = () => {
           </Button>
           <Button
             onClick={handleSave}
-            disabled={saving}
-            className="bg-sage hover:bg-sage/90"
+            disabled={saving || uploading || !hasUnsavedChanges}
+            className={`${hasUnsavedChanges ? 'bg-orange-600 hover:bg-orange-700' : 'bg-sage hover:bg-sage/90'} text-white`}
           >
             <Save className="h-4 w-4 mr-2" />
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? 'Saving...' : hasUnsavedChanges ? 'Save Changes' : 'Saved'}
           </Button>
         </div>
       </div>
+
+      {hasUnsavedChanges && (
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+          <p className="text-orange-800 text-sm">
+            ⚠️ You have unsaved changes. Click "Save Changes" to update your website.
+          </p>
+        </div>
+      )}
 
       {/* Hero and Background Images Management */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <HeroContentManager
           content={content}
-          onContentChange={setContent}
+          onContentChange={handleContentChange}
           uploading={uploading}
           setUploading={setUploading}
         />
 
         <BackgroundImagesManager
           content={content}
-          onContentChange={setContent}
+          onContentChange={handleContentChange}
         />
       </div>
 
