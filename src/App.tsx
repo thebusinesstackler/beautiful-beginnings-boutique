@@ -17,6 +17,7 @@ import PhotoMemoryNecklace from './pages/PhotoMemoryNecklace';
 import WinterBotanicalSnowGlobe from './pages/WinterBotanicalSnowGlobe';
 import CustomPhotoSnowGlobe from './pages/CustomPhotoSnowGlobe';
 import ShippingReturns from './pages/ShippingReturns';
+import OurStory from './pages/OurStory';
 import NotFound from './pages/NotFound';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
@@ -48,6 +49,7 @@ function App() {
             <Route path="/products/snow-globes/winter-botanical" element={<WinterBotanicalSnowGlobe />} />
             <Route path="/products/snow-globes/custom-photo" element={<CustomPhotoSnowGlobe />} />
             <Route path="/shipping-returns" element={<ShippingReturns />} />
+            <Route path="/our-story" element={<OurStory />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />

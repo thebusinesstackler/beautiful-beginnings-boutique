@@ -18,6 +18,7 @@ const Navigation = () => {
     { name: 'Ornaments', href: '/products/ornaments' },
     { name: 'Slate Products', href: '/products/slate' },
     { name: 'Wood Pictures', href: '/products/wood-sublimation' },
+    { name: 'Our Story', href: '/our-story' },
   ];
 
   return (
