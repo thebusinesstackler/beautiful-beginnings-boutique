@@ -551,6 +551,48 @@ export type Database = {
         }
         Relationships: []
       }
+      website_content: {
+        Row: {
+          about_background_image: string | null
+          created_at: string | null
+          featured_background_image: string | null
+          hero_description: string | null
+          hero_main_image: string | null
+          hero_secondary_images: string[] | null
+          hero_subtitle: string | null
+          hero_title: string | null
+          id: string
+          testimonials_background_image: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          about_background_image?: string | null
+          created_at?: string | null
+          featured_background_image?: string | null
+          hero_description?: string | null
+          hero_main_image?: string | null
+          hero_secondary_images?: string[] | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          testimonials_background_image?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          about_background_image?: string | null
+          created_at?: string | null
+          featured_background_image?: string | null
+          hero_description?: string | null
+          hero_main_image?: string | null
+          hero_secondary_images?: string[] | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          testimonials_background_image?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -38,7 +38,7 @@ const WebsiteManager = () => {
   const fetchWebsiteContent = async () => {
     try {
       const { data, error } = await supabase
-        .from('website_content')
+        .from('website_content' as any)
         .select('*')
         .single();
 
@@ -47,7 +47,7 @@ const WebsiteManager = () => {
       }
 
       if (data) {
-        setContent(data);
+        setContent(data as WebsiteContent);
       } else {
         // Create default content if none exists
         const defaultContent = {
@@ -65,13 +65,13 @@ const WebsiteManager = () => {
         };
 
         const { data: newData, error: insertError } = await supabase
-          .from('website_content')
+          .from('website_content' as any)
           .insert([defaultContent])
           .select()
           .single();
 
         if (insertError) throw insertError;
-        setContent(newData);
+        setContent(newData as WebsiteContent);
       }
     } catch (error) {
       console.error('Error fetching website content:', error);
@@ -91,7 +91,7 @@ const WebsiteManager = () => {
     setSaving(true);
     try {
       const { error } = await supabase
-        .from('website_content')
+        .from('website_content' as any)
         .update({
           hero_main_image: content.hero_main_image,
           hero_secondary_images: content.hero_secondary_images,
