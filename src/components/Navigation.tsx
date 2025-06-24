@@ -11,14 +11,12 @@ const Navigation = () => {
 
   const navItems = [
     { name: 'Home', href: '/' },
-    { name: 'Shop', href: '/shop' },
     { name: 'Snow Globes', href: '/products/snow-globes' },
     { name: 'Necklaces', href: '/products/necklaces' },
     { name: 'Ornaments', href: '/products/ornaments' },
     { name: 'Slate Products', href: '/products/slate' },
     { name: 'Wood Pictures', href: '/products/wood-sublimation' },
     { name: 'About', href: '/about' },
-    { name: 'Our Story', href: '/our-story' },
   ];
 
   return (
