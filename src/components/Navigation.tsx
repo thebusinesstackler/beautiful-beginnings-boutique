@@ -22,8 +22,8 @@ const Navigation = () => {
 
   return (
     <nav className="shadow-lg sticky top-0 z-50" style={{ backgroundColor: '#faf6ee', borderBottom: '1px solid #F6DADA' }}>
-      <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-28">
+      <div className="w-full">
+        <div className="flex justify-between items-center h-28 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link 
             to="/" 
