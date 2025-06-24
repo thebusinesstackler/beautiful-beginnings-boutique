@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, Star, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -80,7 +79,7 @@ const FeaturedProducts = () => {
   if (loading) {
     return (
       <section className="py-20" style={{ backgroundColor: '#FAF5EF' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
             <div className="text-charcoal font-medium">Loading featured products...</div>
@@ -92,9 +91,9 @@ const FeaturedProducts = () => {
 
   return (
     <section className="py-20" style={{ backgroundColor: '#FAF5EF' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-16 animate-fade-in">
+        <div className="text-center mb-16 animate-fade-in max-w-7xl mx-auto">
           <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
             <Star className="h-4 w-4 mr-2" />
             Customer Favorites
@@ -108,11 +107,11 @@ const FeaturedProducts = () => {
         </div>
 
         {/* Section Divider */}
-        <div className="w-full h-px mb-12" style={{ backgroundColor: '#F6DADA' }}></div>
+        <div className="w-full h-px mb-12 max-w-7xl mx-auto" style={{ backgroundColor: '#F6DADA' }}></div>
 
         {/* Products Grid */}
         {products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {products.map((product) => (
               <div
                 key={product.id}
@@ -193,14 +192,14 @@ const FeaturedProducts = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
+          <div className="text-center py-16 max-w-7xl mx-auto">
             <p className="text-xl text-stone mb-4">No featured products available</p>
             <p className="text-stone">Products can be featured from the admin dashboard</p>
           </div>
         )}
 
         {/* View All Button */}
-        <div className="text-center mt-16">
+        <div className="text-center mt-16 max-w-7xl mx-auto">
           <Button 
             className="px-10 py-4 text-lg group font-semibold rounded-lg border-2 transition-all duration-200"
             style={{ 
