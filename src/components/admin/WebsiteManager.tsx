@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,8 @@ import BackgroundImagesManager from './BackgroundImagesManager';
 import FAQManager from './FAQManager';
 import FeaturedManager from './FeaturedManager';
 import HomepagePreview from './HomepagePreview';
+import TestimonialsManager from './TestimonialsManager';
+import CollectionsManager from './CollectionsManager';
 
 interface WebsiteContent {
   id: string;
@@ -185,6 +186,26 @@ const WebsiteManager = () => {
 
       {/* Homepage Preview */}
       <HomepagePreview />
+
+      {/* Collections Management */}
+      <Card className="bg-accent/5 border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-charcoal">Collections Management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CollectionsManager />
+        </CardContent>
+      </Card>
+
+      {/* Testimonials Management */}
+      <Card className="bg-blush/10 border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-charcoal">Testimonials Management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TestimonialsManager />
+        </CardContent>
+      </Card>
 
       {/* FAQ Management Section */}
       <FAQManager />
