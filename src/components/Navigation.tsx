@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Menu, X } from 'lucide-react';
@@ -22,7 +23,7 @@ const Navigation = () => {
   return (
     <nav className="shadow-lg sticky top-0 z-50" style={{ backgroundColor: '#faf6ee', borderBottom: '1px solid #F6DADA' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-24">
           {/* Logo */}
           <Link 
             to="/" 
@@ -32,7 +33,7 @@ const Navigation = () => {
             <img 
               src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
               alt="Beautiful Beginnings Logo" 
-              className="h-16 w-16 object-contain"
+              className="h-32 w-32 object-contain"
             />
           </Link>
 
