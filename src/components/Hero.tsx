@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Star, Heart, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
 interface WebsiteContent {
@@ -85,13 +86,16 @@ const Hero = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
               <Button 
+                asChild
                 className="text-lg px-8 py-3 group text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
                 style={{ backgroundColor: '#E28F84' }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
               >
-                Shop Now
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <Link to="/shop">
+                  Shop Now
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </Button>
               <Button 
                 variant="outline" 
