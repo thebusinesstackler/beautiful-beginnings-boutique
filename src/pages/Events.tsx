@@ -40,12 +40,12 @@ const Events = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream to-pearl">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream via-pearl to-blush/30">
         <Navigation />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
-            <div className="text-charcoal font-medium">Loading events...</div>
+            <div className="animate-spin rounded-full h-12 w-12 border-3 border-sage border-t-transparent mx-auto mb-6"></div>
+            <div className="text-charcoal font-medium text-lg">Loading upcoming events...</div>
           </div>
         </main>
         <Footer />
@@ -54,89 +54,146 @@ const Events = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream to-pearl">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream via-pearl to-blush/30">
       <Navigation />
       
-      <main className="flex-1 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-charcoal mb-4">Events & Shows</h1>
-            <p className="text-lg text-stone max-w-2xl mx-auto">
-              Come meet us in person! We'd love to see you at these upcoming craft fairs, markets, and special events.
+      <main className="flex-1 py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Hero Header */}
+          <div className="text-center mb-20">
+            <div className="inline-block px-4 py-2 bg-sage/10 rounded-full mb-6">
+              <span className="text-sage font-medium text-sm uppercase tracking-wide">Events & Shows</span>
+            </div>
+            <h1 className="text-5xl md:text-6xl font-playfair font-bold text-charcoal mb-6 leading-tight">
+              Meet Us in 
+              <span className="text-sage block">Person</span>
+            </h1>
+            <p className="text-xl text-stone max-w-3xl mx-auto leading-relaxed">
+              Join us at craft fairs, markets, and special events where you can see our 
+              handcrafted keepsakes up close and meet the artisans behind each piece.
             </p>
           </div>
 
-          {/* Events Grid */}
+          {/* Events */}
           {events && events.length > 0 ? (
-            <div className="grid gap-6 md:gap-8">
-              {events.map((event) => (
-                <div key={event.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
-                  <div className="md:flex">
+            <div className="space-y-12">
+              {events.map((event, index) => (
+                <article 
+                  key={event.id} 
+                  className={`group ${index === 0 ? 'featured-event' : ''}`}
+                >
+                  <div className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden ${
+                    index === 0 ? 'lg:grid lg:grid-cols-2 lg:gap-0' : ''
+                  }`}>
+                    {/* Featured Image */}
                     {event.image_url && (
-                      <div className="md:w-1/3">
+                      <div className={`relative overflow-hidden ${
+                        index === 0 ? 'lg:order-2 h-64 lg:h-full' : 'h-64'
+                      }`}>
                         <img 
                           src={event.image_url} 
                           alt={event.title}
-                          className="w-full h-48 md:h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 to-transparent"></div>
                       </div>
                     )}
-                    <div className={`p-6 ${event.image_url ? 'md:w-2/3' : 'w-full'}`}>
-                      <h2 className="text-2xl font-bold text-charcoal mb-4">{event.title}</h2>
+                    
+                    {/* Content */}
+                    <div className={`p-8 lg:p-12 ${index === 0 ? 'lg:order-1' : ''}`}>
+                      {/* Event Title */}
+                      <h2 className={`font-playfair font-bold text-charcoal mb-6 group-hover:text-sage transition-colors duration-300 ${
+                        index === 0 ? 'text-3xl lg:text-4xl' : 'text-2xl lg:text-3xl'
+                      }`}>
+                        {event.title}
+                      </h2>
                       
+                      {/* Event Description */}
                       {event.description && (
-                        <p className="text-stone mb-4 leading-relaxed">
+                        <p className={`text-stone leading-relaxed mb-6 ${
+                          index === 0 ? 'text-lg' : 'text-base'
+                        }`}>
                           {event.description}
                         </p>
                       )}
                       
-                      <div className="space-y-3">
+                      {/* Event Details */}
+                      <div className="space-y-4 mb-6">
                         {event.start_date && (
-                          <div className="flex items-center text-stone">
-                            <Calendar className="h-5 w-5 mr-3 text-sage" />
+                          <div className="flex items-start gap-3">
+                            <Calendar className="h-5 w-5 text-sage mt-0.5 flex-shrink-0" />
                             <div>
-                              <div className="font-medium">{formatDate(event.start_date)}</div>
-                              <div className="text-sm flex items-center">
-                                <Clock className="h-4 w-4 mr-1" />
-                                {formatTime(event.start_date)}
-                                {event.end_date && ` - ${formatTime(event.end_date)}`}
+                              <div className="font-medium text-charcoal text-lg">
+                                {formatDate(event.start_date)}
+                              </div>
+                              <div className="text-stone flex items-center gap-1 mt-1">
+                                <Clock className="h-4 w-4" />
+                                <span>
+                                  {formatTime(event.start_date)}
+                                  {event.end_date && ` - ${formatTime(event.end_date)}`}
+                                </span>
                               </div>
                             </div>
                           </div>
                         )}
                         
                         {event.location && (
-                          <div className="flex items-center text-stone">
-                            <MapPin className="h-5 w-5 mr-3 text-sage" />
-                            <span>{event.location}</span>
-                          </div>
-                        )}
-                        
-                        {event.event_url && (
-                          <div className="pt-2">
-                            <a 
-                              href={event.event_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center text-sage hover:text-chocolate font-medium transition-colors duration-200"
-                            >
-                              Learn more
-                              <ExternalLink className="h-4 w-4 ml-1" />
-                            </a>
+                          <div className="flex items-start gap-3">
+                            <MapPin className="h-5 w-5 text-sage mt-0.5 flex-shrink-0" />
+                            <span className="text-stone font-medium">{event.location}</span>
                           </div>
                         )}
                       </div>
+                      
+                      {/* Event Link */}
+                      {event.event_url && (
+                        <a 
+                          href={event.event_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-sage hover:text-chocolate font-medium transition-all duration-300 group-hover:gap-3"
+                        >
+                          Learn more about this event
+                          <ExternalLink className="h-4 w-4 transition-transform duration-300" />
+                        </a>
+                      )}
                     </div>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">📅</div>
-              <h3 className="text-xl font-semibold text-charcoal mb-2">No upcoming events</h3>
-              <p className="text-stone">Check back soon for exciting events where you can meet us in person!</p>
+            /* Empty State */
+            <div className="text-center py-20">
+              <div className="w-24 h-24 mx-auto mb-8 bg-sage/10 rounded-full flex items-center justify-center">
+                <span className="text-4xl">🎪</span>
+              </div>
+              <h3 className="text-2xl font-playfair font-semibold text-charcoal mb-4">
+                No Upcoming Events
+              </h3>
+              <p className="text-lg text-stone max-w-md mx-auto">
+                We're planning exciting events where you can meet us in person. 
+                Check back soon for craft fairs, markets, and special shows!
+              </p>
+            </div>
+          )}
+
+          {/* Call to Action */}
+          {events && events.length > 0 && (
+            <div className="mt-20 bg-gradient-to-r from-sage/10 to-forest/10 rounded-2xl p-8 lg:p-12 text-center">
+              <h3 className="text-2xl font-playfair font-bold text-charcoal mb-4">
+                Can't Make It to an Event?
+              </h3>
+              <p className="text-stone mb-6 max-w-2xl mx-auto">
+                Browse our full collection online and have our handcrafted keepsakes 
+                delivered directly to your door. Each piece is made with the same love and attention to detail.
+              </p>
+              <a 
+                href="/shop"
+                className="bg-sage hover:bg-forest text-white px-8 py-3 rounded-lg font-medium transition-colors duration-300 inline-block"
+              >
+                Shop Our Collection
+              </a>
             </div>
           )}
         </div>
