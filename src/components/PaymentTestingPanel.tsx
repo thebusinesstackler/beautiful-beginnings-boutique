@@ -106,30 +106,38 @@ const PaymentTestingPanel = () => {
     addTestResult('Payment Flow', 'pending', 'Testing payment initialization...');
     
     setTimeout(() => {
-      if (window.Square) {
-        // Check if card container exists
-        const cardContainer = document.getElementById('card-container');
-        const hasCardInput = cardContainer && cardContainer.children.length > 0;
-        
-        if (hasCardInput) {
-          addTestResult('Payment Flow', 'passed', 'Square SDK loaded and card form rendered');
-          toast({
-            title: "Payment Flow Ready",
-            description: "Square Web Payments SDK is properly initialized with card form",
-          });
-        } else {
-          addTestResult('Payment Flow', 'failed', 'Square SDK loaded but card form not rendered - check environment settings');
-          toast({
-            title: "Payment Flow Warning",
-            description: "Square SDK loaded but card form not visible - possible environment mismatch",
-            variant: "destructive",
-          });
-        }
-      } else {
-        addTestResult('Payment Flow', 'failed', 'Square SDK not loaded');
+      const checks = {
+        sdkLoaded: !!window.Square,
+        httpsConnection: window.location.protocol === 'https:' || window.location.hostname === 'localhost',
+        cardContainer: !!document.getElementById('card-container'),
+        squareContainer: !!document.querySelector('[data-square-container]'),
+        cardForm: false
+      };
+      
+      // Check if card form is rendered
+      const cardContainer = document.getElementById('card-container') || document.querySelector('[data-square-container]');
+      if (cardContainer) {
+        checks.cardForm = cardContainer.children.length > 0 || cardContainer.querySelector('iframe') !== null;
+      }
+      
+      const passedChecks = Object.values(checks).filter(Boolean).length;
+      const totalChecks = Object.keys(checks).length;
+      
+      if (checks.sdkLoaded && checks.httpsConnection && checks.cardForm) {
+        addTestResult('Payment Flow', 'passed', `All ${totalChecks} checks passed - Square SDK ready`);
         toast({
-          title: "Payment Flow Error",
-          description: "Square SDK not detected - check HTML script tag",
+          title: "Payment Flow Ready",
+          description: "Square Web Payments SDK is properly initialized",
+        });
+      } else {
+        const failedChecks = Object.entries(checks)
+          .filter(([key, value]) => !value)
+          .map(([key]) => key);
+        
+        addTestResult('Payment Flow', 'failed', `${passedChecks}/${totalChecks} checks passed. Failed: ${failedChecks.join(', ')}`);
+        toast({
+          title: "Payment Flow Issues",
+          description: `Failed checks: ${failedChecks.join(', ')}`,
           variant: "destructive",
         });
       }

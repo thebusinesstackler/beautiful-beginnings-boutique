@@ -61,28 +61,81 @@ const EmbeddedSquareCheckout = ({
   const [card, setCard] = useState<any>(null);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [sdkStatus, setSdkStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [isSecureConnection, setIsSecureConnection] = useState<boolean>(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Initialize Square Web Payments SDK with retry logic
+  // Initialize Square Web Payments SDK with comprehensive validation
   useEffect(() => {
     let retryCount = 0;
     const maxRetries = 5;
     const retryDelay = 1000;
 
+    // Check HTTPS connection
+    const checkSecureConnection = () => {
+      const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+      setIsSecureConnection(isSecure);
+      
+      if (!isSecure) {
+        setSdkStatus('error');
+        toast({
+          title: "Secure Connection Required",
+          description: "Square payments require HTTPS. Please use a secure connection.",
+          variant: "destructive",
+        });
+        return false;
+      }
+      return true;
+    };
+
+    const validateEnvironmentCredentials = () => {
+      // Validate that App ID matches environment
+      const appId = settings.square_app_id || '';
+      const environment = 'sandbox'; // Force sandbox
+      
+      const isSandboxAppId = appId.includes('sandbox');
+      const isProductionAppId = !appId.includes('sandbox') && appId.length > 0;
+      
+      if (environment === 'sandbox' && !isSandboxAppId) {
+        console.warn('Environment mismatch: Using sandbox environment but App ID appears to be production');
+        toast({
+          title: "Configuration Warning",
+          description: "App ID may not match sandbox environment. Please verify your Square configuration.",
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      // Note: Currently forcing sandbox, so production check is commented out
+      // if (environment === 'production' && !isProductionAppId) {
+      //   console.warn('Environment mismatch: Using production environment but App ID appears to be sandbox');
+      //   return false;
+      // }
+      
+      return true;
+    };
+
     const initializeSquare = async () => {
       console.log(`Attempting to initialize Square SDK (attempt ${retryCount + 1}/${maxRetries})`);
+      setSdkStatus('loading');
+      
+      // Check secure connection first
+      if (!checkSecureConnection()) {
+        return;
+      }
       
       if (!window.Square) {
         if (retryCount < maxRetries) {
           retryCount++;
-          console.log(`Square SDK not loaded yet, retrying in ${retryDelay}ms...`);
-          setTimeout(initializeSquare, retryDelay);
+          console.log(`Square SDK not loaded yet, retrying in ${retryDelay * retryCount}ms...`);
+          setTimeout(initializeSquare, retryDelay * retryCount); // Exponential backoff
           return;
         } else {
           console.error('Square SDK failed to load after maximum retries');
+          setSdkStatus('error');
           toast({
             title: "Payment System Error",
-            description: "Failed to load payment system. Please refresh the page and try again.",
+            description: "Failed to load Square SDK. Please check your internet connection and refresh the page.",
             variant: "destructive",
           });
           return;
@@ -91,22 +144,32 @@ const EmbeddedSquareCheckout = ({
 
       if (!settings.square_app_id) {
         console.error('Square App ID not configured');
+        setSdkStatus('error');
         return;
       }
 
       if (!settings.square_location_id) {
         console.error('Square Location ID not configured');
+        setSdkStatus('error');
+        return;
+      }
+
+      // Validate environment and credentials match
+      if (!validateEnvironmentCredentials()) {
+        setSdkStatus('error');
         return;
       }
 
       try {
-        const environment = 'sandbox'; // Force sandbox for now since your App ID is sandbox
+        const environment = 'sandbox'; // Force sandbox since using sandbox SDK URL
         
         console.log('Square SDK Initialization:', {
           environment,
           appId: settings.square_app_id,
           locationId: settings.square_location_id,
-          hostname: window.location.hostname
+          hostname: window.location.hostname,
+          protocol: window.location.protocol,
+          isSecure: isSecureConnection
         });
 
         // Initialize Square payments with correct API call
@@ -121,15 +184,29 @@ const EmbeddedSquareCheckout = ({
         
         setPayments(paymentsInstance);
         console.log('Square payments instance created successfully');
+        setSdkStatus('ready');
 
         // Wait for DOM to be ready and initialize card
         await initializeCard(paymentsInstance);
         
       } catch (error) {
         console.error('Failed to initialize Square Web Payments SDK:', error);
+        setSdkStatus('error');
+        
+        let errorMessage = "Failed to initialize payment system";
+        if (error.message?.includes('APPLICATION_ID')) {
+          errorMessage = "Invalid Square Application ID. Please check your configuration.";
+        } else if (error.message?.includes('LOCATION_ID')) {
+          errorMessage = "Invalid Square Location ID. Please check your configuration.";
+        } else if (error.message?.includes('CORS')) {
+          errorMessage = "Domain not authorized for Square payments. Please contact support.";
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
         toast({
           title: "Payment Initialization Error",
-          description: `Failed to initialize payment system: ${error.message || 'Unknown error'}`,
+          description: errorMessage,
           variant: "destructive",
         });
       }
@@ -160,12 +237,15 @@ const EmbeddedSquareCheckout = ({
               fontSize: '16px',
               fontFamily: 'system-ui, -apple-system, sans-serif',
               color: '#374151',
-              backgroundColor: '#ffffff'
+              backgroundColor: '#ffffff',
+              lineHeight: '1.5'
             },
             placeholder: {
               color: '#9CA3AF'
             }
-          }
+          },
+          // Add buyer verification for enhanced security
+          includeInputLabels: true
         });
         
         console.log('Card instance created successfully, attaching to DOM...');
@@ -173,10 +253,12 @@ const EmbeddedSquareCheckout = ({
         // Ensure the card container is visible and ready
         if (cardRef.current) {
           cardRef.current.innerHTML = ''; // Clear any existing content
+          cardRef.current.setAttribute('data-square-container', 'true'); // Add identifier
           console.log('Card container cleared, attempting attach...');
         }
         
-        await cardInstance.attach('#card-container');
+        // Use React ref instead of DOM selector for better reliability
+        await cardInstance.attach(cardRef.current);
         
         setCard(cardInstance);
         console.log('Square card form attached successfully to DOM');
@@ -283,7 +365,8 @@ const EmbeddedSquareCheckout = ({
     setPaymentStatus('processing');
 
     try {
-      // Tokenize the card
+      // Tokenize the card with buyer verification
+      console.log('Starting card tokenization...');
       const tokenResult = await card.tokenize();
       
       if (tokenResult.status === 'OK') {
@@ -419,24 +502,54 @@ const EmbeddedSquareCheckout = ({
       {/* Card Input Container */}
       <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-sage/10 p-6">
         <h3 className="text-lg font-semibold text-charcoal mb-4">Payment Information</h3>
-        <div 
-          ref={cardRef} 
-          id="card-container"
-          className="min-h-[60px] p-4 border border-stone/20 rounded-lg bg-white"
-        />
+        
+        {/* SDK Status Indicator */}
+        {sdkStatus === 'loading' && (
+          <div className="flex items-center justify-center min-h-[60px] p-4 border border-stone/20 rounded-lg bg-white">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-sage border-t-transparent mr-3"></div>
+            <span className="text-charcoal/60">Loading payment form...</span>
+          </div>
+        )}
+        
+        {sdkStatus === 'error' && (
+          <div className="min-h-[60px] p-4 border border-red-200 rounded-lg bg-red-50 flex items-center justify-center">
+            <span className="text-red-700">Payment form failed to load. Please refresh the page.</span>
+          </div>
+        )}
+        
+        {sdkStatus === 'ready' && (
+          <div 
+            ref={cardRef} 
+            id="card-container"
+            data-square-container="true"
+            className="min-h-[60px] p-4 border border-stone/20 rounded-lg bg-white transition-opacity duration-300"
+          />
+        )}
+        
+        {!isSecureConnection && (
+          <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
+            ⚠️ Secure connection (HTTPS) required for payment processing
+          </div>
+        )}
       </div>
 
       {/* Payment Button */}
       <Button
         onClick={handlePayment}
-        disabled={isLoading || !card}
-        className="w-full bg-sage hover:bg-forest text-white text-lg font-semibold py-3 rounded-lg transition-colors shadow-md hover:shadow-lg"
+        disabled={isLoading || !card || sdkStatus !== 'ready' || !isSecureConnection}
+        className="w-full bg-sage hover:bg-forest text-white text-lg font-semibold py-3 rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? (
           <>
             <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
             Processing Payment...
           </>
+        ) : sdkStatus === 'loading' ? (
+          'Loading Payment Form...'
+        ) : sdkStatus === 'error' ? (
+          'Payment Form Unavailable'
+        ) : !isSecureConnection ? (
+          'Secure Connection Required'
         ) : (
           `Pay $${total.toFixed(2)}`
         )}

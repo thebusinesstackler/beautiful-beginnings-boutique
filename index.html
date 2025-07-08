@@ -23,8 +23,8 @@
     <!-- Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;500;600&display=swap">
     
-    <!-- Square Web Payments SDK -->
-    <script type="application/javascript" src="https://web.squarecdn.com/v1/square.js"></script>
+    <!-- Square Web Payments SDK - Sandbox -->
+    <script type="application/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
     
     <!-- CRITICAL CSS - PREVENT YELLOW FLASH ON PAGE LOAD -->
     <style>
@@ -78,6 +78,18 @@
         background-color: rgb(255 255 255) !important;
         background: rgb(255 255 255) !important;
         outline: none !important;
+      }
+      
+      /* SQUARE CARD FORM SPECIFIC OVERRIDES */
+      #card-container iframe,
+      #card-container input,
+      [data-square-container] iframe,
+      [data-square-container] input {
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: rgb(255 255 255) !important;
+        background: rgb(255 255 255) !important;
+        color: rgb(15 23 42) !important;
       }
       
       /* IMMEDIATE BUTTON AND INTERACTIVE ELEMENT PROTECTION */
