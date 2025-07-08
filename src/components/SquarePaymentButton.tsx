@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import type { SDKStatus } from '@/types/SquareCheckout';
@@ -27,20 +28,26 @@ const SquarePaymentButton = ({
     return `Pay $${total.toFixed(2)}`;
   };
 
-  const isDisabled = isLoading || !hasCard || sdkStatus !== 'ready' || !isSecureConnection;
+  // Make button less restrictive for better UX - only require SDK to be ready
+  const isDisabled = isLoading || sdkStatus !== 'ready' || !isSecureConnection;
 
   return (
     <div className="space-y-4">
       <Button
         onClick={onPayment}
         disabled={isDisabled}
-        className="w-full bg-gradient-to-r from-sage to-forest hover:from-sage/90 hover:to-forest/90 text-white text-lg font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
+        className="w-full bg-sage hover:bg-forest text-white text-lg font-semibold py-6 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          backgroundColor: isDisabled ? 'hsl(0 0% 80%)' : 'hsl(140 20% 55%)',
+          color: 'white',
+          minHeight: '56px'
+        }}
       >
         <div className="flex items-center justify-center gap-3">
           {isLoading && (
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
           )}
-          <span className="font-semibold tracking-wide">{getButtonText()}</span>
+          <span className="font-semibold">{getButtonText()}</span>
           {!isLoading && sdkStatus === 'ready' && isSecureConnection && (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -49,25 +56,30 @@ const SquarePaymentButton = ({
         </div>
       </Button>
       
+      {/* Debug info - remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="text-xs text-stone space-y-1 p-2 bg-stone/5 rounded">
+          <div>SDK Status: {sdkStatus}</div>
+          <div>Has Card: {hasCard ? 'Yes' : 'No'}</div>
+          <div>Secure: {isSecureConnection ? 'Yes' : 'No'}</div>
+          <div>Loading: {isLoading ? 'Yes' : 'No'}</div>
+          <div>Disabled: {isDisabled ? 'Yes' : 'No'}</div>
+        </div>
+      )}
+      
       {/* Trust indicators */}
-      <div className="flex items-center justify-center gap-6 text-xs text-charcoal/50">
+      <div className="flex items-center justify-center gap-4 text-xs text-stone">
         <div className="flex items-center gap-1">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span>PCI Compliant</span>
         </div>
         <div className="flex items-center gap-1">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
           <span>SSL Secured</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-          <span>Bank-level encryption</span>
         </div>
       </div>
     </div>
