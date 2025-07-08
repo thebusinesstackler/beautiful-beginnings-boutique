@@ -62,22 +62,16 @@ const Blog = () => {
           {/* Blog Posts */}
           {blogPosts && blogPosts.length > 0 ? (
             <div className="space-y-16">
-              {blogPosts.map((post, index) => (
-                <article 
-                  key={post.id} 
-                  className={`group ${index === 0 ? 'featured-post' : ''}`}
-                >
-                  <div className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden ${
-                    index === 0 ? 'lg:grid lg:grid-cols-2 lg:gap-0' : ''
-                  }`}>
+              {/* Featured Post (First Post) */}
+              {blogPosts.length > 0 && (
+                <article className="group featured-post">
+                  <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden lg:grid lg:grid-cols-2 lg:gap-0">
                     {/* Featured Image */}
-                    {post.featured_image && (
-                      <div className={`relative overflow-hidden ${
-                        index === 0 ? 'lg:order-2 h-64 lg:h-full' : 'h-64'
-                      }`}>
+                    {blogPosts[0].featured_image && (
+                      <div className="relative overflow-hidden lg:order-2 h-64 lg:h-full">
                         <img 
-                          src={post.featured_image} 
-                          alt={post.title}
+                          src={blogPosts[0].featured_image} 
+                          alt={blogPosts[0].title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 to-transparent"></div>
@@ -85,26 +79,26 @@ const Blog = () => {
                     )}
                     
                     {/* Content */}
-                    <div className={`p-8 lg:p-12 ${index === 0 ? 'lg:order-1' : ''}`}>
+                    <div className="p-8 lg:p-12 lg:order-1">
                       {/* Meta Information */}
                       <div className="flex items-center gap-6 text-sm text-stone mb-6">
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4 text-sage" />
                           <span>
-                            {new Date(post.publish_date || post.created_at).toLocaleDateString('en-US', {
+                            {new Date(blogPosts[0].publish_date || blogPosts[0].created_at).toLocaleDateString('en-US', {
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric'
                             })}
                           </span>
                         </div>
-                        {post.content && (
+                        {blogPosts[0].content && (
                           <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4 text-sage" />
-                            <span>{calculateReadingTime(post.content)} min read</span>
+                            <span>{calculateReadingTime(blogPosts[0].content)} min read</span>
                           </div>
                         )}
-                        {post.author_id && (
+                        {blogPosts[0].author_id && (
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-sage" />
                             <span>Author</span>
@@ -113,26 +107,22 @@ const Blog = () => {
                       </div>
                       
                       {/* Title */}
-                      <h2 className={`font-playfair font-bold text-charcoal mb-4 group-hover:text-sage transition-colors duration-300 ${
-                        index === 0 ? 'text-3xl lg:text-4xl' : 'text-2xl lg:text-3xl'
-                      }`}>
-                        <Link to={`/blog/${post.slug}`} className="hover:underline decoration-sage decoration-2 underline-offset-4">
-                          {post.title}
+                      <h2 className="text-3xl lg:text-4xl font-playfair font-bold text-charcoal mb-4 group-hover:text-sage transition-colors duration-300">
+                        <Link to={`/blog/${blogPosts[0].slug}`} className="hover:underline decoration-sage decoration-2 underline-offset-4">
+                          {blogPosts[0].title}
                         </Link>
                       </h2>
                       
                       {/* Excerpt */}
-                      {post.excerpt && (
-                        <p className={`text-stone leading-relaxed mb-6 ${
-                          index === 0 ? 'text-lg' : 'text-base'
-                        }`}>
-                          {post.excerpt}
+                      {blogPosts[0].excerpt && (
+                        <p className="text-lg text-stone leading-relaxed mb-6">
+                          {blogPosts[0].excerpt}
                         </p>
                       )}
                       
                       {/* Read More Link */}
                       <Link 
-                        to={`/blog/${post.slug}`}
+                        to={`/blog/${blogPosts[0].slug}`}
                         className="inline-flex items-center gap-2 text-sage hover:text-chocolate font-medium transition-all duration-300 group-hover:gap-3"
                       >
                         Continue reading
@@ -141,7 +131,76 @@ const Blog = () => {
                     </div>
                   </div>
                 </article>
-              ))}
+              )}
+
+              {/* Two-Column Grid for Remaining Posts */}
+              {blogPosts.length > 1 && (
+                <div className="grid md:grid-cols-2 gap-8">
+                  {blogPosts.slice(1).map((post) => (
+                    <article key={post.id} className="group">
+                      <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden">
+                        {/* Featured Image */}
+                        {post.featured_image && (
+                          <div className="relative overflow-hidden h-48">
+                            <img 
+                              src={post.featured_image} 
+                              alt={post.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 to-transparent"></div>
+                          </div>
+                        )}
+                        
+                        {/* Content */}
+                        <div className="p-6">
+                          {/* Meta Information */}
+                          <div className="flex items-center gap-4 text-sm text-stone mb-4 flex-wrap">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-sage" />
+                              <span>
+                                {new Date(post.publish_date || post.created_at).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })}
+                              </span>
+                            </div>
+                            {post.content && (
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-sage" />
+                                <span>{calculateReadingTime(post.content)} min read</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Title */}
+                          <h2 className="text-xl lg:text-2xl font-playfair font-bold text-charcoal mb-3 group-hover:text-sage transition-colors duration-300">
+                            <Link to={`/blog/${post.slug}`} className="hover:underline decoration-sage decoration-2 underline-offset-4">
+                              {post.title}
+                            </Link>
+                          </h2>
+                          
+                          {/* Excerpt */}
+                          {post.excerpt && (
+                            <p className="text-stone leading-relaxed mb-4 text-sm">
+                              {post.excerpt}
+                            </p>
+                          )}
+                          
+                          {/* Read More Link */}
+                          <Link 
+                            to={`/blog/${post.slug}`}
+                            className="inline-flex items-center gap-2 text-sage hover:text-chocolate font-medium transition-all duration-300 group-hover:gap-3 text-sm"
+                          >
+                            Continue reading
+                            <ArrowRight className="h-4 w-4 transition-transform duration-300" />
+                          </Link>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
             /* Empty State */
