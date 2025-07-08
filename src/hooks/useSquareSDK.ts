@@ -75,19 +75,22 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         }
       }
 
-      // Initialize card payment method with enhanced error handling
+      // Initialize card payment method with corrected styling
       console.log('Creating card instance...');
       const cardInstance = await paymentsInstance.card({
         style: {
           input: {
             fontSize: '16px',
-            fontFamily: 'system-ui, -apple-system, sans-serif',
+            fontFamily: 'Arial, sans-serif',
             color: '#374151',
             backgroundColor: '#ffffff',
             lineHeight: '1.5'
           },
-          placeholder: {
-            color: '#9CA3AF'
+          '.input-container.is-focus': {
+            borderColor: '#86EFAC'
+          },
+          '.input-container.is-error': {
+            borderColor: '#EF4444'
           }
         },
         // Add buyer verification for enhanced security
@@ -145,11 +148,13 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         return;
       }
       
+      // Wait for Square SDK with longer timeout
       if (!window.Square) {
         if (retryCount < maxRetries) {
           retryCount++;
-          console.log(`Square SDK not loaded yet, retrying in ${retryDelay * retryCount}ms...`);
-          setTimeout(initializeSquare, retryDelay * retryCount); // Exponential backoff
+          const delay = Math.min(retryDelay * Math.pow(1.5, retryCount), 10000); // Cap at 10 seconds
+          console.log(`Square SDK not loaded yet, retrying in ${delay}ms...`);
+          setTimeout(initializeSquare, delay);
           return;
         } else {
           console.error('Square SDK failed to load after maximum retries');
@@ -234,8 +239,8 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     };
 
     if (squareAppId && squareLocationId) {
-      // Small delay to ensure DOM is ready
-      setTimeout(initializeSquare, 100);
+      // Longer delay to ensure DOM and SDK are ready
+      setTimeout(initializeSquare, 500);
     }
 
     // Cleanup function
