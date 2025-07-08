@@ -11,6 +11,7 @@ import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import SquareCheckout from '@/components/SquareCheckout';
 import CartTestingPanel from '@/components/CartTestingPanel';
+import PaymentTestingPanel from '@/components/PaymentTestingPanel';
 import { useShippingSettings } from '@/hooks/useShippingSettings';
 
 const Checkout = () => {
@@ -403,8 +404,13 @@ const Checkout = () => {
         )}
       </div>
 
-      {/* Testing Panel - Only show in development */}
-      {process.env.NODE_ENV === 'development' && <CartTestingPanel />}
+      {/* Testing Panels - Only show in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <>
+          <CartTestingPanel />
+          <PaymentTestingPanel />
+        </>
+      )}
 
       <Footer />
     </div>

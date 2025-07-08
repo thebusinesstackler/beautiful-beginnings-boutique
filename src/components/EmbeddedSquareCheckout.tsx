@@ -51,6 +51,8 @@ const EmbeddedSquareCheckout = ({
   const [isLoading, setIsLoading] = useState(false);
   const [payments, setPayments] = useState<any>(null);
   const [card, setCard] = useState<any>(null);
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Initialize Square Web Payments SDK
@@ -91,6 +93,46 @@ const EmbeddedSquareCheckout = ({
     }
   }, [settings.square_app_id, settings.square_location_id]);
 
+  // Enhanced form validation
+  const validateForm = () => {
+    const errors: string[] = [];
+
+    // Customer info validation
+    if (!customerInfo.firstName?.trim()) errors.push("First name is required");
+    if (!customerInfo.lastName?.trim()) errors.push("Last name is required");
+    if (!customerInfo.email?.trim()) errors.push("Email is required");
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) {
+      errors.push("Please enter a valid email address");
+    }
+    if (!customerInfo.phone?.trim()) errors.push("Phone number is required");
+
+    // Shipping address validation
+    if (!shippingAddress.address?.trim()) errors.push("Shipping address is required");
+    if (!shippingAddress.city?.trim()) errors.push("City is required");
+    if (!shippingAddress.state?.trim()) errors.push("State is required");
+    if (!shippingAddress.zipCode?.trim()) errors.push("ZIP code is required");
+    else if (!/^\d{5}(-\d{4})?$/.test(shippingAddress.zipCode)) {
+      errors.push("Please enter a valid ZIP code (e.g., 12345 or 12345-6789)");
+    }
+
+    // Billing address validation (if different from shipping)
+    if (!sameAsShipping) {
+      if (!billingAddress.address?.trim()) errors.push("Billing address is required");
+      if (!billingAddress.city?.trim()) errors.push("Billing city is required");
+      if (!billingAddress.state?.trim()) errors.push("Billing state is required");
+      if (!billingAddress.zipCode?.trim()) errors.push("Billing ZIP code is required");
+      else if (!/^\d{5}(-\d{4})?$/.test(billingAddress.zipCode)) {
+        errors.push("Please enter a valid billing ZIP code");
+      }
+    }
+
+    // Cart validation
+    if (items.length === 0) errors.push("Your cart is empty");
+
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
+
   const handlePayment = async () => {
     if (!card || !payments) {
       toast({
@@ -101,36 +143,18 @@ const EmbeddedSquareCheckout = ({
       return;
     }
 
-    // Validate customer information
-    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email) {
+    // Comprehensive form validation
+    if (!validateForm()) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required customer information.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validate shipping address
-    if (!shippingAddress.address || !shippingAddress.city || !shippingAddress.state || !shippingAddress.zipCode) {
-      toast({
-        title: "Missing Address",
-        description: "Please fill in all required shipping address fields.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (items.length === 0) {
-      toast({
-        title: "Cart Empty",
-        description: "Please add items to your cart before checkout.",
+        title: "Please Fix Form Errors",
+        description: `${validationErrors.length} error(s) found: ${validationErrors.slice(0, 2).join(', ')}${validationErrors.length > 2 ? '...' : ''}`,
         variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
+    setPaymentStatus('processing');
 
     try {
       // Tokenize the card
@@ -167,6 +191,7 @@ const EmbeddedSquareCheckout = ({
         }
 
         if (data.success) {
+          setPaymentStatus('success');
           console.log('Payment successful:', data);
           
           // Clear cart on successful payment
@@ -179,20 +204,39 @@ const EmbeddedSquareCheckout = ({
 
           onSuccess?.();
         } else {
+          setPaymentStatus('error');
           throw new Error(data.error || 'Payment failed');
         }
       } else {
+        setPaymentStatus('error');
         console.error('Tokenization failed:', tokenResult.errors);
         throw new Error('Card tokenization failed. Please check your card details.');
       }
     } catch (error: any) {
+      setPaymentStatus('error');
       console.error('Payment error:', error);
       
       let errorMessage = "Payment processing failed. Please try again.";
-      if (error.message.includes('card')) {
+      
+      // Enhanced error handling for different Square error types
+      if (error.message.includes('INVALID_CARD_DATA')) {
+        errorMessage = "Invalid card information. Please check your card number, expiration date, and CVV.";
+      } else if (error.message.includes('CARD_DECLINED')) {
+        errorMessage = "Your card was declined. Please try a different payment method or contact your bank.";
+      } else if (error.message.includes('INSUFFICIENT_FUNDS')) {
+        errorMessage = "Insufficient funds on your card. Please try a different payment method.";
+      } else if (error.message.includes('EXPIRED_CARD')) {
+        errorMessage = "Your card has expired. Please use a different payment method.";
+      } else if (error.message.includes('CVV_FAILURE')) {
+        errorMessage = "CVV verification failed. Please check your card's security code.";
+      } else if (error.message.includes('INVALID_LOCATION')) {
+        errorMessage = "Payment configuration error. Please contact support.";
+      } else if (error.message.includes('card')) {
         errorMessage = "Card information is invalid. Please check your card details.";
       } else if (error.message.includes('amount')) {
         errorMessage = "Payment amount is invalid. Please try again.";
+      } else if (error.message.includes('network') || error.message.includes('timeout')) {
+        errorMessage = "Network error. Please check your connection and try again.";
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -226,6 +270,20 @@ const EmbeddedSquareCheckout = ({
 
   return (
     <div className="w-full space-y-6">
+      {/* Validation Errors Display */}
+      {validationErrors.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <h4 className="font-semibold text-red-800 mb-2">Please fix the following errors:</h4>
+          <ul className="text-sm text-red-700 space-y-1">
+            {validationErrors.map((error, index) => (
+              <li key={index} className="flex items-center">
+                <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2 flex-shrink-0"></span>
+                {error}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {/* Card Input Container */}
       <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-sage/10 p-6">
         <h3 className="text-lg font-semibold text-charcoal mb-4">Payment Information</h3>
