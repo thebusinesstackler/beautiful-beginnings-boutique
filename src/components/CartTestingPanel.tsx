@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
@@ -7,6 +7,70 @@ import { RefreshCw, TestTube, CheckCircle, XCircle } from 'lucide-react';
 const CartTestingPanel = () => {
   const { items, addToCart, clearCart, getCartTotal, getCartCount } = useCart();
   const [testResults, setTestResults] = useState<Array<{test: string, passed: boolean, message: string}>>([]);
+  const [isTestingCart, setIsTestingCart] = useState(false);
+  const [testStartValues, setTestStartValues] = useState<{count: number, total: number} | null>(null);
+
+  // Use useEffect to wait for cart state changes during testing
+  useEffect(() => {
+    if (isTestingCart && testStartValues) {
+      const currentCount = getCartCount();
+      const currentTotal = getCartTotal();
+      
+      // Check if the state has actually changed from our starting values
+      if (currentCount !== testStartValues.count || currentTotal !== testStartValues.total) {
+        // State has changed, now we can measure the results
+        const results = [];
+        
+        // Test 2: Add item to cart
+        results.push({
+          test: 'Add to Cart',
+          passed: currentCount > testStartValues.count,
+          message: `Cart count: ${testStartValues.count} → ${currentCount}`
+        });
+        
+        // Test 3: Cart total calculation
+        const expectedIncrease = 10.99; // Test product price
+        const actualIncrease = currentTotal - testStartValues.total;
+        
+        results.push({
+          test: 'Cart Total Calculation',
+          passed: Math.abs(actualIncrease - expectedIncrease) < 0.01,
+          message: `Total increased by $${actualIncrease.toFixed(2)} (expected $${expectedIncrease.toFixed(2)})`
+        });
+        
+        // Test 4: LocalStorage persistence
+        try {
+          const stored = localStorage.getItem('shopping_cart');
+          const parsed = stored ? JSON.parse(stored) : [];
+          const hasTestProduct = parsed.some((item: any) => item.id === 999999);
+          
+          results.push({
+            test: 'LocalStorage Persistence',
+            passed: hasTestProduct,
+            message: hasTestProduct ? 'Test product found in localStorage' : 'Test product not found in localStorage'
+          });
+        } catch (error) {
+          results.push({
+            test: 'LocalStorage Persistence',
+            passed: false,
+            message: 'Error accessing localStorage'
+          });
+        }
+        
+        setTestResults(results);
+        setIsTestingCart(false);
+        setTestStartValues(null);
+        
+        // Show summary toast
+        const passedTests = results.filter(r => r.passed).length;
+        toast({
+          title: "Test Results",
+          description: `${passedTests}/${results.length} tests passed`,
+          variant: passedTests === results.length ? "default" : "destructive",
+        });
+      }
+    }
+  }, [items, isTestingCart, testStartValues, getCartCount, getCartTotal]);
 
   const runTests = () => {
     const results = [];
@@ -14,6 +78,10 @@ const CartTestingPanel = () => {
     // Test 1: Cart persistence
     const beforeCount = getCartCount();
     const beforeTotal = getCartTotal();
+    
+    // Store starting values for useEffect to compare against
+    setTestStartValues({ count: beforeCount, total: beforeTotal });
+    setIsTestingCart(true);
     
     // Test 2: Add item to cart
     const testProduct = {
@@ -24,53 +92,7 @@ const CartTestingPanel = () => {
     };
     
     addToCart(testProduct);
-    
-    const afterAdd = getCartCount();
-    results.push({
-      test: 'Add to Cart',
-      passed: afterAdd > beforeCount,
-      message: `Cart count: ${beforeCount} → ${afterAdd}`
-    });
-    
-    // Test 3: Cart total calculation
-    const newTotal = getCartTotal();
-    const expectedIncrease = testProduct.price;
-    const actualIncrease = newTotal - beforeTotal;
-    
-    results.push({
-      test: 'Cart Total Calculation',
-      passed: Math.abs(actualIncrease - expectedIncrease) < 0.01,
-      message: `Total increased by $${actualIncrease.toFixed(2)} (expected $${expectedIncrease.toFixed(2)})`
-    });
-    
-    // Test 4: LocalStorage persistence
-    try {
-      const stored = localStorage.getItem('shopping_cart');
-      const parsed = stored ? JSON.parse(stored) : [];
-      const hasTestProduct = parsed.some((item: any) => item.id === testProduct.id);
-      
-      results.push({
-        test: 'LocalStorage Persistence',
-        passed: hasTestProduct,
-        message: hasTestProduct ? 'Test product found in localStorage' : 'Test product not found in localStorage'
-      });
-    } catch (error) {
-      results.push({
-        test: 'LocalStorage Persistence',
-        passed: false,
-        message: 'Error accessing localStorage'
-      });
-    }
-    
-    setTestResults(results);
-    
-    // Show summary toast
-    const passedTests = results.filter(r => r.passed).length;
-    toast({
-      title: "Test Results",
-      description: `${passedTests}/${results.length} tests passed`,
-      variant: passedTests === results.length ? "default" : "destructive",
-    });
+    // Note: The actual testing will happen in useEffect when state updates
   };
 
   const testCartPersistence = () => {
@@ -114,9 +136,10 @@ const CartTestingPanel = () => {
           onClick={runTests}
           size="sm"
           className="w-full"
+          disabled={isTestingCart}
         >
           <TestTube className="h-3 w-3 mr-2" />
-          Run Tests
+          {isTestingCart ? 'Testing...' : 'Run Tests'}
         </Button>
         
         <Button
@@ -138,6 +161,13 @@ const CartTestingPanel = () => {
           Clear Test Data
         </Button>
       </div>
+      
+      {/* Show testing state */}
+      {isTestingCart && (
+        <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
+          Waiting for cart state to update...
+        </div>
+      )}
       
       {testResults.length > 0 && (
         <div className="space-y-1">
