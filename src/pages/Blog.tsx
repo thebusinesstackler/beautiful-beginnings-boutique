@@ -4,8 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import { Calendar, User, ArrowRight } from 'lucide-react';
+import { Calendar, User, ArrowRight, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { calculateReadingTime } from '@/utils/blogUtils';
 
 const Blog = () => {
   const { data: blogPosts, isLoading } = useQuery({
@@ -24,12 +25,12 @@ const Blog = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream to-pearl">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream via-pearl to-blush/30">
         <Navigation />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
-            <div className="text-charcoal font-medium">Loading blog posts...</div>
+            <div className="animate-spin rounded-full h-12 w-12 border-3 border-sage border-t-transparent mx-auto mb-6"></div>
+            <div className="text-charcoal font-medium text-lg">Loading our latest stories...</div>
           </div>
         </main>
         <Footer />
@@ -38,67 +39,104 @@ const Blog = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream to-pearl">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream via-pearl to-blush/30">
       <Navigation />
       
-      <main className="flex-1 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-charcoal mb-4">Our Blog</h1>
-            <p className="text-lg text-stone max-w-2xl mx-auto">
-              Stories, inspiration, and behind-the-scenes glimpses into creating beautiful, personalized keepsakes.
+      <main className="flex-1 py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Hero Header */}
+          <div className="text-center mb-20">
+            <div className="inline-block px-4 py-2 bg-sage/10 rounded-full mb-6">
+              <span className="text-sage font-medium text-sm uppercase tracking-wide">Our Blog</span>
+            </div>
+            <h1 className="text-5xl md:text-6xl font-playfair font-bold text-charcoal mb-6 leading-tight">
+              Stories of Love & 
+              <span className="text-sage block">Remembrance</span>
+            </h1>
+            <p className="text-xl text-stone max-w-3xl mx-auto leading-relaxed">
+              Discover the inspiration behind our handcrafted keepsakes, customer stories, 
+              and the artistry that goes into creating meaningful memories.
             </p>
           </div>
 
-          {/* Blog Posts Grid */}
+          {/* Blog Posts */}
           {blogPosts && blogPosts.length > 0 ? (
-            <div className="grid gap-8 md:gap-12">
-              {blogPosts.map((post) => (
-                <article key={post.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
-                  <div className="md:flex">
+            <div className="space-y-16">
+              {blogPosts.map((post, index) => (
+                <article 
+                  key={post.id} 
+                  className={`group ${index === 0 ? 'featured-post' : ''}`}
+                >
+                  <div className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden ${
+                    index === 0 ? 'lg:grid lg:grid-cols-2 lg:gap-0' : ''
+                  }`}>
+                    {/* Featured Image */}
                     {post.featured_image && (
-                      <div className="md:w-1/3">
+                      <div className={`relative overflow-hidden ${
+                        index === 0 ? 'lg:order-2 h-64 lg:h-full' : 'h-64'
+                      }`}>
                         <img 
                           src={post.featured_image} 
                           alt={post.title}
-                          className="w-full h-48 md:h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 to-transparent"></div>
                       </div>
                     )}
-                    <div className={`p-6 ${post.featured_image ? 'md:w-2/3' : 'w-full'}`}>
-                      <div className="flex items-center text-sm text-stone mb-3">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        {new Date(post.publish_date || post.created_at).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                    
+                    {/* Content */}
+                    <div className={`p-8 lg:p-12 ${index === 0 ? 'lg:order-1' : ''}`}>
+                      {/* Meta Information */}
+                      <div className="flex items-center gap-6 text-sm text-stone mb-6">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-sage" />
+                          <span>
+                            {new Date(post.publish_date || post.created_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                        {post.content && (
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-sage" />
+                            <span>{calculateReadingTime(post.content)} min read</span>
+                          </div>
+                        )}
                         {post.author_id && (
-                          <>
-                            <span className="mx-2">•</span>
-                            <User className="h-4 w-4 mr-1" />
-                            Author
-                          </>
+                          <div className="flex items-center gap-2">
+                            <User className="h-4 w-4 text-sage" />
+                            <span>Author</span>
+                          </div>
                         )}
                       </div>
                       
-                      <h2 className="text-2xl font-bold text-charcoal mb-3 hover:text-chocolate transition-colors duration-200">
-                        {post.title}
+                      {/* Title */}
+                      <h2 className={`font-playfair font-bold text-charcoal mb-4 group-hover:text-sage transition-colors duration-300 ${
+                        index === 0 ? 'text-3xl lg:text-4xl' : 'text-2xl lg:text-3xl'
+                      }`}>
+                        <Link to={`/blog/${post.slug}`} className="hover:underline decoration-sage decoration-2 underline-offset-4">
+                          {post.title}
+                        </Link>
                       </h2>
                       
+                      {/* Excerpt */}
                       {post.excerpt && (
-                        <p className="text-stone mb-4 leading-relaxed">
+                        <p className={`text-stone leading-relaxed mb-6 ${
+                          index === 0 ? 'text-lg' : 'text-base'
+                        }`}>
                           {post.excerpt}
                         </p>
                       )}
                       
+                      {/* Read More Link */}
                       <Link 
                         to={`/blog/${post.slug}`}
-                        className="inline-flex items-center text-sage hover:text-chocolate font-medium transition-colors duration-200"
+                        className="inline-flex items-center gap-2 text-sage hover:text-chocolate font-medium transition-all duration-300 group-hover:gap-3"
                       >
-                        Read more
-                        <ArrowRight className="h-4 w-4 ml-1" />
+                        Continue reading
+                        <ArrowRight className="h-4 w-4 transition-transform duration-300" />
                       </Link>
                     </div>
                   </div>
@@ -106,10 +144,34 @@ const Blog = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">📝</div>
-              <h3 className="text-xl font-semibold text-charcoal mb-2">No blog posts yet</h3>
-              <p className="text-stone">Check back soon for inspiring stories and updates!</p>
+            /* Empty State */
+            <div className="text-center py-20">
+              <div className="w-24 h-24 mx-auto mb-8 bg-sage/10 rounded-full flex items-center justify-center">
+                <span className="text-4xl">📝</span>
+              </div>
+              <h3 className="text-2xl font-playfair font-semibold text-charcoal mb-4">
+                Our Story Is Just Beginning
+              </h3>
+              <p className="text-lg text-stone max-w-md mx-auto">
+                We're crafting beautiful stories to share with you. 
+                Check back soon for inspiring tales and heartfelt moments.
+              </p>
+            </div>
+          )}
+
+          {/* Newsletter Signup */}
+          {blogPosts && blogPosts.length > 0 && (
+            <div className="mt-20 bg-gradient-to-r from-sage/10 to-forest/10 rounded-2xl p-8 lg:p-12 text-center">
+              <h3 className="text-2xl font-playfair font-bold text-charcoal mb-4">
+                Stay Connected
+              </h3>
+              <p className="text-stone mb-6 max-w-2xl mx-auto">
+                Subscribe to our newsletter and be the first to read our latest stories, 
+                get crafting tips, and discover new ways to preserve your precious memories.
+              </p>
+              <button className="bg-sage hover:bg-forest text-white px-8 py-3 rounded-lg font-medium transition-colors duration-300">
+                Subscribe to Updates
+              </button>
             </div>
           )}
         </div>
