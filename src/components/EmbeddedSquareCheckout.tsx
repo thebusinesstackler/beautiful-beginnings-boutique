@@ -55,12 +55,30 @@ const EmbeddedSquareCheckout = ({
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Initialize Square Web Payments SDK
+  // Initialize Square Web Payments SDK with retry logic
   useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 5;
+    const retryDelay = 1000;
+
     const initializeSquare = async () => {
+      console.log(`Attempting to initialize Square SDK (attempt ${retryCount + 1}/${maxRetries})`);
+      
       if (!window.Square) {
-        console.error('Square SDK not loaded');
-        return;
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`Square SDK not loaded yet, retrying in ${retryDelay}ms...`);
+          setTimeout(initializeSquare, retryDelay);
+          return;
+        } else {
+          console.error('Square SDK failed to load after maximum retries');
+          toast({
+            title: "Payment System Error",
+            description: "Failed to load payment system. Please refresh the page and try again.",
+            variant: "destructive",
+          });
+          return;
+        }
       }
 
       if (!settings.square_app_id) {
@@ -68,30 +86,73 @@ const EmbeddedSquareCheckout = ({
         return;
       }
 
+      if (!settings.square_location_id) {
+        console.error('Square Location ID not configured');
+        return;
+      }
+
       try {
+        console.log('Initializing Square Web Payments SDK with:', {
+          appId: settings.square_app_id,
+          locationId: settings.square_location_id,
+          environment: settings.square_environment
+        });
+
         const paymentsInstance = window.Square.payments(settings.square_app_id, settings.square_location_id);
         setPayments(paymentsInstance);
 
         // Initialize card payment method
-        const cardInstance = await paymentsInstance.card();
-        await cardInstance.attach(cardRef.current);
-        setCard(cardInstance);
-
-        console.log('Square Web Payments SDK initialized successfully');
+        const cardInstance = await paymentsInstance.card({
+          style: {
+            '.input-container': {
+              borderColor: '#d6d3d1',
+              borderRadius: '8px'
+            },
+            '.input-container.is-focus': {
+              borderColor: '#86efac'
+            },
+            '.input-container.is-error': {
+              borderColor: '#f87171'
+            },
+            '.message-text': {
+              color: '#dc2626'
+            }
+          }
+        });
+        
+        if (cardRef.current) {
+          await cardInstance.attach(cardRef.current);
+          setCard(cardInstance);
+          console.log('Square Web Payments SDK initialized successfully');
+        } else {
+          console.error('Card container ref not available');
+        }
       } catch (error) {
         console.error('Failed to initialize Square Web Payments SDK:', error);
         toast({
           title: "Payment Initialization Error",
-          description: "Failed to initialize payment system. Please try again.",
+          description: `Failed to initialize payment system: ${error.message || 'Unknown error'}`,
           variant: "destructive",
         });
       }
     };
 
     if (settings.square_app_id && settings.square_location_id) {
-      initializeSquare();
+      // Small delay to ensure DOM is ready
+      setTimeout(initializeSquare, 100);
     }
-  }, [settings.square_app_id, settings.square_location_id]);
+
+    // Cleanup function
+    return () => {
+      if (card) {
+        try {
+          card.destroy();
+        } catch (error) {
+          console.log('Error destroying card instance:', error);
+        }
+      }
+    };
+  }, [settings.square_app_id, settings.square_location_id, settings.square_environment]);
 
   // Enhanced form validation
   const validateForm = () => {
