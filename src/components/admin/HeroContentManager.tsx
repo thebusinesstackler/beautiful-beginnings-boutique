@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { X, Upload, Plus } from 'lucide-react';
 import ProductImageUploader from './ProductImageUploader';
 
 interface WebsiteContent {
@@ -33,16 +34,23 @@ const HeroContentManager: React.FC<HeroContentManagerProps> = ({
   uploading,
   setUploading
 }) => {
-  const handleImageUpload = (imageUrl: string, field: string) => {
+  const handleMainImageUpload = (imageUrl: string) => {
     onContentChange({
       ...content,
-      [field]: imageUrl
+      hero_main_image: imageUrl
     });
   };
 
-  const handleSecondaryImageUpload = (imageUrl: string, index: number) => {
+  const handleSecondaryImageUpload = (imageUrl: string, index?: number) => {
     const newSecondaryImages = [...content.hero_secondary_images];
-    newSecondaryImages[index] = imageUrl;
+    
+    if (index !== undefined) {
+      // Replace existing image
+      newSecondaryImages[index] = imageUrl;
+    } else {
+      // Add new image
+      newSecondaryImages.push(imageUrl);
+    }
 
     onContentChange({
       ...content,
@@ -50,10 +58,10 @@ const HeroContentManager: React.FC<HeroContentManagerProps> = ({
     });
   };
 
-  const addSecondaryImage = () => {
+  const removeMainImage = () => {
     onContentChange({
       ...content,
-      hero_secondary_images: [...content.hero_secondary_images, ""]
+      hero_main_image: ""
     });
   };
 
@@ -65,12 +73,19 @@ const HeroContentManager: React.FC<HeroContentManagerProps> = ({
     });
   };
 
+  const addSecondaryImageSlot = () => {
+    onContentChange({
+      ...content,
+      hero_secondary_images: [...content.hero_secondary_images, ""]
+    });
+  };
+
   return (
     <Card className="bg-cream/30 border-0 shadow-sm">
       <CardHeader>
         <CardTitle className="text-charcoal">Hero Section</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <div>
           <Label className="text-base font-medium text-charcoal">Hero Title</Label>
           <Input
@@ -99,59 +114,105 @@ const HeroContentManager: React.FC<HeroContentManagerProps> = ({
           />
         </div>
 
+        {/* Main Hero Image */}
         <div>
           <Label className="text-base font-medium text-charcoal mb-2 block">Main Hero Image</Label>
+          
           {content.hero_main_image && (
-            <div className="mb-4">
+            <div className="mb-4 relative">
               <img
                 src={content.hero_main_image}
                 alt="Hero main"
                 className="w-full h-32 object-cover rounded-lg"
               />
+              <Button
+                onClick={removeMainImage}
+                size="sm"
+                variant="destructive"
+                className="absolute top-2 right-2"
+              >
+                <X className="h-4 w-4" />
+              </Button>
             </div>
           )}
-          <ProductImageUploader
-            onImageUploaded={(url) => handleImageUpload(url, 'hero_main_image')}
-            uploading={uploading}
-            setUploading={setUploading}
-          />
+          
+          <div className="space-y-2">
+            <ProductImageUploader
+              onImageUploaded={handleMainImageUpload}
+              uploading={uploading}
+              setUploading={setUploading}
+            />
+            <div className="text-sm text-stone-600">
+              Or paste URL:
+            </div>
+            <Input
+              value={content.hero_main_image}
+              onChange={(e) => handleMainImageUpload(e.target.value)}
+              placeholder="Enter image URL"
+            />
+          </div>
         </div>
 
+        {/* Secondary Hero Images */}
         <div>
-          <Label className="text-base font-medium text-charcoal mb-2 block">Secondary Hero Images</Label>
+          <div className="flex items-center justify-between mb-4">
+            <Label className="text-base font-medium text-charcoal">Secondary Hero Images</Label>
+            <Button
+              onClick={addSecondaryImageSlot}
+              size="sm"
+              variant="outline"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Image
+            </Button>
+          </div>
+          
           {content.hero_secondary_images.map((image, index) => (
-            <div key={index} className="mb-4 p-4 border rounded-lg">
+            <div key={index} className="mb-4 p-4 border rounded-lg bg-white/50">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-charcoal">Image {index + 1}</span>
+                <Button
+                  onClick={() => removeSecondaryImage(index)}
+                  size="sm"
+                  variant="destructive"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              
               {image && (
-                <img
-                  src={image}
-                  alt={`Hero secondary ${index + 1}`}
-                  className="w-full h-24 object-cover rounded mb-2"
-                />
+                <div className="mb-4">
+                  <img
+                    src={image}
+                    alt={`Hero secondary ${index + 1}`}
+                    className="w-full h-24 object-cover rounded"
+                  />
+                </div>
               )}
-              <div className="flex items-center space-x-2">
+              
+              <div className="space-y-2">
+                <ProductImageUploader
+                  onImageUploaded={(url) => handleSecondaryImageUpload(url, index)}
+                  uploading={uploading}
+                  setUploading={setUploading}
+                />
+                <div className="text-sm text-stone-600">
+                  Or paste URL:
+                </div>
                 <Input
                   value={image}
                   onChange={(e) => handleSecondaryImageUpload(e.target.value, index)}
-                  placeholder="Image URL"
-                  className="flex-1"
+                  placeholder="Enter image URL"
                 />
-                <Button
-                  onClick={() => removeSecondaryImage(index)}
-                  variant="outline"
-                  size="sm"
-                >
-                  Remove
-                </Button>
               </div>
             </div>
           ))}
-          <Button
-            onClick={addSecondaryImage}
-            variant="outline"
-            size="sm"
-          >
-            Add Secondary Image
-          </Button>
+          
+          {content.hero_secondary_images.length === 0 && (
+            <div className="text-center py-8 text-stone-500">
+              No secondary images added yet. Click "Add Image" to get started.
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
