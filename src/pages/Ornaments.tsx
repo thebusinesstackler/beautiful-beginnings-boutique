@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Info, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -234,7 +233,7 @@ const Ornaments = () => {
                     </div>
                     
                     <div className="space-y-3">
-                      <Link to="/products/ornaments/customize-glass" className="block">
+                      <Link to={`/products/ornaments/customize-glass?product=${product.id}`} className="block">
                         <Button 
                           size="sm"
                           variant="outline" 

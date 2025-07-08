@@ -2,44 +2,86 @@
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Camera, CheckCircle, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import PhotoUpload from '@/components/PhotoUpload';
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image_url: string;
+  description: string;
+  seo_title?: string;
+}
+
 const CustomizeGlassOrnament = () => {
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get('product');
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [isPhotoConfirmed, setIsPhotoConfirmed] = useState(false);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    if (productId) {
+      fetchProduct();
+    } else {
+      // Use default product if no ID provided
+      setProduct({
+        id: 'default-glass-ornament',
+        name: "Custom Glass Photo Ornament",
+        price: 24.99,
+        image_url: "/placeholder.svg",
+        description: "Transform your favorite memories into a beautiful glass ornament. Our premium glass ornaments are carefully crafted with your personalized photo, creating a lasting keepsake perfect for holidays or year-round display."
+      });
+      setLoading(false);
+    }
+  }, [productId]);
 
-  // Product data
-  const product = {
-    id: 1,
-    name: "Custom Glass Photo Ornament",
-    price: 24.99,
-    image: "/placeholder.svg",
-    description: "Transform your favorite memories into a beautiful glass ornament. Our premium glass ornaments are carefully crafted with your personalized photo, creating a lasting keepsake perfect for holidays or year-round display.",
-    fullDescription: "Create a stunning personalized glass ornament with your favorite photo. Each ornament is expertly crafted using high-quality glass and advanced printing technology to ensure your memories are preserved beautifully. Perfect for Christmas trees, holiday decorations, or as thoughtful gifts for loved ones. The crystal-clear glass provides excellent photo clarity while the durable construction ensures your ornament will last for years to come.",
-    features: [
-      "Premium crystal-clear glass construction",
-      "High-resolution photo printing",
-      "Durable and scratch-resistant finish",
-      "Includes hanging ribbon",
-      "Perfect gift size at 3.5 inches",
-      "Professional quality craftsmanship"
-    ]
+  const fetchProduct = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, price, image_url, description, seo_title')
+        .eq('id', productId)
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      setProduct(data);
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load product details. Please try again later.",
+        variant: "destructive",
+      });
+      // Fallback to default product
+      setProduct({
+        id: 'default-glass-ornament',
+        name: "Custom Glass Photo Ornament",
+        price: 24.99,
+        image_url: "/placeholder.svg",
+        description: "Transform your favorite memories into a beautiful glass ornament. Our premium glass ornaments are carefully crafted with your personalized photo, creating a lasting keepsake perfect for holidays or year-round display."
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddToCart = () => {
+    if (!product) return;
+
     if (!uploadedPhoto) {
       toast({
         title: "Photo Required",
@@ -60,10 +102,10 @@ const CustomizeGlassOrnament = () => {
     
     for (let i = 0; i < quantity; i++) {
       addToCart({
-        id: product.id,
+        id: parseInt(product.id),
         name: product.name,
         price: product.price,
-        image: product.image
+        image: product.image_url
       });
     }
     toast({
@@ -98,6 +140,38 @@ const CustomizeGlassOrnament = () => {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: '#faf6ee' }}>
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#E28F84] border-t-transparent mx-auto mb-4"></div>
+              <p className="text-lg" style={{ color: '#A89B84' }}>Loading product details...</p>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: '#faf6ee' }}>
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+          <h1 className="text-2xl font-bold mb-4" style={{ color: '#2d3436' }}>Product not found</h1>
+          <Link to="/products/ornaments">
+            <Button variant="outline" style={{ borderColor: '#E28F84', color: '#E28F84' }}>Back to Ornaments</Button>
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#faf6ee' }}>
       <Navigation />
@@ -109,7 +183,7 @@ const CustomizeGlassOrnament = () => {
           <span>/</span>
           <Link to="/products/ornaments" className="hover:opacity-80">Ornaments</Link>
           <span>/</span>
-          <span style={{ color: '#2d3436' }}>Customize Glass Ornament</span>
+          <span style={{ color: '#2d3436' }}>Customize {product.name}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -127,20 +201,27 @@ const CustomizeGlassOrnament = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
                     <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
                       <span className="text-sm font-medium" style={{ color: '#2d3436' }}>
-                        Preview on Glass Ornament
+                        Preview on {product.name}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full h-96 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <Camera className="h-16 w-16 mx-auto mb-4" style={{ color: '#a48f4b' }} />
-                      <p className="text-lg font-medium" style={{ color: '#2d3436' }}>
-                        Upload your photo to see preview
-                      </p>
-                      <p className="text-sm" style={{ color: '#6c5548' }}>
-                        Your photo will appear here on the glass ornament
-                      </p>
+                  <div className="w-full h-96 relative">
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-lg flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <Camera className="h-16 w-16 mx-auto mb-4 opacity-80" />
+                        <p className="text-lg font-medium">
+                          Upload your photo to see preview
+                        </p>
+                        <p className="text-sm opacity-80">
+                          Your photo will appear here on the ornament
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -219,19 +300,6 @@ const CustomizeGlassOrnament = () => {
               <p className="leading-relaxed text-lg" style={{ color: '#6c5548' }}>
                 {product.description}
               </p>
-              
-              {/* Features */}
-              <div className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl p-4 border" style={{ borderColor: '#F6DADA' }}>
-                <h3 className="font-semibold mb-3" style={{ color: '#2d3436' }}>What's Included:</h3>
-                <ul className="space-y-2">
-                  {product.features.map((feature, index) => (
-                    <li key={index} className="flex items-start space-x-2">
-                      <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: '#E28F84' }} />
-                      <span className="text-sm" style={{ color: '#6c5548' }}>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
 
             {/* Photo Upload Section */}
@@ -243,7 +311,7 @@ const CustomizeGlassOrnament = () => {
                 </h3>
               </div>
               <p className="text-sm mb-4" style={{ color: '#6c5548' }}>
-                Choose your favorite photo to create your personalized glass ornament. For best results, use high-quality images with good lighting.
+                Choose your favorite photo to create your personalized ornament. For best results, use high-quality images with good lighting.
               </p>
               <PhotoUpload onUpload={handlePhotoUpload} />
             </div>
@@ -292,39 +360,6 @@ const CustomizeGlassOrnament = () => {
                   }
                 </p>
               )}
-            </div>
-          </div>
-        </div>
-
-        {/* Full Product Description */}
-        <div className="mt-16 bg-white rounded-xl p-8 shadow-sm">
-          <h2 className="text-2xl font-playfair font-bold mb-6" style={{ color: '#2d3436' }}>
-            About Your Custom Glass Ornament
-          </h2>
-          <p className="leading-relaxed text-lg mb-6" style={{ color: '#6c5548' }}>
-            {product.fullDescription}
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="font-semibold mb-3" style={{ color: '#2d3436' }}>Perfect For:</h3>
-              <ul className="space-y-2 text-sm" style={{ color: '#6c5548' }}>
-                <li>• Christmas tree decorations</li>
-                <li>• Holiday gift giving</li>
-                <li>• Memorial keepsakes</li>
-                <li>• Anniversary celebrations</li>
-                <li>• Family photo displays</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-3" style={{ color: '#2d3436' }}>Care Instructions:</h3>
-              <ul className="space-y-2 text-sm" style={{ color: '#6c5548' }}>
-                <li>• Handle with care - glass material</li>
-                <li>• Clean with soft, dry cloth</li>
-                <li>• Store in protective packaging</li>
-                <li>• Avoid extreme temperatures</li>
-                <li>• Keep away from children under 3</li>
-              </ul>
             </div>
           </div>
         </div>
