@@ -93,52 +93,37 @@ const EmbeddedSquareCheckout = ({
 
       try {
         const environment = settings.square_environment || 'sandbox';
-        const isPreviewEnvironment = window.location.hostname.includes('lovableproject.com') || 
-                                    window.location.hostname.includes('lovable.app') || 
-                                    window.location.hostname.includes('localhost') ||
-                                    window.location.hostname.includes('127.0.0.1');
         
-        // Force sandbox for preview/development environments
-        const actualEnvironment = (environment === 'sandbox' || isPreviewEnvironment) ? 'sandbox' : 'production';
-        
-        console.log('Square SDK Environment Detection:', {
-          configuredEnvironment: environment,
-          isPreviewEnvironment,
-          actualEnvironment,
-          hostname: window.location.hostname,
+        console.log('Square SDK Initialization:', {
+          environment,
           appId: settings.square_app_id,
-          locationId: settings.square_location_id
+          locationId: settings.square_location_id,
+          hostname: window.location.hostname
         });
 
-        // Initialize with explicit sandbox configuration for development/preview
-        let paymentsConfig = {};
-        if (actualEnvironment === 'sandbox') {
-          paymentsConfig = {
-            environment: 'sandbox'
-          };
-          console.log('Using explicit sandbox configuration');
+        // Initialize Square payments with correct API call
+        let paymentsInstance;
+        if (environment === 'sandbox') {
+          console.log('Initializing Square SDK in sandbox mode');
+          paymentsInstance = window.Square.payments(
+            settings.square_app_id, 
+            settings.square_location_id,
+            'sandbox'
+          );
         } else {
-          console.log('Using production configuration');
+          console.log('Initializing Square SDK in production mode');
+          paymentsInstance = window.Square.payments(
+            settings.square_app_id, 
+            settings.square_location_id
+          );
         }
-
-        const paymentsInstance = window.Square.payments(
-          settings.square_app_id, 
-          settings.square_location_id, 
-          paymentsConfig
-        );
         
         setPayments(paymentsInstance);
+        console.log('Square payments instance created successfully');
 
-        // Initialize card payment method
-        const cardInstance = await paymentsInstance.card();
+        // Wait for DOM to be ready and initialize card
+        await initializeCard(paymentsInstance);
         
-        if (cardRef.current) {
-          await cardInstance.attach(cardRef.current);
-          setCard(cardInstance);
-          console.log('Square Web Payments SDK initialized successfully');
-        } else {
-          console.error('Card container ref not available');
-        }
       } catch (error) {
         console.error('Failed to initialize Square Web Payments SDK:', error);
         toast({
@@ -146,6 +131,65 @@ const EmbeddedSquareCheckout = ({
           description: `Failed to initialize payment system: ${error.message || 'Unknown error'}`,
           variant: "destructive",
         });
+      }
+    };
+
+    const initializeCard = async (paymentsInstance: any, retryCount = 0) => {
+      const maxRetries = 3;
+      
+      try {
+        console.log(`Initializing card (attempt ${retryCount + 1}/${maxRetries + 1})`);
+        
+        // Ensure card container is available
+        if (!cardRef.current) {
+          if (retryCount < maxRetries) {
+            console.log('Card container not ready, retrying in 500ms...');
+            setTimeout(() => initializeCard(paymentsInstance, retryCount + 1), 500);
+            return;
+          } else {
+            throw new Error('Card container not available after retries');
+          }
+        }
+
+        // Initialize card payment method
+        const cardInstance = await paymentsInstance.card({
+          style: {
+            input: {
+              fontSize: '16px',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              color: '#374151',
+              backgroundColor: '#ffffff'
+            },
+            placeholder: {
+              color: '#9CA3AF'
+            }
+          }
+        });
+        
+        console.log('Card instance created, attaching to DOM...');
+        await cardInstance.attach(cardRef.current);
+        
+        setCard(cardInstance);
+        console.log('Square card form attached successfully');
+        
+        // Verify card form is rendered
+        setTimeout(() => {
+          const cardContainer = cardRef.current;
+          if (cardContainer && cardContainer.children.length > 0) {
+            console.log('Card form rendered successfully - children found:', cardContainer.children.length);
+          } else {
+            console.warn('Card form may not have rendered properly - no children found');
+          }
+        }, 1000);
+        
+      } catch (error) {
+        console.error(`Card initialization failed (attempt ${retryCount + 1}):`, error);
+        if (retryCount < maxRetries) {
+          console.log(`Retrying card initialization in ${(retryCount + 1) * 1000}ms...`);
+          setTimeout(() => initializeCard(paymentsInstance, retryCount + 1), (retryCount + 1) * 1000);
+        } else {
+          throw error;
+        }
       }
     };
 
