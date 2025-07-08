@@ -99,10 +99,16 @@ const EmbeddedSquareCheckout = ({
           environment: environment
         });
 
-        // Initialize with environment configuration
-        const paymentsInstance = window.Square.payments(settings.square_app_id, settings.square_location_id, {
-          environment: environment
-        });
+        // Initialize with proper environment configuration for sandbox
+        let paymentsInstance;
+        if (environment === 'sandbox') {
+          paymentsInstance = window.Square.payments(settings.square_app_id, settings.square_location_id, {
+            environment: 'sandbox'
+          });
+        } else {
+          paymentsInstance = window.Square.payments(settings.square_app_id, settings.square_location_id);
+        }
+        
         setPayments(paymentsInstance);
 
         // Initialize card payment method
