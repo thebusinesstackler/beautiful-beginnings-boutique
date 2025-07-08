@@ -92,13 +92,17 @@ const EmbeddedSquareCheckout = ({
       }
 
       try {
+        const environment = settings.square_environment || 'sandbox';
         console.log('Initializing Square Web Payments SDK with:', {
           appId: settings.square_app_id,
           locationId: settings.square_location_id,
-          environment: settings.square_environment
+          environment: environment
         });
 
-        const paymentsInstance = window.Square.payments(settings.square_app_id, settings.square_location_id);
+        // Initialize with environment configuration
+        const paymentsInstance = window.Square.payments(settings.square_app_id, settings.square_location_id, {
+          environment: environment
+        });
         setPayments(paymentsInstance);
 
         // Initialize card payment method

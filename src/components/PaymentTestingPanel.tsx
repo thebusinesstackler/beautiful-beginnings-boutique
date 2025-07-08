@@ -107,11 +107,24 @@ const PaymentTestingPanel = () => {
     
     setTimeout(() => {
       if (window.Square) {
-        addTestResult('Payment Flow', 'passed', 'Square SDK loaded and payment flow ready');
-        toast({
-          title: "Payment Flow Ready",
-          description: "Square Web Payments SDK is properly initialized",
-        });
+        // Check if card container exists
+        const cardContainer = document.getElementById('card-container');
+        const hasCardInput = cardContainer && cardContainer.children.length > 0;
+        
+        if (hasCardInput) {
+          addTestResult('Payment Flow', 'passed', 'Square SDK loaded and card form rendered');
+          toast({
+            title: "Payment Flow Ready",
+            description: "Square Web Payments SDK is properly initialized with card form",
+          });
+        } else {
+          addTestResult('Payment Flow', 'failed', 'Square SDK loaded but card form not rendered - check environment settings');
+          toast({
+            title: "Payment Flow Warning",
+            description: "Square SDK loaded but card form not visible - possible environment mismatch",
+            variant: "destructive",
+          });
+        }
       } else {
         addTestResult('Payment Flow', 'failed', 'Square SDK not loaded');
         toast({
@@ -120,7 +133,7 @@ const PaymentTestingPanel = () => {
           variant: "destructive",
         });
       }
-    }, 500);
+    }, 1000);
   };
 
   const testErrorHandling = () => {
