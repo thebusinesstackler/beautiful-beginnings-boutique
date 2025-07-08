@@ -100,7 +100,7 @@ const EmbeddedSquareCheckout = ({
       }
 
       try {
-        const environment = settings.square_environment || 'sandbox';
+        const environment = 'sandbox'; // Force sandbox for now since your App ID is sandbox
         
         console.log('Square SDK Initialization:', {
           environment,
