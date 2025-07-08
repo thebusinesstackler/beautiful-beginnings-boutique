@@ -10,6 +10,7 @@ import Testimonials from '@/components/Testimonials';
 import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import SocialProofNotifications from '@/components/SocialProofNotifications';
+import StillHaveQuestions from '@/components/StillHaveQuestions';
 
 const Index = () => {
   return (
@@ -23,6 +24,7 @@ const Index = () => {
       <FeaturedProducts />
       <Testimonials />
       <FAQ />
+      <StillHaveQuestions />
       <Footer />
       <SocialProofNotifications />
     </div>

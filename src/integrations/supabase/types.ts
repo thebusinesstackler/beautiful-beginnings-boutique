@@ -372,6 +372,8 @@ export type Database = {
           personalization_data: Json | null
           price: number
           product_id: string | null
+          product_image: string | null
+          product_name: string | null
           quantity: number
         }
         Insert: {
@@ -381,6 +383,8 @@ export type Database = {
           personalization_data?: Json | null
           price: number
           product_id?: string | null
+          product_image?: string | null
+          product_name?: string | null
           quantity?: number
         }
         Update: {
@@ -390,6 +394,8 @@ export type Database = {
           personalization_data?: Json | null
           price?: number
           product_id?: string | null
+          product_image?: string | null
+          product_name?: string | null
           quantity?: number
         }
         Relationships: [
@@ -422,6 +428,8 @@ export type Database = {
           payment_id: string | null
           personalization_data: Json | null
           shipping_address: Json | null
+          square_checkout_id: string | null
+          square_order_id: string | null
           status: string | null
           total_amount: number
           tracking_number: string | null
@@ -440,6 +448,8 @@ export type Database = {
           payment_id?: string | null
           personalization_data?: Json | null
           shipping_address?: Json | null
+          square_checkout_id?: string | null
+          square_order_id?: string | null
           status?: string | null
           total_amount: number
           tracking_number?: string | null
@@ -458,6 +468,8 @@ export type Database = {
           payment_id?: string | null
           personalization_data?: Json | null
           shipping_address?: Json | null
+          square_checkout_id?: string | null
+          square_order_id?: string | null
           status?: string | null
           total_amount?: number
           tracking_number?: string | null
@@ -679,6 +691,30 @@ export type Database = {
           usage_limit?: number | null
           used_count?: number | null
           value?: number
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          key: string
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          key: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          key?: string
+          updated_at?: string | null
+          value?: string | null
         }
         Relationships: []
       }

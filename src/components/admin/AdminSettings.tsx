@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,7 +56,7 @@ const AdminSettings = () => {
             <Store className="h-5 w-5 mr-2 text-stone" />
             Store Information
           </CardTitle>
-          <CardDescription>Basic information about your store (appears in footer)</CardDescription>
+          <CardDescription>Basic information about your store (appears in footer and homepage)</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -82,7 +83,9 @@ const AdminSettings = () => {
                 id="store_phone" 
                 value={formData.store_phone}
                 onChange={(e) => handleInputChange('store_phone', e.target.value)}
+                placeholder="(555) 123-4567"
               />
+              <p className="text-xs text-stone mt-1">This will appear on your homepage</p>
             </div>
             <div>
               <Label htmlFor="store_website" className="text-charcoal">Website URL</Label>

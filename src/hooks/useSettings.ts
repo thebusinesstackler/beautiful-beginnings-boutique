@@ -26,13 +26,48 @@ export const useSettings = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('settings')
+        .select('key, value');
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        const settingsObject: Partial<SiteSettings> = {};
+        data.forEach(setting => {
+          const key = setting.key as keyof SiteSettings;
+          if (setting.value) {
+            settingsObject[key] = setting.value;
+          }
+        });
+        
+        setSettings(prev => ({ ...prev, ...settingsObject }));
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
+
   const updateSettings = async (newSettings: Partial<SiteSettings>) => {
     setLoading(true);
     try {
-      // For now, we'll store settings in localStorage since we don't have a settings table
-      // In a real app, you'd want to create a settings table in the database
+      // Update each setting in the database
+      for (const [key, value] of Object.entries(newSettings)) {
+        await supabase
+          .from('settings')
+          .upsert(
+            { key, value: value as string },
+            { onConflict: 'key' }
+          );
+      }
+      
       const currentSettings = { ...settings, ...newSettings };
-      localStorage.setItem('siteSettings', JSON.stringify(currentSettings));
       setSettings(currentSettings);
       
       toast({
@@ -50,19 +85,6 @@ export const useSettings = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    // Load settings from localStorage on component mount
-    const savedSettings = localStorage.getItem('siteSettings');
-    if (savedSettings) {
-      try {
-        const parsed = JSON.parse(savedSettings);
-        setSettings(parsed);
-      } catch (error) {
-        console.error('Error parsing saved settings:', error);
-      }
-    }
-  }, []);
 
   return { settings, updateSettings, loading };
 };
