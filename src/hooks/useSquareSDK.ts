@@ -39,34 +39,21 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         }
       }
 
-      console.log('🎯 Creating Square card instance...');
+      console.log('🎯 Creating Square card instance with minimal styling...');
       const cardInstance = await paymentsInstance.card({
         style: {
           input: {
-            fontSize: '16px',
-            fontFamily: 'system-ui, -apple-system, sans-serif',
-            color: '#2d3436',
-            backgroundColor: '#ffffff',
-            padding: '16px',
-            border: 'none'
+            fontSize: '16px'
           },
           '.input-container': {
-            borderRadius: '8px',
-            border: '2px solid hsl(140 20% 75%)',
-            backgroundColor: '#ffffff'
+            borderColor: '#d1d5db',
+            borderRadius: '8px'
           },
           '.input-container.is-focus': {
-            borderColor: 'hsl(140 30% 45%)',
-            boxShadow: '0 0 0 2px hsl(140 30% 45% / 0.2)'
+            borderColor: '#10b981'
           },
           '.input-container.is-error': {
-            borderColor: '#ef4444',
-            boxShadow: '0 0 0 2px rgba(239, 68, 68, 0.2)'
-          },
-          '.message-text': {
-            color: '#ef4444',
-            fontSize: '14px',
-            marginTop: '4px'
+            borderColor: '#ef4444'
           }
         }
       });
@@ -76,7 +63,6 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       // Ensure container is clean and ready
       if (cardRef.current) {
         cardRef.current.innerHTML = '';
-        cardRef.current.className = 'square-card-container min-h-[80px] p-4 border-2 border-sage/30 rounded-lg bg-white transition-all duration-200 focus-within:border-sage focus-within:ring-2 focus-within:ring-sage/20';
         console.log('🧹 Card container prepared');
       }
       
