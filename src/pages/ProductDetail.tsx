@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Camera, Upload, Sparkles, Shield, Truck, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -9,6 +8,8 @@ import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import PhotoUpload from '@/components/PhotoUpload';
+import WoodCustomizationOptions from '@/components/WoodCustomizationOptions';
+import WoodPhotoUploadGuide from '@/components/WoodPhotoUploadGuide';
 
 interface Product {
   id: string;
@@ -32,6 +33,7 @@ const ProductDetail = () => {
   const [showPersonalization, setShowPersonalization] = useState(false);
   const [showShipping, setShowShipping] = useState(false);
   const [showFAQ, setShowFAQ] = useState<number | null>(null);
+  const [customizations, setCustomizations] = useState<any>({});
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -89,11 +91,23 @@ const ProductDetail = () => {
     });
   };
 
+  const handleCustomizationChange = (newCustomizations: any) => {
+    setCustomizations(newCustomizations);
+    console.log('Customizations updated:', newCustomizations);
+  };
+
   const hasPersonalization = product?.personalization_options && 
     typeof product.personalization_options === 'object' && 
     product.personalization_options.photo_upload;
 
-  const faqs = [
+  const isWoodSublimation = product?.category === 'Wood Sublimation';
+
+  const faqs = isWoodSublimation ? [
+    { question: "How do I upload my photo for wood sublimation?", answer: "Simply click 'Personalize this item' and use our easy upload tool. We accept high-resolution JPG, PNG formats up to 20MB for the best wood sublimation results." },
+    { question: "What makes wood sublimation special?", answer: "Wood sublimation permanently bonds your photo to the wood surface, creating vibrant colors that complement the natural grain. Each piece is unique due to the wood's natural patterns." },
+    { question: "Can I choose different wood types?", answer: "Yes! We offer Pine, Oak, and Cedar options. Each wood type has its own grain pattern and color characteristics that will show through your photo." },
+    { question: "How long does wood sublimation take?", answer: "Wood sublimation requires 3-5 business days for processing, plus shipping time. The careful sublimation process ensures your photo bonds perfectly with the wood." }
+  ] : [
     { question: "How do I upload my photo?", answer: "Simply click 'Personalize this item' and use our easy upload tool. We accept JPG, PNG formats up to 20MB." },
     { question: "Can I add custom text?", answer: "Yes! You can add names, dates, or short messages during the personalization process." },
     { question: "What image size works best?", answer: "For best results, use high-resolution images (at least 1000x1000 pixels) with good lighting and clear focus." }
@@ -183,6 +197,11 @@ const ProductDetail = () => {
               )}
             </div>
             
+            {/* Wood Photo Upload Guide for Wood Sublimation products */}
+            {isWoodSublimation && hasPersonalization && (
+              <WoodPhotoUploadGuide />
+            )}
+
             {/* Photo Upload Preview for personalizable products */}
             {hasPersonalization && (
               <div className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl p-6 border-2 border-dashed border-primary/20">
@@ -230,14 +249,16 @@ const ProductDetail = () => {
               {product.description}
             </p>
 
-            {hasPersonalization && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            {/* Enhanced Wood Sublimation Info */}
+            {isWoodSublimation && hasPersonalization && (
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4">
                 <div className="flex items-start space-x-3">
-                  <Camera className="h-5 w-5 text-amber-600 mt-0.5" />
+                  <Sparkles className="h-5 w-5 text-amber-600 mt-0.5" />
                   <div>
-                    <h4 className="font-medium text-amber-800">Photo Upload Process</h4>
+                    <h4 className="font-medium text-amber-800">Wood Sublimation Process</h4>
                     <p className="text-sm text-amber-700 mt-1">
-                      After purchase, you'll receive instructions to upload your high-resolution photo. Processing takes 3-5 business days.
+                      Your photo will be permanently transferred onto natural wood using our sublimation process. 
+                      The wood grain adds character and makes each piece unique. Processing takes 3-5 business days.
                     </p>
                   </div>
                 </div>
@@ -276,7 +297,7 @@ const ProductDetail = () => {
               </Button>
             </div>
 
-            {/* Personalization Toggle */}
+            {/* Enhanced Personalization Section */}
             {hasPersonalization && (
               <div className="rounded-xl p-4 shadow-sm border-2" style={{ backgroundColor: 'white', borderColor: '#F6DADA' }}>
                 <button
@@ -285,7 +306,9 @@ const ProductDetail = () => {
                 >
                   <div className="flex items-center">
                     <Sparkles className="h-5 w-5 mr-2" style={{ color: '#a48f4b' }} />
-                    <h3 className="font-semibold" style={{ color: '#2d3436' }}>Personalize this item</h3>
+                    <h3 className="font-semibold" style={{ color: '#2d3436' }}>
+                      {isWoodSublimation ? 'Customize Your Wood Piece' : 'Personalize this item'}
+                    </h3>
                   </div>
                   {showPersonalization ? (
                     <ChevronUp className="h-5 w-5" style={{ color: '#a48f4b' }} />
@@ -295,11 +318,22 @@ const ProductDetail = () => {
                 </button>
                 
                 {showPersonalization && (
-                  <div className="mt-4 animate-fade-in">
-                    <p className="text-sm mb-4" style={{ color: '#6c5548' }}>
-                      Upload your favorite photo to personalize this {product.category.toLowerCase()}
-                    </p>
-                    <PhotoUpload onUpload={handlePhotoUpload} />
+                  <div className="mt-6 space-y-6 animate-fade-in">
+                    {/* Wood Customization Options */}
+                    {isWoodSublimation && (
+                      <WoodCustomizationOptions 
+                        personalizationOptions={product.personalization_options}
+                        onCustomizationChange={handleCustomizationChange}
+                      />
+                    )}
+                    
+                    {/* Photo Upload */}
+                    <div>
+                      <h4 className="font-medium mb-3" style={{ color: '#2d3436' }}>
+                        Upload Your Photo
+                      </h4>
+                      <PhotoUpload onUpload={handlePhotoUpload} />
+                    </div>
                   </div>
                 )}
               </div>
@@ -312,7 +346,7 @@ const ProductDetail = () => {
           <div className="mt-20">
             <section className="bg-white p-8 rounded-xl shadow-sm">
               <h2 className="text-2xl font-playfair font-bold mb-8" style={{ color: '#2d3436' }}>
-                Frequently Asked Questions
+                {isWoodSublimation ? 'Wood Sublimation FAQ' : 'Frequently Asked Questions'}
               </h2>
               <div className="space-y-4">
                 {faqs.map((faq, index) => (
