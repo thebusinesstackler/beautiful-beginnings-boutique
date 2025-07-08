@@ -44,11 +44,17 @@ export const useSettings = () => {
 
   const fetchSettings = async () => {
     try {
+      console.log('Fetching settings from database...');
       const { data, error } = await supabase
         .from('settings')
         .select('key, value');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching settings:', error);
+        throw error;
+      }
+
+      console.log('Settings data received:', data);
 
       if (data && data.length > 0) {
         const settingsObject: Partial<SiteSettings> = {};
@@ -59,33 +65,52 @@ export const useSettings = () => {
           }
         });
         
+        console.log('Parsed settings object:', settingsObject);
         setSettings(prev => ({ ...prev, ...settingsObject }));
       }
     } catch (error) {
       console.error('Error fetching settings:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load settings",
+        variant: "destructive",
+      });
     }
   };
 
   const updateSettings = async (newSettings: Partial<SiteSettings>) => {
     setLoading(true);
     try {
+      console.log('Updating settings:', newSettings);
+      
       // Update each setting in the database
       for (const [key, value] of Object.entries(newSettings)) {
-        await supabase
+        console.log(`Updating setting: ${key} = ${value}`);
+        const { error } = await supabase
           .from('settings')
           .upsert(
             { key, value: value as string },
             { onConflict: 'key' }
           );
+        
+        if (error) {
+          console.error(`Error updating setting ${key}:`, error);
+          throw error;
+        }
       }
       
       const currentSettings = { ...settings, ...newSettings };
       setSettings(currentSettings);
+      console.log('Settings updated successfully:', currentSettings);
       
       toast({
         title: "Settings Updated",
         description: "Your settings have been saved successfully.",
       });
+
+      // Trigger a window event to notify other components about the settings update
+      window.dispatchEvent(new CustomEvent('settingsUpdated', { detail: currentSettings }));
+      
     } catch (error) {
       console.error('Error updating settings:', error);
       toast({
@@ -98,5 +123,5 @@ export const useSettings = () => {
     }
   };
 
-  return { settings, updateSettings, loading };
+  return { settings, updateSettings, loading, fetchSettings };
 };

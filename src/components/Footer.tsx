@@ -4,14 +4,26 @@ import { Instagram, Facebook, Mail, Phone, Award, Star, LogIn, LogOut, Shield } 
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
+import { useEffect } from 'react';
 
 const Footer = () => {
   const { user, profile, signOut } = useAuth();
-  const { settings } = useSettings();
+  const { settings, fetchSettings } = useSettings();
 
   const handleSignOut = async () => {
     await signOut();
   };
+
+  // Listen for settings updates from other components
+  useEffect(() => {
+    const handleSettingsUpdate = () => {
+      console.log('Settings updated, refetching...');
+      fetchSettings();
+    };
+
+    window.addEventListener('settingsUpdated', handleSettingsUpdate);
+    return () => window.removeEventListener('settingsUpdated', handleSettingsUpdate);
+  }, [fetchSettings]);
 
   return (
     <footer className="relative bg-cream border-t border-stone-200">
@@ -189,7 +201,6 @@ const Footer = () => {
               )}
             </div>
             
-            {/* Social Links */}
             <div className="flex space-x-3">
               <a 
                 href="#" 

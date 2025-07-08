@@ -3,30 +3,21 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { useSettings } from '@/hooks/useSettings';
 
 const StillHaveQuestions = () => {
-  const [phoneNumber, setPhoneNumber] = useState('(555) 123-4567');
+  const { settings } = useSettings();
 
+  // Listen for settings updates
   useEffect(() => {
-    fetchPhoneNumber();
+    const handleSettingsUpdate = () => {
+      console.log('Settings updated in StillHaveQuestions component');
+      // The useSettings hook will automatically update when settings change
+    };
+
+    window.addEventListener('settingsUpdated', handleSettingsUpdate);
+    return () => window.removeEventListener('settingsUpdated', handleSettingsUpdate);
   }, []);
-
-  const fetchPhoneNumber = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('settings')
-        .select('value')
-        .eq('key', 'store_phone')
-        .single();
-
-      if (data && data.value) {
-        setPhoneNumber(data.value);
-      }
-    } catch (error) {
-      console.error('Error fetching phone number:', error);
-    }
-  };
 
   return (
     <section className="py-16" style={{ backgroundColor: '#FAF5EF' }}>
@@ -55,7 +46,7 @@ const StillHaveQuestions = () => {
           <div className="flex items-center space-x-2">
             <Phone className="h-5 w-5" style={{ color: '#7A7047' }} />
             <span className="text-lg font-medium" style={{ color: '#7A7047' }}>
-              Call us: {phoneNumber}
+              Call us: {settings.store_phone}
             </span>
           </div>
         </div>
