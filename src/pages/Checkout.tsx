@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import PhotoUpload from '@/components/PhotoUpload';
 import { toast } from '@/hooks/use-toast';
+import SquareCheckout from '@/components/SquareCheckout';
 
 const Checkout = () => {
   const { items, removeFromCart, getCartTotal, updatePhoto, addToCart } = useCart();
@@ -40,6 +40,22 @@ const Checkout = () => {
         description: "Thank you for your order. You'll receive a confirmation email shortly.",
       });
     }, 2000);
+  };
+
+  const handleSquareSuccess = () => {
+    toast({
+      title: "Payment Successful!",
+      description: "Your order has been processed successfully.",
+    });
+  };
+
+  const handleSquareError = (error: any) => {
+    console.error('Square payment error:', error);
+    toast({
+      title: "Payment Error",
+      description: "There was an issue processing your payment. Please try again.",
+      variant: "destructive",
+    });
   };
 
   return (
@@ -190,23 +206,33 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                <Button
-                  onClick={handleCheckout}
-                  disabled={isProcessing}
-                  className="w-full btn-primary text-lg font-semibold py-3"
-                >
-                  {isProcessing ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                      Processing...
-                    </>
-                  ) : (
-                    'Proceed to Checkout'
-                  )}
-                </Button>
+                {/* Square Checkout Button */}
+                <div className="space-y-3">
+                  <SquareCheckout
+                    onSuccess={handleSquareSuccess}
+                    onError={handleSquareError}
+                  />
+                  
+                  {/* Fallback checkout button */}
+                  <Button
+                    onClick={handleCheckout}
+                    disabled={isProcessing}
+                    variant="outline"
+                    className="w-full text-lg font-semibold py-3"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-400 border-t-transparent mr-2"></div>
+                        Processing...
+                      </>
+                    ) : (
+                      'Alternative Checkout'
+                    )}
+                  </Button>
+                </div>
 
                 <div className="mt-4 text-center text-xs text-gray-500">
-                  <p>Secure checkout powered by Stripe</p>
+                  <p>Secure checkout powered by Square</p>
                   <p className="mt-1">🔒 Your payment information is protected</p>
                 </div>
               </div>

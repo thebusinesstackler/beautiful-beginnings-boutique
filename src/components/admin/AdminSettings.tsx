@@ -32,6 +32,15 @@ const AdminSettings = () => {
     });
   };
 
+  const handleSaveSquareSettings = () => {
+    updateSettings({
+      square_app_id: formData.square_app_id,
+      square_location_id: formData.square_location_id,
+      square_access_token: formData.square_access_token,
+      square_environment: formData.square_environment || 'sandbox'
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -102,36 +111,76 @@ const AdminSettings = () => {
         </CardContent>
       </Card>
 
-      {/* Payment Settings */}
+      {/* Square Payment Settings */}
       <Card className="bg-blush/20 border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center text-charcoal">
             <CreditCard className="h-5 w-5 mr-2 text-stone" />
-            Payment Settings
+            Square Payment Settings
           </CardTitle>
-          <CardDescription>Configure payment processing</CardDescription>
+          <CardDescription>Configure Square payment processing for secure checkouts</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="square_app_id" className="text-charcoal">Square Application ID</Label>
-              <Input id="square_app_id" placeholder="Enter Square App ID" />
+              <Input 
+                id="square_app_id" 
+                placeholder="Enter Square App ID"
+                value={formData.square_app_id || ''}
+                onChange={(e) => handleInputChange('square_app_id', e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="square_location_id" className="text-charcoal">Square Location ID</Label>
-              <Input id="square_location_id" placeholder="Enter Square Location ID" />
+              <Input 
+                id="square_location_id" 
+                placeholder="Enter Square Location ID"
+                value={formData.square_location_id || ''}
+                onChange={(e) => handleInputChange('square_location_id', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="square_access_token" className="text-charcoal">Square Access Token</Label>
+              <Input 
+                id="square_access_token" 
+                type="password"
+                placeholder="Enter Square Access Token"
+                value={formData.square_access_token || ''}
+                onChange={(e) => handleInputChange('square_access_token', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="square_environment" className="text-charcoal">Environment</Label>
+              <select 
+                id="square_environment"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                value={formData.square_environment || 'sandbox'}
+                onChange={(e) => handleInputChange('square_environment', e.target.value)}
+              >
+                <option value="sandbox">Sandbox (Testing)</option>
+                <option value="production">Production (Live)</option>
+              </select>
             </div>
           </div>
-          <div>
-            <Label htmlFor="payment_instructions" className="text-charcoal">Payment Instructions</Label>
-            <Textarea 
-              id="payment_instructions" 
-              placeholder="Special instructions for customers about payment..."
-              rows={3}
-            />
+          <div className="bg-sage/10 p-4 rounded-lg">
+            <p className="text-sm text-charcoal/80 mb-2">
+              <strong>How to get Square credentials:</strong>
+            </p>
+            <ul className="text-sm text-charcoal/70 space-y-1">
+              <li>1. Go to Square Developer Dashboard</li>
+              <li>2. Create a new application or use an existing one</li>
+              <li>3. Copy the Application ID from your app settings</li>
+              <li>4. Get your Location ID from the Locations API or Dashboard</li>
+              <li>5. Generate an Access Token (use Sandbox for testing)</li>
+            </ul>
           </div>
-          <Button className="bg-sage hover:bg-sage/90 text-white">
-            Save Payment Settings
+          <Button 
+            className="bg-sage hover:bg-sage/90 text-white"
+            onClick={handleSaveSquareSettings}
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save Square Settings'}
           </Button>
         </CardContent>
       </Card>
