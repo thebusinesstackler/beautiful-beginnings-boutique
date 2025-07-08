@@ -1,46 +1,58 @@
+
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, ArrowLeft, Info, Sparkles, Palette } from 'lucide-react';
+import { Heart, ShoppingCart, ArrowLeft, Info, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image_url: string;
+  description: string;
+  seo_title?: string;
+}
 
 const Slate = () => {
-  const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
+  const [likedProducts, setLikedProducts] = useState<Set<string>>(new Set());
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchProducts();
   }, []);
 
-  const products = [
-    {
-      id: 1,
-      name: "Natural Edge Slate Photo",
-      price: 25.00,
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
-      description: "Beautiful natural edge slate with your photo, perfect for rustic home décor that tells your story"
-    },
-    {
-      id: 2,
-      name: "Rectangular Slate Display",
-      price: 30.00,
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
-      description: "Clean rectangular slate perfect for family photos and special memories with elegant presentation"
-    },
-    {
-      id: 3,
-      name: "Large Slate Memorial",
-      price: 40.00,
-      originalPrice: 45.00,
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400",
-      description: "Large slate piece perfect for memorial displays or commemorating life's most precious moments"
-    }
-  ];
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, price, image_url, description, seo_title')
+        .eq('category', 'Slate')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
 
-  const toggleLike = (productId: number) => {
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load products. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleLike = (productId: string) => {
     const newLiked = new Set(likedProducts);
     if (newLiked.has(productId)) {
       newLiked.delete(productId);
@@ -50,18 +62,30 @@ const Slate = () => {
     setLikedProducts(newLiked);
   };
 
-  const handleAddToCart = (product: typeof products[0]) => {
+  const handleAddToCart = (product: Product) => {
     addToCart({
-      id: product.id,
+      id: parseInt(product.id),
       name: product.name,
       price: product.price,
-      image: product.image
+      image: product.image_url
     });
     toast({
       title: "Added to cart!",
       description: `${product.name} has been added to your cart.`,
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">Loading slate products...</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -85,7 +109,6 @@ const Slate = () => {
           </div>
 
           <div className="text-center">
-            {/* Large logo */}
             <div className="mb-8">
               <img 
                 src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
@@ -139,89 +162,86 @@ const Slate = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden border border-gray-100"
-            >
-              <div className="relative overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                {product.originalPrice && (
-                  <div className="absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-medium text-white shadow-lg" style={{ backgroundColor: '#E28F84' }}>
-                    Sale
-                  </div>
-                )}
-                <button
-                  onClick={() => toggleLike(product.id)}
-                  className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white hover:scale-110 transition-all duration-200 shadow-lg"
-                >
-                  <Heart
-                    className={`h-5 w-5 transition-all duration-200 ${
-                      likedProducts.has(product.id)
-                        ? 'text-red-500 fill-current scale-110'
-                        : 'text-gray-600'
-                    }`}
+        {products.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden border border-gray-100"
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={product.image_url}
+                    alt={product.name}
+                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
                   />
-                </button>
-              </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <button
+                    onClick={() => toggleLike(product.id)}
+                    className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white hover:scale-110 transition-all duration-200 shadow-lg"
+                  >
+                    <Heart
+                      className={`h-5 w-5 transition-all duration-200 ${
+                        likedProducts.has(product.id)
+                          ? 'text-red-500 fill-current scale-110'
+                          : 'text-gray-600'
+                      }`}
+                    />
+                  </button>
+                </div>
 
-              <div className="p-6">
-                <h3 className="font-playfair font-bold text-xl mb-3 group-hover:text-[#E28F84] transition-colors duration-300" style={{ color: '#5B4C37' }}>
-                  {product.name}
-                </h3>
-                <p className="text-sm leading-relaxed mb-4" style={{ color: '#A89B84' }}>
-                  {product.description}
-                </p>
-                
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center space-x-2">
+                <div className="p-6">
+                  <h3 className="font-playfair font-bold text-xl mb-3 group-hover:text-[#E28F84] transition-colors duration-300" style={{ color: '#5B4C37' }}>
+                    {product.name}
+                  </h3>
+                  <p className="text-sm leading-relaxed mb-4" style={{ color: '#A89B84' }}>
+                    {product.description}
+                  </p>
+                  
+                  <div className="flex items-center justify-between mb-6">
                     <span className="text-2xl font-bold" style={{ color: '#E28F84' }}>
                       ${product.price.toFixed(2)}
                     </span>
-                    {product.originalPrice && (
-                      <span className="text-sm line-through" style={{ color: '#A89B84' }}>
-                        ${product.originalPrice.toFixed(2)}
-                      </span>
-                    )}
+                    <div className="px-3 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
+                      Natural Stone
+                    </div>
                   </div>
-                  <div className="px-3 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#F6DADA', color: '#7A7047' }}>
-                    Natural Stone
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="w-full text-sm py-2 border-2 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-300"
-                    style={{ borderColor: '#E28F84' }}
-                  >
-                    <Info className="h-4 w-4 mr-2" />
-                    Learn More
-                  </Button>
                   
-                  <Button 
-                    size="sm" 
-                    className="w-full text-sm py-2 text-white font-semibold transition-all duration-300 hover:shadow-md"
-                    style={{ backgroundColor: '#E28F84' }}
-                    onClick={() => handleAddToCart(product)}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
-                  </Button>
+                  <div className="space-y-3">
+                    <Link to={`/products/slate/${product.id}`} className="block">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="w-full text-sm py-2 border-2 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-300"
+                        style={{ borderColor: '#E28F84' }}
+                      >
+                        <Info className="h-4 w-4 mr-2" />
+                        Learn More
+                      </Button>
+                    </Link>
+                    
+                    <Button 
+                      size="sm" 
+                      className="w-full text-sm py-2 text-white font-semibold transition-all duration-300 hover:shadow-md"
+                      style={{ backgroundColor: '#E28F84' }}
+                      onClick={() => handleAddToCart(product)}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Add to Cart
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <p className="text-xl mb-4" style={{ color: '#A89B84' }}>No slate products available at the moment.</p>
+            <p style={{ color: '#A89B84' }}>Check back soon for new elegant pieces!</p>
+          </div>
+        )}
 
         {/* Back to Home */}
         <div className="text-center">
