@@ -28,6 +28,8 @@ import CustomOrders from './pages/CustomOrders';
 import OurStory from './pages/OurStory';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Blog from './pages/Blog';
+import Events from './pages/Events';
 import NotFound from './pages/NotFound';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
@@ -72,6 +74,8 @@ function App() {
             <Route path="/our-story" element={<OurStory />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/events" element={<Events />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
