@@ -42,6 +42,33 @@ const AdminSettings = () => {
     });
   };
 
+  const handleSaveShippingSettings = () => {
+    updateSettings({
+      domestic_shipping: formData.domestic_shipping,
+      international_shipping: formData.international_shipping,
+      free_shipping_threshold: formData.free_shipping_threshold,
+      processing_time: formData.processing_time,
+      shipping_policy: formData.shipping_policy
+    });
+  };
+
+  const handleSaveEmailSettings = () => {
+    updateSettings({
+      order_confirmation_template: formData.order_confirmation_template,
+      shipping_confirmation_template: formData.shipping_confirmation_template
+    });
+  };
+
+  const handleSaveCraftShowSettings = () => {
+    updateSettings({
+      next_show_name: formData.next_show_name,
+      next_show_date: formData.next_show_date,
+      show_location: formData.show_location,
+      booth_number: formData.booth_number,
+      show_notes: formData.show_notes
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -201,19 +228,45 @@ const AdminSettings = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="domestic_shipping" className="text-charcoal">Domestic Shipping Rate</Label>
-              <Input id="domestic_shipping" type="number" step="0.01" placeholder="5.99" />
+              <Input 
+                id="domestic_shipping" 
+                type="number" 
+                step="0.01" 
+                placeholder="5.99"
+                value={formData.domestic_shipping || ''}
+                onChange={(e) => handleInputChange('domestic_shipping', e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="international_shipping" className="text-charcoal">International Shipping Rate</Label>
-              <Input id="international_shipping" type="number" step="0.01" placeholder="15.99" />
+              <Input 
+                id="international_shipping" 
+                type="number" 
+                step="0.01" 
+                placeholder="15.99"
+                value={formData.international_shipping || ''}
+                onChange={(e) => handleInputChange('international_shipping', e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="free_shipping_threshold" className="text-charcoal">Free Shipping Threshold</Label>
-              <Input id="free_shipping_threshold" type="number" step="0.01" placeholder="75.00" />
+              <Input 
+                id="free_shipping_threshold" 
+                type="number" 
+                step="0.01" 
+                placeholder="75.00"
+                value={formData.free_shipping_threshold || ''}
+                onChange={(e) => handleInputChange('free_shipping_threshold', e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="processing_time" className="text-charcoal">Processing Time (days)</Label>
-              <Input id="processing_time" type="number" placeholder="3-5" />
+              <Input 
+                id="processing_time" 
+                placeholder="3-5"
+                value={formData.processing_time || ''}
+                onChange={(e) => handleInputChange('processing_time', e.target.value)}
+              />
             </div>
           </div>
           <div>
@@ -222,10 +275,16 @@ const AdminSettings = () => {
               id="shipping_policy" 
               placeholder="Describe your shipping policy..."
               rows={4}
+              value={formData.shipping_policy || ''}
+              onChange={(e) => handleInputChange('shipping_policy', e.target.value)}
             />
           </div>
-          <Button className="bg-sage hover:bg-sage/90 text-white">
-            Save Shipping Settings
+          <Button 
+            className="bg-sage hover:bg-sage/90 text-white"
+            onClick={handleSaveShippingSettings}
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save Shipping Settings'}
           </Button>
         </CardContent>
       </Card>
@@ -246,6 +305,8 @@ const AdminSettings = () => {
               id="order_confirmation_template" 
               placeholder="Thank you for your order! Your order #{{order_id}} has been received..."
               rows={4}
+              value={formData.order_confirmation_template || ''}
+              onChange={(e) => handleInputChange('order_confirmation_template', e.target.value)}
             />
           </div>
           <div>
@@ -254,10 +315,16 @@ const AdminSettings = () => {
               id="shipping_confirmation_template" 
               placeholder="Great news! Your order #{{order_id}} has shipped..."
               rows={4}
+              value={formData.shipping_confirmation_template || ''}
+              onChange={(e) => handleInputChange('shipping_confirmation_template', e.target.value)}
             />
           </div>
-          <Button className="bg-sage hover:bg-sage/90 text-white">
-            Save Email Settings
+          <Button 
+            className="bg-sage hover:bg-sage/90 text-white"
+            onClick={handleSaveEmailSettings}
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save Email Settings'}
           </Button>
         </CardContent>
       </Card>
@@ -275,19 +342,39 @@ const AdminSettings = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="next_show_name" className="text-charcoal">Next Show Name</Label>
-              <Input id="next_show_name" placeholder="Spring Craft Fair" />
+              <Input 
+                id="next_show_name" 
+                placeholder="Spring Craft Fair"
+                value={formData.next_show_name || ''}
+                onChange={(e) => handleInputChange('next_show_name', e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="next_show_date" className="text-charcoal">Show Date</Label>
-              <Input id="next_show_date" type="date" />
+              <Input 
+                id="next_show_date" 
+                type="date"
+                value={formData.next_show_date || ''}
+                onChange={(e) => handleInputChange('next_show_date', e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="show_location" className="text-charcoal">Location</Label>
-              <Input id="show_location" placeholder="Community Center, Main St" />
+              <Input 
+                id="show_location" 
+                placeholder="Community Center, Main St"
+                value={formData.show_location || ''}
+                onChange={(e) => handleInputChange('show_location', e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="booth_number" className="text-charcoal">Booth Number</Label>
-              <Input id="booth_number" placeholder="A-15" />
+              <Input 
+                id="booth_number" 
+                placeholder="A-15"
+                value={formData.booth_number || ''}
+                onChange={(e) => handleInputChange('booth_number', e.target.value)}
+              />
             </div>
           </div>
           <div>
@@ -296,10 +383,16 @@ const AdminSettings = () => {
               id="show_notes" 
               placeholder="Special preparations, new products to showcase..."
               rows={3}
+              value={formData.show_notes || ''}
+              onChange={(e) => handleInputChange('show_notes', e.target.value)}
             />
           </div>
-          <Button className="bg-sage hover:bg-sage/90 text-white">
-            Save Show Information
+          <Button 
+            className="bg-sage hover:bg-sage/90 text-white"
+            onClick={handleSaveCraftShowSettings}
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save Show Information'}
           </Button>
         </CardContent>
       </Card>

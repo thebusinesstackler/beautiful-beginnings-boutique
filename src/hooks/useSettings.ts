@@ -13,6 +13,18 @@ interface SiteSettings {
   square_location_id?: string;
   square_access_token?: string;
   square_environment?: string;
+  domestic_shipping?: string;
+  international_shipping?: string;
+  free_shipping_threshold?: string;
+  processing_time?: string;
+  shipping_policy?: string;
+  order_confirmation_template?: string;
+  shipping_confirmation_template?: string;
+  next_show_name?: string;
+  next_show_date?: string;
+  show_location?: string;
+  booth_number?: string;
+  show_notes?: string;
 }
 
 export const useSettings = () => {
@@ -72,7 +84,7 @@ export const useSettings = () => {
       
       toast({
         title: "Settings Updated",
-        description: "Your store settings have been saved successfully.",
+        description: "Your settings have been saved successfully.",
       });
     } catch (error) {
       console.error('Error updating settings:', error);

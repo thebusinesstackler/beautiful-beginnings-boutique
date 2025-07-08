@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ShippingSettings {
   domesticRate: number;
@@ -19,17 +20,45 @@ export const useShippingSettings = () => {
   });
 
   useEffect(() => {
-    // Load shipping settings from localStorage (admin panel integration)
-    const savedSettings = localStorage.getItem('shippingSettings');
-    if (savedSettings) {
-      try {
-        const parsed = JSON.parse(savedSettings);
-        setSettings(prev => ({ ...prev, ...parsed }));
-      } catch (error) {
-        console.error('Error parsing shipping settings:', error);
-      }
-    }
+    fetchShippingSettings();
   }, []);
+
+  const fetchShippingSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('settings')
+        .select('key, value')
+        .in('key', ['domestic_shipping', 'international_shipping', 'free_shipping_threshold', 'processing_time', 'shipping_policy']);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        const newSettings = { ...settings };
+        data.forEach(setting => {
+          switch (setting.key) {
+            case 'domestic_shipping':
+              newSettings.domesticRate = parseFloat(setting.value) || 5.99;
+              break;
+            case 'international_shipping':
+              newSettings.internationalRate = parseFloat(setting.value) || 15.99;
+              break;
+            case 'free_shipping_threshold':
+              newSettings.freeShippingThreshold = parseFloat(setting.value) || 75.00;
+              break;
+            case 'processing_time':
+              newSettings.processingTimeDays = setting.value || '3-5';
+              break;
+            case 'shipping_policy':
+              newSettings.policy = setting.value || 'Free shipping on orders over $75. Processing takes 3-5 business days.';
+              break;
+          }
+        });
+        setSettings(newSettings);
+      }
+    } catch (error) {
+      console.error('Error fetching shipping settings:', error);
+    }
+  };
 
   const calculateShipping = (subtotal: number, isDomestic: boolean = true) => {
     if (subtotal >= settings.freeShippingThreshold) {
