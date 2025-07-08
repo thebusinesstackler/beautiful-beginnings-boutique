@@ -19,36 +19,33 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { order, locationId, redirectUrl, note, squareCredentials } = await req.json()
+    const { order, redirectUrl, note, squareCredentials } = await req.json()
 
-    console.log('Received request with Square credentials:', {
+    console.log('Received checkout request:', {
+      hasOrder: !!order,
       hasCredentials: !!squareCredentials,
-      environment: squareCredentials?.environment
+      lineItemsCount: order?.lineItems?.length || 0
     })
 
     // Use Square credentials from the request (from database settings)
-    let squareAppId = squareCredentials?.appId
-    let squareAccessToken = squareCredentials?.accessToken
-    let squareEnvironment = squareCredentials?.environment || 'sandbox'
+    const squareAppId = squareCredentials?.appId
+    const squareAccessToken = squareCredentials?.accessToken
+    const squareEnvironment = squareCredentials?.environment || 'sandbox'
+    const locationId = squareCredentials?.locationId || order?.locationId
 
-    // Fall back to environment variables if not provided in request
-    if (!squareAppId || !squareAccessToken) {
-      console.log('Falling back to environment variables for Square credentials')
-      squareAppId = squareAppId || Deno.env.get('SQUARE_APP_ID')
-      squareAccessToken = squareAccessToken || Deno.env.get('SQUARE_ACCESS_TOKEN')
-      squareEnvironment = squareEnvironment || Deno.env.get('SQUARE_ENVIRONMENT') || 'sandbox'
-    }
-
-    if (!squareAppId || !squareAccessToken) {
-      throw new Error('Square API credentials not configured')
+    if (!squareAppId || !squareAccessToken || !locationId) {
+      throw new Error('Square credentials not properly configured')
     }
 
     console.log('Using Square environment:', squareEnvironment)
+    console.log('Location ID:', locationId)
 
     // Calculate total amount
     const totalAmount = order.lineItems.reduce((sum: number, item: any) => {
       return sum + (item.basePriceMoney.amount * parseInt(item.quantity))
     }, 0)
+
+    console.log('Total amount calculated:', totalAmount)
 
     // Create Square checkout request
     const squareApiUrl = squareEnvironment === 'production' 
@@ -56,12 +53,11 @@ serve(async (req) => {
       : 'https://connect.squareupsandbox.com'
 
     const checkoutRequest = {
-      idempotency_key: `checkout-${Date.now()}-${Math.random()}`,
-      checkout_page_url: redirectUrl || `${req.headers.get('origin')}/checkout/success`,
+      idempotency_key: `checkout-${Date.now()}-${Math.random().toString(36).substring(2)}`,
       order: {
         location_id: locationId,
         line_items: order.lineItems.map((item: any) => ({
-          quantity: item.quantity,
+          quantity: item.quantity.toString(),
           name: item.name,
           note: item.note,
           base_price_money: {
@@ -70,13 +66,13 @@ serve(async (req) => {
           }
         }))
       },
-      payment_note: note || 'Online order',
-      merchant_support_email: 'support@example.com',
-      pre_populate_buyer_email: '',
-      redirect_url: redirectUrl || `${req.headers.get('origin')}/checkout/success`
+      checkout_options: {
+        redirect_url: redirectUrl || `${req.headers.get('origin')}/checkout/success`
+      },
+      payment_note: note || 'Online order'
     }
 
-    console.log('Creating Square checkout with request:', JSON.stringify(checkoutRequest, null, 2))
+    console.log('Square API request:', JSON.stringify(checkoutRequest, null, 2))
 
     const squareResponse = await fetch(`${squareApiUrl}/v2/online-checkout/payment-links`, {
       method: 'POST',
@@ -90,12 +86,13 @@ serve(async (req) => {
 
     const squareData = await squareResponse.json()
     
+    console.log('Square API response status:', squareResponse.status)
+    console.log('Square API response:', JSON.stringify(squareData, null, 2))
+    
     if (!squareResponse.ok) {
       console.error('Square API error:', squareData)
-      throw new Error(`Square API error: ${squareData.errors?.[0]?.detail || 'Unknown error'}`)
+      throw new Error(`Square API error: ${squareData.errors?.[0]?.detail || squareData.message || 'Unknown error'}`)
     }
-
-    console.log('Square checkout created successfully:', squareData)
 
     // Store order in database for tracking
     const { data: orderRecord, error: orderError } = await supabase
@@ -113,6 +110,8 @@ serve(async (req) => {
 
     if (orderError) {
       console.error('Error creating order record:', orderError)
+    } else {
+      console.log('Order record created:', orderRecord)
     }
 
     return new Response(
