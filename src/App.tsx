@@ -1,5 +1,6 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Index from './pages/Index';
 import Auth from './pages/Auth';
 import Admin from './pages/Admin';
@@ -38,51 +39,56 @@ import SocialProofNotifications from './components/SocialProofNotifications';
 import ScrollToTop from './components/ScrollToTop';
 import './App.css';
 
+// Create a client
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <AuthProvider>
-        <CartProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/checkout/success" element={<CheckoutSuccess />} />
-            <Route path="/products/ornaments" element={<Ornaments />} />
-            <Route path="/products/ornaments/customize-glass" element={<CustomizeGlassOrnament />} />
-            <Route path="/products/ornaments/:id" element={<OrnamentDetail />} />
-            <Route path="/products/necklaces" element={<Necklaces />} />
-            <Route path="/products/snow-globes" element={<SnowGlobes />} />
-            <Route path="/products/snow-globes/:id" element={<ProductDetail />} />
-            <Route path="/products/:category/:id" element={<ProductDetail />} />
-            <Route path="/products/wood-sublimation" element={<WoodSublimation />} />
-            <Route path="/products/slate" element={<Slate />} />
-            <Route path="/products/necklaces/heart-photo-pendant" element={<HeartPhotoPendant />} />
-            <Route path="/products/necklaces/photo-memory-necklace" element={<PhotoMemoryNecklace />} />
-            <Route path="/products/snow-globes/winter-botanical" element={<WinterBotanicalSnowGlobe />} />
-            <Route path="/products/snow-globes/custom-photo" element={<CustomPhotoSnowGlobe />} />
-            <Route path="/shop/anniversaries" element={<Anniversaries />} />
-            <Route path="/shop/birthdays" element={<Birthdays />} />
-            <Route path="/shipping-returns" element={<ShippingReturns />} />
-            <Route path="/care-instructions" element={<CareGuide />} />
-            <Route path="/reviews" element={<CustomerReviews />} />
-            <Route path="/custom-orders" element={<CustomOrders />} />
-            <Route path="/our-story" element={<OurStory />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-          <SocialProofNotifications />
-        </CartProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ScrollToTop />
+        <AuthProvider>
+          <CartProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/checkout/success" element={<CheckoutSuccess />} />
+              <Route path="/products/ornaments" element={<Ornaments />} />
+              <Route path="/products/ornaments/customize-glass" element={<CustomizeGlassOrnament />} />
+              <Route path="/products/ornaments/:id" element={<OrnamentDetail />} />
+              <Route path="/products/necklaces" element={<Necklaces />} />
+              <Route path="/products/snow-globes" element={<SnowGlobes />} />
+              <Route path="/products/snow-globes/:id" element={<ProductDetail />} />
+              <Route path="/products/:category/:id" element={<ProductDetail />} />
+              <Route path="/products/wood-sublimation" element={<WoodSublimation />} />
+              <Route path="/products/slate" element={<Slate />} />
+              <Route path="/products/necklaces/heart-photo-pendant" element={<HeartPhotoPendant />} />
+              <Route path="/products/necklaces/photo-memory-necklace" element={<PhotoMemoryNecklace />} />
+              <Route path="/products/snow-globes/winter-botanical" element={<WinterBotanicalSnowGlobe />} />
+              <Route path="/products/snow-globes/custom-photo" element={<CustomPhotoSnowGlobe />} />
+              <Route path="/shop/anniversaries" element={<Anniversaries />} />
+              <Route path="/shop/birthdays" element={<Birthdays />} />
+              <Route path="/shipping-returns" element={<ShippingReturns />} />
+              <Route path="/care-instructions" element={<CareGuide />} />
+              <Route path="/reviews" element={<CustomerReviews />} />
+              <Route path="/custom-orders" element={<CustomOrders />} />
+              <Route path="/our-story" element={<OurStory />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Toaster />
+            <SocialProofNotifications />
+          </CartProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
