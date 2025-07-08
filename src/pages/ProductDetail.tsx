@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import PhotoUpload from '@/components/PhotoUpload';
 import WoodCustomizationOptions from '@/components/WoodCustomizationOptions';
 import WoodPhotoUploadGuide from '@/components/WoodPhotoUploadGuide';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface Product {
   id: string;
@@ -33,6 +34,7 @@ const ProductDetail = () => {
   const [showPersonalization, setShowPersonalization] = useState(false);
   const [showShipping, setShowShipping] = useState(false);
   const [showFAQ, setShowFAQ] = useState<number | null>(null);
+  const [showDescription, setShowDescription] = useState(false);
   const [customizations, setCustomizations] = useState<any>({});
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -128,6 +130,12 @@ const ProductDetail = () => {
     product.personalization_options.photo_upload;
 
   const isWoodSublimation = product?.category === 'Wood Sublimation';
+
+  const getShortDescription = (description: string) => {
+    if (!description) return '';
+    const sentences = description.split('. ');
+    return sentences.length > 2 ? sentences.slice(0, 2).join('. ') + '.' : description;
+  };
 
   const faqs = isWoodSublimation ? [
     { question: "How do I upload my photo for wood sublimation?", answer: "Simply click 'Personalize this item' and use our easy upload tool. We accept high-resolution JPG, PNG formats up to 20MB for the best wood sublimation results." },
@@ -307,9 +315,29 @@ const ProductDetail = () => {
               </p>
             </div>
 
-            <p className="leading-relaxed text-lg" style={{ color: '#6c5548' }}>
-              {product.description}
-            </p>
+            {/* Short Description */}
+            <div className="space-y-3">
+              <p className="leading-relaxed text-lg" style={{ color: '#6c5548' }}>
+                {product.description && getShortDescription(product.description)}
+              </p>
+              {product.description && product.description.length > getShortDescription(product.description).length && (
+                <button
+                  onClick={() => setShowDescription(!showDescription)}
+                  className="text-sm font-medium hover:underline"
+                  style={{ color: '#E28F84' }}
+                >
+                  {showDescription ? 'Read less' : 'Read more'}
+                </button>
+              )}
+              
+              {showDescription && (
+                <div className="animate-fade-in">
+                  <p className="leading-relaxed text-lg" style={{ color: '#6c5548' }}>
+                    {product.description}
+                  </p>
+                </div>
+              )}
+            </div>
 
             {/* Enhanced Wood Sublimation Info */}
             {isWoodSublimation && hasPersonalization && (
@@ -359,8 +387,8 @@ const ProductDetail = () => {
               </Button>
             </div>
 
-            {/* Enhanced Personalization Section */}
-            {hasPersonalization && (
+            {/* Enhanced Personalization Section - Only show for non-wood products */}
+            {hasPersonalization && !isWoodSublimation && (
               <div className="rounded-xl p-4 shadow-sm border-2" style={{ backgroundColor: 'white', borderColor: '#F6DADA' }}>
                 <button
                   onClick={() => setShowPersonalization(!showPersonalization)}
@@ -369,7 +397,7 @@ const ProductDetail = () => {
                   <div className="flex items-center">
                     <Sparkles className="h-5 w-5 mr-2" style={{ color: '#a48f4b' }} />
                     <h3 className="font-semibold" style={{ color: '#2d3436' }}>
-                      {isWoodSublimation ? 'Customize Your Wood Piece' : 'Personalize this item'}
+                      Personalize this item
                     </h3>
                   </div>
                   {showPersonalization ? (
@@ -381,14 +409,6 @@ const ProductDetail = () => {
                 
                 {showPersonalization && (
                   <div className="mt-6 space-y-6 animate-fade-in">
-                    {/* Wood Customization Options */}
-                    {isWoodSublimation && (
-                      <WoodCustomizationOptions 
-                        personalizationOptions={product.personalization_options}
-                        onCustomizationChange={handleCustomizationChange}
-                      />
-                    )}
-                    
                     {/* Photo Upload */}
                     <div>
                       <h4 className="font-medium mb-3" style={{ color: '#2d3436' }}>
@@ -400,8 +420,48 @@ const ProductDetail = () => {
                 )}
               </div>
             )}
+
+            {/* Simple Photo Upload for Wood Sublimation */}
+            {hasPersonalization && isWoodSublimation && (
+              <div className="rounded-xl p-4 shadow-sm border-2" style={{ backgroundColor: 'white', borderColor: '#F6DADA' }}>
+                <div className="flex items-center mb-4">
+                  <Sparkles className="h-5 w-5 mr-2" style={{ color: '#a48f4b' }} />
+                  <h3 className="font-semibold" style={{ color: '#2d3436' }}>
+                    Upload Your Photo
+                  </h3>
+                </div>
+                <PhotoUpload onUpload={handlePhotoUpload} />
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Full Description Section at Bottom */}
+        {product.description && (
+          <div className="mt-16">
+            <Collapsible>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full flex items-center justify-between p-6 text-left border-2"
+                  style={{ borderColor: '#F6DADA' }}
+                >
+                  <h2 className="text-xl font-playfair font-bold" style={{ color: '#2d3436' }}>
+                    Product Description
+                  </h2>
+                  <ChevronDown className="h-5 w-5" style={{ color: '#a48f4b' }} />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-4">
+                <div className="bg-white p-6 rounded-xl shadow-sm border" style={{ borderColor: '#F6DADA' }}>
+                  <p className="leading-relaxed text-lg whitespace-pre-line" style={{ color: '#6c5548' }}>
+                    {product.description}
+                  </p>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+        )}
 
         {/* FAQ Section */}
         {hasPersonalization && (
