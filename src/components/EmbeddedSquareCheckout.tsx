@@ -102,23 +102,7 @@ const EmbeddedSquareCheckout = ({
         setPayments(paymentsInstance);
 
         // Initialize card payment method
-        const cardInstance = await paymentsInstance.card({
-          style: {
-            '.input-container': {
-              borderColor: '#d6d3d1',
-              borderRadius: '8px'
-            },
-            '.input-container.is-focus': {
-              borderColor: '#86efac'
-            },
-            '.input-container.is-error': {
-              borderColor: '#f87171'
-            },
-            '.message-text': {
-              color: '#dc2626'
-            }
-          }
-        });
+        const cardInstance = await paymentsInstance.card();
         
         if (cardRef.current) {
           await cardInstance.attach(cardRef.current);
