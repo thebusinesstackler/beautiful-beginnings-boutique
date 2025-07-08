@@ -34,6 +34,10 @@ interface EmbeddedSquareCheckoutProps {
     country: string;
   };
   sameAsShipping: boolean;
+  total: number; // Total amount including shipping and tax
+  subtotal: number;
+  shippingCost: number;
+  tax: number;
   onSuccess?: () => void;
   onError?: (error: any) => void;
 }
@@ -43,6 +47,10 @@ const EmbeddedSquareCheckout = ({
   shippingAddress,
   billingAddress,
   sameAsShipping,
+  total,
+  subtotal,
+  shippingCost,
+  tax,
   onSuccess,
   onError
 }: EmbeddedSquareCheckoutProps) => {
@@ -291,7 +299,13 @@ const EmbeddedSquareCheckout = ({
           shippingAddress,
           billingAddress: sameAsShipping ? shippingAddress : billingAddress,
           items,
-          amount: Math.round(getCartTotal() * 100), // Convert to cents
+          amount: Math.round(total * 100), // Convert total to cents
+          breakdown: {
+            subtotal: Math.round(subtotal * 100),
+            shipping: Math.round(shippingCost * 100),
+            tax: Math.round(tax * 100),
+            total: Math.round(total * 100)
+          },
           squareCredentials: {
             appId: settings.square_app_id,
             accessToken: settings.square_access_token,
@@ -427,7 +441,7 @@ const EmbeddedSquareCheckout = ({
             Processing Payment...
           </>
         ) : (
-          `Pay $${getCartTotal().toFixed(2)}`
+          `Pay $${total.toFixed(2)}`
         )}
       </Button>
 

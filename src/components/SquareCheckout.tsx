@@ -24,6 +24,10 @@ interface SquareCheckoutProps {
     country: string;
   };
   sameAsShipping: boolean;
+  total: number;
+  subtotal: number;
+  shippingCost: number;
+  tax: number;
   onSuccess?: () => void;
   onError?: (error: any) => void;
 }
@@ -32,7 +36,11 @@ const SquareCheckout = ({
   customerInfo, 
   shippingAddress, 
   billingAddress, 
-  sameAsShipping, 
+  sameAsShipping,
+  total,
+  subtotal,
+  shippingCost,
+  tax,
   onSuccess, 
   onError 
 }: SquareCheckoutProps) => {
@@ -42,6 +50,10 @@ const SquareCheckout = ({
       shippingAddress={shippingAddress}
       billingAddress={billingAddress}
       sameAsShipping={sameAsShipping}
+      total={total}
+      subtotal={subtotal}
+      shippingCost={shippingCost}
+      tax={tax}
       onSuccess={onSuccess}
       onError={onError}
     />

@@ -406,6 +406,10 @@ const Checkout = () => {
                   shippingAddress={shippingAddress}
                   billingAddress={billingAddress}
                   sameAsShipping={sameAsShipping}
+                  total={total}
+                  subtotal={subtotal}
+                  shippingCost={shippingCost}
+                  tax={tax}
                   onSuccess={handleSquareSuccess}
                   onError={handleSquareError}
                 />
