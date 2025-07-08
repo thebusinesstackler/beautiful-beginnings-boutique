@@ -10,7 +10,7 @@ interface SquareCardFormProps {
 
 const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFormProps) => {
   return (
-    <div className="bg-white rounded-xl border border-stone/20 shadow-sm p-6">
+    <div className="bg-white rounded-xl border border-sage/20 shadow-sm p-6">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-8 h-8 bg-sage/10 rounded-lg flex items-center justify-center">
           <svg className="w-4 h-4 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,7 +25,7 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
       
       {/* SDK Status Indicator */}
       {sdkStatus === 'loading' && (
-        <div className="flex items-center justify-center min-h-[60px] p-4 border border-stone/20 rounded-lg bg-sage/5">
+        <div className="flex items-center justify-center min-h-[80px] p-4 border-2 border-sage/20 rounded-lg bg-sage/5">
           <div className="text-center">
             <div className="animate-spin rounded-full h-6 w-6 border-2 border-sage border-t-transparent mx-auto mb-2"></div>
             <p className="text-stone text-sm">Loading payment form...</p>
@@ -34,7 +34,7 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
       )}
       
       {sdkStatus === 'error' && (
-        <div className="min-h-[60px] p-4 border border-red-200 rounded-lg bg-red-50 flex items-center justify-center">
+        <div className="min-h-[80px] p-4 border-2 border-red-200 rounded-lg bg-red-50 flex items-center justify-center">
           <div className="text-center">
             <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
               <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,12 +52,12 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
           <div 
             ref={cardRef} 
             id="card-container"
-            className="min-h-[60px] p-4 border border-stone/30 rounded-lg bg-white transition-colors focus-within:border-sage/50"
+            className="square-card-container min-h-[80px] p-4 border-2 border-sage/30 rounded-lg bg-white transition-all duration-200 focus-within:border-sage focus-within:ring-2 focus-within:ring-sage/20"
             style={{
-              minHeight: '60px',
+              minHeight: '80px',
               padding: '16px',
               borderRadius: '8px',
-              border: '1px solid hsl(0 0% 80%)',
+              border: '2px solid hsl(140 20% 75%)',
               backgroundColor: 'white'
             }}
           />

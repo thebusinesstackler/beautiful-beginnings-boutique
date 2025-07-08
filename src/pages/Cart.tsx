@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -103,191 +102,154 @@ const Cart = () => {
             </Link>
           </div>
         ) : (
-          <>
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-12">
-              {/* Cart Items */}
-              <div className="xl:col-span-3 space-y-8">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8">
-                  <h2 className="text-2xl font-semibold text-charcoal font-playfair mb-6">
-                    Cart Items
-                  </h2>
-                  
-                  <div className="space-y-8">
-                    {items.map((item) => (
-                      <div key={item.id} className="bg-white rounded-xl border border-stone/20 p-6 shadow-sm">
-                        <div className="flex items-start space-x-6">
-                          {/* Product Image */}
-                          <div className="flex-shrink-0">
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="w-32 h-32 object-cover rounded-xl border border-stone/20 shadow-sm"
-                            />
-                          </div>
-                          
-                          {/* Product Details */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between mb-4">
-                              <div>
-                                <h3 className="text-xl font-medium text-charcoal font-playfair">
-                                  {item.name}
-                                </h3>
-                                <div className="flex items-center space-x-4 mt-2">
-                                  <p className="text-2xl font-bold text-sage">
-                                    ${(item.price * item.quantity).toFixed(2)}
-                                  </p>
-                                  <p className="text-sm text-charcoal/60">
-                                    ${item.price.toFixed(2)} each
-                                  </p>
-                                </div>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeFromCart(item.id)}
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2"
-                              >
-                                <X className="h-5 w-5" />
-                              </Button>
-                            </div>
-
-                            {/* Quantity Controls */}
-                            <div className="flex items-center space-x-4 mb-6">
-                              <span className="text-sm font-medium text-charcoal">Quantity:</span>
-                              <div className="flex items-center space-x-3 bg-stone/10 rounded-xl p-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleQuantityDecrease(item)}
-                                  className="h-10 w-10 p-0 hover:bg-stone/20 rounded-lg"
-                                >
-                                  <Minus className="h-4 w-4" />
-                                </Button>
-                                <span className="text-lg font-semibold w-12 text-center">
-                                  {item.quantity}
-                                </span>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleQuantityIncrease(item)}
-                                  className="h-10 w-10 p-0 hover:bg-stone/20 rounded-lg"
-                                >
-                                  <Plus className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-
-                            {/* Compact Photo Upload Section */}
-                            <div className="p-4 bg-cream/50 rounded-xl border border-sage/10">
-                              <h4 className="text-sm font-medium text-charcoal mb-3 flex items-center">
-                                📸 Upload Your Custom Photo
-                              </h4>
-                              <CompactPhotoUpload
-                                onUpload={(file) => handlePhotoUpload(item.id, file)}
-                                maxSizeMB={10}
-                              />
-                              {item.uploadedPhoto && (
-                                <div className="mt-3 p-3 bg-sage/10 border border-sage/20 rounded-lg">
-                                  <p className="text-sm text-sage font-medium">
-                                    ✓ Photo uploaded: {item.uploadedPhoto.name}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
+            {/* Cart Items */}
+            <div className="xl:col-span-2 space-y-6">
+              {items.map((item) => (
+                <div key={item.id} className="bg-white rounded-xl border border-stone/20 p-6 shadow-sm">
+                  <div className="flex items-start space-x-6">
+                    {/* Product Image */}
+                    <div className="flex-shrink-0">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-32 h-32 object-cover rounded-xl border border-stone/20 shadow-sm"
+                      />
+                    </div>
+                    
+                    {/* Product Details */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h3 className="text-xl font-medium text-charcoal font-playfair">
+                            {item.name}
+                          </h3>
+                          <div className="flex items-center space-x-4 mt-2">
+                            <p className="text-2xl font-bold text-sage">
+                              ${(item.price * item.quantity).toFixed(2)}
+                            </p>
+                            <p className="text-sm text-charcoal/60">
+                              ${item.price.toFixed(2)} each
+                            </p>
                           </div>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFromCart(item.id)}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2"
+                        >
+                          <X className="h-5 w-5" />
+                        </Button>
                       </div>
-                    ))}
+
+                      {/* Quantity Controls */}
+                      <div className="flex items-center space-x-4 mb-6">
+                        <span className="text-sm font-medium text-charcoal">Quantity:</span>
+                        <div className="flex items-center space-x-3 bg-stone/10 rounded-xl p-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleQuantityDecrease(item)}
+                            className="h-10 w-10 p-0 hover:bg-stone/20 rounded-lg"
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="text-lg font-semibold w-12 text-center">
+                            {item.quantity}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleQuantityIncrease(item)}
+                            className="h-10 w-10 p-0 hover:bg-stone/20 rounded-lg"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Compact Photo Upload Section */}
+                      <div className="p-4 bg-cream/50 rounded-xl border border-sage/10">
+                        <h4 className="text-sm font-medium text-charcoal mb-3 flex items-center">
+                          📸 Upload Your Custom Photo
+                        </h4>
+                        <CompactPhotoUpload
+                          onUpload={(file) => handlePhotoUpload(item.id, file)}
+                          maxSizeMB={10}
+                        />
+                        {item.uploadedPhoto && (
+                          <div className="mt-3 p-3 bg-sage/10 border border-sage/20 rounded-lg">
+                            <p className="text-sm text-sage font-medium">
+                              ✓ Photo uploaded: {item.uploadedPhoto.name}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
+            </div>
 
-              {/* Enhanced Order Summary */}
-              <div className="xl:col-span-1">
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8 sticky top-8">
-                  <h3 className="text-2xl font-semibold text-charcoal font-playfair mb-8">Order Summary</h3>
-                  
-                  <div className="space-y-6 mb-8">
-                    <div className="flex justify-between text-base">
-                      <span className="text-charcoal/70">
-                        Subtotal ({items.reduce((sum, item) => sum + item.quantity, 0)} items)
-                      </span>
-                      <span className="font-semibold text-charcoal">
-                        ${subtotal.toFixed(2)}
-                      </span>
-                    </div>
-                    
-                    <div className="flex justify-between text-base">
-                      <span className="text-charcoal/70 flex items-center">
-                        <Truck className="h-4 w-4 mr-2" />
-                        Shipping
-                      </span>
-                      <span className={`font-semibold ${shippingCost === 0 ? 'text-sage' : 'text-charcoal'}`}>
-                        {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
-                      </span>
-                    </div>
-                    
-                    <div className="flex justify-between text-base">
-                      <span className="text-charcoal/70">Estimated Tax</span>
-                      <span className="font-medium text-charcoal">
-                        ${tax.toFixed(2)}
-                      </span>
-                    </div>
-                    
-                    {/* Estimated Delivery */}
-                    <div className="bg-sage/5 rounded-lg p-4">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Clock className="h-4 w-4 text-sage" />
-                        <span className="text-sm font-medium text-sage">Estimated Delivery</span>
-                      </div>
-                      <p className="text-sm text-charcoal">
-                        {estimatedDelivery.earliest} - {estimatedDelivery.latest}
-                      </p>
-                    </div>
-                    
-                    <div className="border-t border-stone/20 pt-6">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xl font-bold text-charcoal">Total</span>
-                        <span className="text-2xl font-bold text-sage">
-                          ${total.toFixed(2)}
-                        </span>
-                      </div>
+            {/* Cart Summary */}
+            <div className="xl:col-span-1">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8 sticky top-8">
+                <h3 className="text-2xl font-semibold text-charcoal font-playfair mb-8">Order Summary</h3>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="flex justify-between text-base">
+                    <span className="text-charcoal/70">Subtotal</span>
+                    <span className="font-semibold text-charcoal">${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-base">
+                    <span className="text-charcoal/70">Shipping</span>
+                    <span className={`font-semibold ${shippingCost === 0 ? 'text-sage' : 'text-charcoal'}`}>
+                      {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-base">
+                    <span className="text-charcoal/70">Tax</span>
+                    <span className="font-medium text-charcoal">${tax.toFixed(2)}</span>
+                  </div>
+                  <div className="border-t border-stone/20 pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xl font-bold text-charcoal">Total</span>
+                      <span className="text-2xl font-bold text-sage">${total.toFixed(2)}</span>
                     </div>
                   </div>
+                </div>
 
-                  <Button
-                    onClick={handleProceedToCheckout}
-                    className="w-full bg-sage hover:bg-forest text-white text-lg font-semibold py-4 rounded-xl transition-colors shadow-lg hover:shadow-xl mb-6"
-                  >
-                    Proceed to Checkout
-                  </Button>
-
-                  <div className="space-y-4 text-center">
-                    <div className="flex items-center justify-center space-x-2 text-sm text-charcoal/60">
-                      <Shield className="h-4 w-4" />
-                      <span>Secure 256-bit SSL encryption</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-2 text-sm text-charcoal/60">
-                      <Clock className="h-4 w-4" />
-                      <span>Fast {settings.processingTimeDays} day processing</span>
-                    </div>
-                  </div>
-
-                  <Link to="/products/ornaments" className="block mt-6">
-                    <Button
-                      variant="outline"
-                      className="w-full border-sage/30 text-sage hover:bg-sage/10 hover:border-sage/50 transition-colors"
+                {/* Enhanced Proceed to Checkout Button */}
+                <div className="space-y-4">
+                  <Link to="/checkout">
+                    <Button 
+                      className="w-full text-white text-xl font-bold py-6 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                      style={{
+                        backgroundColor: 'hsl(140 30% 45%)',
+                        color: 'white',
+                        minHeight: '60px',
+                        fontSize: '20px',
+                        fontWeight: '700'
+                      }}
                     >
-                      Continue Shopping
+                      <div className="flex items-center justify-center gap-3">
+                        <span>Proceed to Checkout</span>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
                     </Button>
                   </Link>
+                  
+                  <div className="text-center text-xs text-charcoal/60 space-y-1">
+                    <p>🔒 Secure checkout with Square</p>
+                    <p>Free shipping on orders over $75</p>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* People Also Bought Section */}
-            <PeopleAlsoBought />
-          </>
+          </div>
         )}
       </div>
 

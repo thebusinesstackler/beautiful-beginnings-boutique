@@ -28,7 +28,7 @@ const SquarePaymentButton = ({
     return `Pay $${total.toFixed(2)}`;
   };
 
-  // Make button less restrictive for better UX - only require SDK to be ready
+  // Simplified button enabling logic - only require basic conditions
   const isDisabled = isLoading || sdkStatus !== 'ready' || !isSecureConnection;
 
   return (
@@ -36,18 +36,20 @@ const SquarePaymentButton = ({
       <Button
         onClick={onPayment}
         disabled={isDisabled}
-        className="w-full bg-sage hover:bg-forest text-white text-lg font-semibold py-6 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full text-white text-lg font-semibold py-6 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
-          backgroundColor: isDisabled ? 'hsl(0 0% 80%)' : 'hsl(140 20% 55%)',
+          backgroundColor: isDisabled ? 'hsl(0 0% 60%)' : 'hsl(140 30% 45%)',
           color: 'white',
-          minHeight: '56px'
+          minHeight: '60px',
+          fontSize: '18px',
+          fontWeight: '600'
         }}
       >
         <div className="flex items-center justify-center gap-3">
           {isLoading && (
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
           )}
-          <span className="font-semibold">{getButtonText()}</span>
+          <span className="font-semibold text-lg">{getButtonText()}</span>
           {!isLoading && sdkStatus === 'ready' && isSecureConnection && (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -56,14 +58,16 @@ const SquarePaymentButton = ({
         </div>
       </Button>
       
-      {/* Debug info - remove in production */}
+      {/* Debug info - only show in development */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="text-xs text-stone space-y-1 p-2 bg-stone/5 rounded">
-          <div>SDK Status: {sdkStatus}</div>
-          <div>Has Card: {hasCard ? 'Yes' : 'No'}</div>
-          <div>Secure: {isSecureConnection ? 'Yes' : 'No'}</div>
-          <div>Loading: {isLoading ? 'Yes' : 'No'}</div>
-          <div>Disabled: {isDisabled ? 'Yes' : 'No'}</div>
+        <div className="text-xs text-stone space-y-1 p-3 bg-stone/5 rounded-lg border">
+          <div className="font-medium text-charcoal">Debug Info:</div>
+          <div>SDK Status: <span className="font-mono">{sdkStatus}</span></div>
+          <div>Has Card: <span className="font-mono">{hasCard ? 'Yes' : 'No'}</span></div>
+          <div>Secure: <span className="font-mono">{isSecureConnection ? 'Yes' : 'No'}</span></div>
+          <div>Loading: <span className="font-mono">{isLoading ? 'Yes' : 'No'}</span></div>
+          <div>Button Disabled: <span className="font-mono">{isDisabled ? 'Yes' : 'No'}</span></div>
+          <div>Total: <span className="font-mono">${total.toFixed(2)}</span></div>
         </div>
       )}
       

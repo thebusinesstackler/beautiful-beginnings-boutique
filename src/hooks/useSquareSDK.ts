@@ -27,19 +27,19 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     const maxRetries = 3;
     
     try {
-      console.log(`Initializing card (attempt ${retryCount + 1}/${maxRetries + 1})`);
+      console.log(`🔄 Initializing Square card (attempt ${retryCount + 1}/${maxRetries + 1})`);
       
       if (!cardRef.current) {
+        console.log('⚠️ Card container not ready, waiting...');
         if (retryCount < maxRetries) {
-          console.log('Card container not ready, retrying...');
           setTimeout(() => initializeCard(paymentsInstance, retryCount + 1), 500);
           return;
         } else {
-          throw new Error('Card container not available');
+          throw new Error('Card container not available after retries');
         }
       }
 
-      console.log('Creating card instance...');
+      console.log('🎯 Creating Square card instance...');
       const cardInstance = await paymentsInstance.card({
         style: {
           input: {
@@ -47,38 +47,52 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
             fontFamily: 'system-ui, -apple-system, sans-serif',
             color: '#2d3436',
             backgroundColor: '#ffffff',
-            padding: '12px'
+            padding: '16px',
+            border: 'none'
           },
           '.input-container': {
             borderRadius: '8px',
-            border: '1px solid #d1d5db'
+            border: '2px solid hsl(140 20% 75%)',
+            backgroundColor: '#ffffff'
           },
           '.input-container.is-focus': {
-            borderColor: '#8fa68e'
+            borderColor: 'hsl(140 30% 45%)',
+            boxShadow: '0 0 0 2px hsl(140 30% 45% / 0.2)'
           },
           '.input-container.is-error': {
-            borderColor: '#ef4444'
+            borderColor: '#ef4444',
+            boxShadow: '0 0 0 2px rgba(239, 68, 68, 0.2)'
+          },
+          '.message-text': {
+            color: '#ef4444',
+            fontSize: '14px',
+            marginTop: '4px'
           }
         }
       });
       
-      console.log('Card instance created, attaching to DOM...');
+      console.log('🎨 Card instance created, preparing container...');
       
+      // Ensure container is clean and ready
       if (cardRef.current) {
         cardRef.current.innerHTML = '';
-        console.log('Card container cleared, attempting attach...');
+        cardRef.current.className = 'square-card-container min-h-[80px] p-4 border-2 border-sage/30 rounded-lg bg-white transition-all duration-200 focus-within:border-sage focus-within:ring-2 focus-within:ring-sage/20';
+        console.log('🧹 Card container prepared');
       }
       
+      console.log('📎 Attaching card to container...');
       await cardInstance.attach(cardRef.current);
       
       setCard(cardInstance);
-      console.log('Square card form attached successfully');
+      console.log('✅ Square card form attached successfully!');
       
     } catch (error) {
-      console.error(`Card initialization failed (attempt ${retryCount + 1}):`, error);
+      console.error(`❌ Card initialization failed (attempt ${retryCount + 1}):`, error);
       if (retryCount < maxRetries) {
+        console.log(`🔄 Retrying in ${(retryCount + 1) * 1000}ms...`);
         setTimeout(() => initializeCard(paymentsInstance, retryCount + 1), (retryCount + 1) * 1000);
       } else {
+        console.error('💥 Max retries reached, card initialization failed');
         throw error;
       }
     }
@@ -90,45 +104,55 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     const maxRetries = 5;
 
     const initializeSquare = async () => {
-      console.log(`Initializing Square SDK (attempt ${retryCount + 1}/${maxRetries})`);
+      console.log(`🚀 Initializing Square SDK (attempt ${retryCount + 1}/${maxRetries})`);
       setSdkStatus('loading');
       
       if (!checkSecureConnection()) {
+        console.error('🔒 Secure connection required');
         setSdkStatus('error');
         return;
       }
       
       if (!window.Square) {
+        console.log('⏳ Square SDK not loaded, waiting...');
         if (retryCount < maxRetries) {
           retryCount++;
           setTimeout(initializeSquare, 1000);
           return;
         } else {
-          console.error('Square SDK failed to load');
+          console.error('💥 Square SDK failed to load after retries');
           setSdkStatus('error');
           return;
         }
       }
 
       if (!squareAppId || !squareLocationId) {
-        console.error('Square credentials missing');
+        console.error('⚠️ Square credentials missing:', { squareAppId: !!squareAppId, squareLocationId: !!squareLocationId });
         setSdkStatus('error');
         return;
       }
 
       try {
-        console.log('Initializing Square payments...');
+        console.log('🏗️ Creating Square payments instance...');
+        console.log('📋 Square config:', { 
+          appId: squareAppId?.substring(0, 10) + '...', 
+          locationId: squareLocationId?.substring(0, 10) + '...',
+          environment: squareEnvironment 
+        });
         
-        const paymentsInstance = window.Square.payments(squareAppId, squareLocationId, 'sandbox');
+        const paymentsInstance = window.Square.payments(squareAppId, squareLocationId, squareEnvironment || 'sandbox');
         
         setPayments(paymentsInstance);
-        console.log('Square payments instance created');
+        console.log('✅ Square payments instance created');
         setSdkStatus('ready');
 
-        await initializeCard(paymentsInstance);
+        // Wait a bit for the component to render before initializing card
+        setTimeout(() => {
+          initializeCard(paymentsInstance);
+        }, 100);
         
       } catch (error) {
-        console.error('Failed to initialize Square SDK:', error);
+        console.error('💥 Failed to initialize Square SDK:', error);
         setSdkStatus('error');
         
         toast({
@@ -140,19 +164,23 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     };
 
     if (squareAppId && squareLocationId) {
-      setTimeout(initializeSquare, 500);
+      console.log('🎬 Starting Square initialization...');
+      setTimeout(initializeSquare, 100); // Small delay to ensure DOM is ready
+    } else {
+      console.log('⚠️ Square credentials not provided, skipping initialization');
     }
 
     return () => {
       if (card) {
         try {
+          console.log('🧹 Cleaning up Square card instance');
           card.destroy();
         } catch (error) {
-          console.log('Error destroying card:', error);
+          console.log('⚠️ Error destroying card:', error);
         }
       }
     };
-  }, [squareAppId, squareLocationId]);
+  }, [squareAppId, squareLocationId, squareEnvironment]);
 
   return {
     payments,
