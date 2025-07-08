@@ -385,6 +385,10 @@ const Checkout = () => {
 
                 {/* Square Checkout */}
                 <SquareCheckout
+                  customerInfo={customerInfo}
+                  shippingAddress={shippingAddress}
+                  billingAddress={billingAddress}
+                  sameAsShipping={sameAsShipping}
                   onSuccess={handleSquareSuccess}
                   onError={handleSquareError}
                 />
