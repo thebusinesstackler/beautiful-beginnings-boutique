@@ -4,12 +4,14 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ShoppingCart, X, Check, Shield, Lock } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, X } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import SquareCheckout from '@/components/SquareCheckout';
+import CartTestingPanel from '@/components/CartTestingPanel';
+import PaymentTestingPanel from '@/components/PaymentTestingPanel';
 import { useShippingSettings } from '@/hooks/useShippingSettings';
 
 const Checkout = () => {
@@ -77,43 +79,22 @@ const Checkout = () => {
     <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-12">
           <Link
             to="/cart"
-            className="inline-flex items-center text-sm font-medium text-charcoal/60 hover:text-charcoal mb-4 transition-colors group"
+            className="inline-flex items-center text-sm font-medium text-charcoal/60 hover:text-charcoal mb-6 transition-colors"
           >
-            <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Cart
           </Link>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-charcoal font-playfair">
-                Secure Checkout
-              </h1>
-              <p className="text-stone mt-2 flex items-center">
-                <Shield className="h-4 w-4 mr-2 text-sage" />
-                Complete your order securely
-              </p>
-            </div>
-            <div className="hidden md:flex items-center space-x-4 text-sm text-charcoal/60">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-sage rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">1</div>
-                <span>Cart</span>
-              </div>
-              <div className="w-8 h-px bg-sage/30"></div>
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-sage rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">2</div>
-                <span className="font-medium text-sage">Checkout</span>
-              </div>
-              <div className="w-8 h-px bg-sage/30"></div>
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-sage/20 rounded-full flex items-center justify-center text-sage text-xs font-bold mr-2">3</div>
-                <span>Complete</span>
-              </div>
-            </div>
-          </div>
+          <h1 className="text-5xl font-bold text-charcoal font-playfair">
+            Checkout
+          </h1>
+          <p className="text-stone mt-2">
+            Complete your order details below
+          </p>
         </div>
 
         {items.length === 0 ? (
@@ -132,346 +113,324 @@ const Checkout = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Checkout Form */}
-            <div className="lg:col-span-2 space-y-6">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
+            {/* Checkout Form */}
+            <div className="xl:col-span-2 space-y-8">
               {/* Customer Information */}
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 overflow-hidden">
-                <div className="bg-gradient-to-r from-sage/10 to-forest/10 px-6 py-4 border-b border-sage/10">
-                  <h2 className="text-xl font-semibold text-charcoal font-playfair flex items-center">
-                    <div className="w-8 h-8 bg-sage rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">1</div>
-                    Contact Information
-                  </h2>
-                </div>
-                <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="firstName" className="text-charcoal font-medium flex items-center">
-                        First Name <span className="text-red-500 ml-1">*</span>
-                      </Label>
-                      <Input
-                        id="firstName"
-                        value={customerInfo.firstName}
-                        onChange={(e) => setCustomerInfo({...customerInfo, firstName: e.target.value})}
-                        className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                        placeholder="Enter your first name"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="lastName" className="text-charcoal font-medium flex items-center">
-                        Last Name <span className="text-red-500 ml-1">*</span>
-                      </Label>
-                      <Input
-                        id="lastName"
-                        value={customerInfo.lastName}
-                        onChange={(e) => setCustomerInfo({...customerInfo, lastName: e.target.value})}
-                        className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                        placeholder="Enter your last name"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email" className="text-charcoal font-medium flex items-center">
-                        Email Address <span className="text-red-500 ml-1">*</span>
-                      </Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={customerInfo.email}
-                        onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
-                        className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                        placeholder="your@email.com"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone" className="text-charcoal font-medium flex items-center">
-                        Phone Number <span className="text-red-500 ml-1">*</span>
-                      </Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={customerInfo.phone}
-                        onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-                        className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                        placeholder="(555) 123-4567"
-                        required
-                      />
-                    </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8">
+                <h2 className="text-2xl font-semibold text-charcoal font-playfair mb-6">
+                  Customer Information
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="firstName" className="text-charcoal font-medium">
+                      First Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="firstName"
+                      value={customerInfo.firstName}
+                      onChange={(e) => setCustomerInfo({...customerInfo, firstName: e.target.value})}
+                      className="mt-2"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName" className="text-charcoal font-medium">
+                      Last Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="lastName"
+                      value={customerInfo.lastName}
+                      onChange={(e) => setCustomerInfo({...customerInfo, lastName: e.target.value})}
+                      className="mt-2"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email" className="text-charcoal font-medium">
+                      Email Address <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={customerInfo.email}
+                      onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+                      className="mt-2"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone" className="text-charcoal font-medium">
+                      Phone Number <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={customerInfo.phone}
+                      onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
+                      className="mt-2"
+                      required
+                    />
                   </div>
                 </div>
               </div>
 
               {/* Shipping Address */}
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 overflow-hidden">
-                <div className="bg-gradient-to-r from-sage/10 to-forest/10 px-6 py-4 border-b border-sage/10">
-                  <h2 className="text-xl font-semibold text-charcoal font-playfair flex items-center">
-                    <div className="w-8 h-8 bg-sage rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">2</div>
-                    Shipping Address
-                  </h2>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-4">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8">
+                <h2 className="text-2xl font-semibold text-charcoal font-playfair mb-6">
+                  Shipping Address
+                </h2>
+                <div className="space-y-6">
+                  <div>
+                    <Label htmlFor="shippingAddress" className="text-charcoal font-medium">
+                      Street Address <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="shippingAddress"
+                      value={shippingAddress.address}
+                      onChange={(e) => setShippingAddress({...shippingAddress, address: e.target.value})}
+                      className="mt-2"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <Label htmlFor="shippingAddress" className="text-charcoal font-medium flex items-center">
-                        Street Address <span className="text-red-500 ml-1">*</span>
+                      <Label htmlFor="shippingCity" className="text-charcoal font-medium">
+                        City <span className="text-red-500">*</span>
                       </Label>
                       <Input
-                        id="shippingAddress"
-                        value={shippingAddress.address}
-                        onChange={(e) => setShippingAddress({...shippingAddress, address: e.target.value})}
-                        className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                        placeholder="123 Main Street"
+                        id="shippingCity"
+                        value={shippingAddress.city}
+                        onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                        className="mt-2"
                         required
                       />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <Label htmlFor="shippingCity" className="text-charcoal font-medium flex items-center">
-                          City <span className="text-red-500 ml-1">*</span>
-                        </Label>
-                        <Input
-                          id="shippingCity"
-                          value={shippingAddress.city}
-                          onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
-                          className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                          placeholder="Your City"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="shippingState" className="text-charcoal font-medium flex items-center">
-                          State <span className="text-red-500 ml-1">*</span>
-                        </Label>
-                        <Input
-                          id="shippingState"
-                          value={shippingAddress.state}
-                          onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
-                          className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                          placeholder="FL"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="shippingZip" className="text-charcoal font-medium flex items-center">
-                          ZIP Code <span className="text-red-500 ml-1">*</span>
-                        </Label>
-                        <Input
-                          id="shippingZip"
-                          value={shippingAddress.zipCode}
-                          onChange={(e) => setShippingAddress({...shippingAddress, zipCode: e.target.value})}
-                          className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                          placeholder="12345"
-                          required
-                        />
-                      </div>
+                    <div>
+                      <Label htmlFor="shippingState" className="text-charcoal font-medium">
+                        State <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="shippingState"
+                        value={shippingAddress.state}
+                        onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
+                        className="mt-2"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="shippingZip" className="text-charcoal font-medium">
+                        ZIP Code <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="shippingZip"
+                        value={shippingAddress.zipCode}
+                        onChange={(e) => setShippingAddress({...shippingAddress, zipCode: e.target.value})}
+                        className="mt-2"
+                        required
+                      />
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Billing Address */}
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 overflow-hidden">
-                <div className="bg-gradient-to-r from-sage/10 to-forest/10 px-6 py-4 border-b border-sage/10">
-                  <h2 className="text-xl font-semibold text-charcoal font-playfair flex items-center">
-                    <div className="w-8 h-8 bg-sage rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">3</div>
-                    Billing Address
-                  </h2>
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8">
+                <h2 className="text-2xl font-semibold text-charcoal font-playfair mb-6">
+                  Billing Address
+                </h2>
+                <div className="mb-6">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={sameAsShipping}
+                      onChange={(e) => setSameAsShipping(e.target.checked)}
+                      className="rounded border-sage/30 text-sage focus:ring-sage"
+                    />
+                    <span className="text-sm text-charcoal">Same as shipping address</span>
+                  </label>
                 </div>
-                <div className="p-6">
-                  <div className="mb-6">
-                    <label className="flex items-center space-x-3 cursor-pointer group">
-                      <div className="relative">
-                        <input
-                          type="checkbox"
-                          checked={sameAsShipping}
-                          onChange={(e) => setSameAsShipping(e.target.checked)}
-                          className="sr-only"
-                        />
-                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                          sameAsShipping 
-                            ? 'bg-sage border-sage text-white' 
-                            : 'border-sage/30 group-hover:border-sage/50'
-                        }`}>
-                          {sameAsShipping && <Check className="h-3 w-3" />}
-                        </div>
-                      </div>
-                      <span className="text-charcoal font-medium">Same as shipping address</span>
-                    </label>
-                  </div>
-                  
-                  {!sameAsShipping && (
-                    <div className="space-y-4">
+                
+                {!sameAsShipping && (
+                  <div className="space-y-6">
+                    <div>
+                      <Label htmlFor="billingAddress">Street Address</Label>
+                      <Input
+                        id="billingAddress"
+                        value={billingAddress.address}
+                        onChange={(e) => setBillingAddress({...billingAddress, address: e.target.value})}
+                        className="mt-2"
+                        required
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div>
-                        <Label htmlFor="billingAddress" className="text-charcoal font-medium">Street Address</Label>
+                        <Label htmlFor="billingCity">City</Label>
                         <Input
-                          id="billingAddress"
-                          value={billingAddress.address}
-                          onChange={(e) => setBillingAddress({...billingAddress, address: e.target.value})}
-                          className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                          placeholder="123 Billing Street"
+                          id="billingCity"
+                          value={billingAddress.city}
+                          onChange={(e) => setBillingAddress({...billingAddress, city: e.target.value})}
+                          className="mt-2"
                           required
                         />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <Label htmlFor="billingCity" className="text-charcoal font-medium">City</Label>
-                          <Input
-                            id="billingCity"
-                            value={billingAddress.city}
-                            onChange={(e) => setBillingAddress({...billingAddress, city: e.target.value})}
-                            className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                            placeholder="Billing City"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="billingState" className="text-charcoal font-medium">State</Label>
-                          <Input
-                            id="billingState"
-                            value={billingAddress.state}
-                            onChange={(e) => setBillingAddress({...billingAddress, state: e.target.value})}
-                            className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                            placeholder="FL"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="billingZip" className="text-charcoal font-medium">ZIP Code</Label>
-                          <Input
-                            id="billingZip"
-                            value={billingAddress.zipCode}
-                            onChange={(e) => setBillingAddress({...billingAddress, zipCode: e.target.value})}
-                            className="mt-2 border-sage/20 focus:border-sage focus:ring-sage/20"
-                            placeholder="12345"
-                            required
-                          />
-                        </div>
+                      <div>
+                        <Label htmlFor="billingState">State</Label>
+                        <Input
+                          id="billingState"
+                          value={billingAddress.state}
+                          onChange={(e) => setBillingAddress({...billingAddress, state: e.target.value})}
+                          className="mt-2"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="billingZip">ZIP Code</Label>
+                        <Input
+                          id="billingZip"
+                          value={billingAddress.zipCode}
+                          onChange={(e) => setBillingAddress({...billingAddress, zipCode: e.target.value})}
+                          className="mt-2"
+                          required
+                        />
                       </div>
                     </div>
-                  )}
+                  </div>
+                )}
+              </div>
+
+              {/* Order Items */}
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8">
+                <h2 className="text-2xl font-semibold text-charcoal font-playfair mb-6">
+                  Your Items
+                </h2>
+                <div className="space-y-6">
+                  {items.map((item) => (
+                    <div key={item.id} className="flex items-start space-x-4 p-4 border border-stone/20 rounded-xl">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-medium text-charcoal">{item.name}</h3>
+                        <p className="text-sage font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                        <p className="text-sm text-charcoal/60">Quantity: {item.quantity}</p>
+                        
+                        {/* Photo Display */}
+                        {item.uploadedPhoto ? (
+                          <div className="mt-3 p-3 bg-sage/10 rounded-lg">
+                            <p className="text-sm text-sage font-medium mb-2">
+                              ✓ Custom photo: {item.uploadedPhoto.name}
+                            </p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const input = document.createElement('input');
+                                input.type = 'file';
+                                input.accept = 'image/*';
+                                input.onchange = (e) => {
+                                  const file = (e.target as HTMLInputElement).files?.[0];
+                                  if (file) handlePhotoChange(item.id, file);
+                                };
+                                input.click();
+                              }}
+                              className="text-xs"
+                            >
+                              Change Photo
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="mt-3 p-3 bg-amber-50 rounded-lg">
+                            <p className="text-sm text-amber-800 mb-2">
+                              No custom photo uploaded
+                            </p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const input = document.createElement('input');
+                                input.type = 'file';
+                                input.accept = 'image/*';
+                                input.onchange = (e) => {
+                                  const file = (e.target as HTMLInputElement).files?.[0];
+                                  if (file) handlePhotoChange(item.id, file);
+                                };
+                                input.click();
+                              }}
+                              className="text-xs"
+                            >
+                              Upload Photo
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Order Summary Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-8 space-y-6">
-                {/* Order Items */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 overflow-hidden">
-                  <div className="bg-gradient-to-r from-sage/10 to-forest/10 px-6 py-4 border-b border-sage/10">
-                    <h3 className="text-lg font-semibold text-charcoal font-playfair">Your Order</h3>
-                    <p className="text-sm text-charcoal/60">{items.length} {items.length === 1 ? 'item' : 'items'}</p>
+            {/* Order Summary */}
+            <div className="xl:col-span-1">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8 sticky top-8">
+                <h3 className="text-2xl font-semibold text-charcoal font-playfair mb-8">Order Summary</h3>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="flex justify-between text-base">
+                    <span className="text-charcoal/70">Subtotal</span>
+                    <span className="font-semibold text-charcoal">${subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="p-6 max-h-80 overflow-y-auto">
-                    <div className="space-y-4">
-                      {items.map((item) => (
-                        <div key={item.id} className="flex items-start space-x-3 p-3 bg-sage/5 rounded-xl">
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-charcoal text-sm truncate">{item.name}</h4>
-                            <p className="text-sage font-semibold text-sm">${(item.price * item.quantity).toFixed(2)}</p>
-                            <p className="text-xs text-charcoal/60">Qty: {item.quantity}</p>
-                            
-                            {item.uploadedPhoto ? (
-                              <div className="mt-2 flex items-center text-xs text-sage bg-sage/10 px-2 py-1 rounded">
-                                <Check className="h-3 w-3 mr-1" />
-                                Custom photo added
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => {
-                                  const input = document.createElement('input');
-                                  input.type = 'file';
-                                  input.accept = 'image/*';
-                                  input.onchange = (e) => {
-                                    const file = (e.target as HTMLInputElement).files?.[0];
-                                    if (file) handlePhotoChange(item.id, file);
-                                  };
-                                  input.click();
-                                }}
-                                className="mt-2 text-xs text-sage hover:text-forest font-medium underline"
-                              >
-                                Add photo
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                  <div className="flex justify-between text-base">
+                    <span className="text-charcoal/70">Shipping</span>
+                    <span className={`font-semibold ${shippingCost === 0 ? 'text-sage' : 'text-charcoal'}`}>
+                      {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-base">
+                    <span className="text-charcoal/70">Tax</span>
+                    <span className="font-medium text-charcoal">${tax.toFixed(2)}</span>
+                  </div>
+                  <div className="border-t border-stone/20 pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xl font-bold text-charcoal">Total</span>
+                      <span className="text-2xl font-bold text-sage">${total.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Order Summary */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 overflow-hidden">
-                  <div className="bg-gradient-to-r from-sage/10 to-forest/10 px-6 py-4 border-b border-sage/10">
-                    <h3 className="text-lg font-semibold text-charcoal font-playfair">Order Summary</h3>
-                  </div>
-                  <div className="p-6">
-                    <div className="space-y-4 mb-6">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-charcoal/70">Subtotal</span>
-                        <span className="font-medium text-charcoal">${subtotal.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-charcoal/70">Shipping</span>
-                        <span className={`font-medium ${shippingCost === 0 ? 'text-sage' : 'text-charcoal'}`}>
-                          {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-charcoal/70">Tax</span>
-                        <span className="font-medium text-charcoal">${tax.toFixed(2)}</span>
-                      </div>
-                      <div className="border-t border-sage/20 pt-4">
-                        <div className="flex justify-between items-center">
-                          <span className="text-lg font-bold text-charcoal">Total</span>
-                          <span className="text-2xl font-bold text-sage">${total.toFixed(2)}</span>
-                        </div>
-                      </div>
-                    </div>
+                {/* Square Checkout */}
+                <SquareCheckout
+                  customerInfo={customerInfo}
+                  shippingAddress={shippingAddress}
+                  billingAddress={billingAddress}
+                  sameAsShipping={sameAsShipping}
+                  total={total}
+                  subtotal={subtotal}
+                  shippingCost={shippingCost}
+                  tax={tax}
+                  onSuccess={handleSquareSuccess}
+                  onError={handleSquareError}
+                />
 
-                    {/* Square Checkout */}
-                    <SquareCheckout
-                      customerInfo={customerInfo}
-                      shippingAddress={shippingAddress}
-                      billingAddress={billingAddress}
-                      sameAsShipping={sameAsShipping}
-                      total={total}
-                      subtotal={subtotal}
-                      shippingCost={shippingCost}
-                      tax={tax}
-                      onSuccess={handleSquareSuccess}
-                      onError={handleSquareError}
-                    />
-
-                    <div className="mt-6 text-center space-y-3">
-                      <div className="flex items-center justify-center gap-4 text-xs text-charcoal/60">
-                        <div className="flex items-center">
-                          <Lock className="h-3 w-3 mr-1 text-sage" />
-                          <span>SSL Secured</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Shield className="h-3 w-3 mr-1 text-sage" />
-                          <span>PCI Compliant</span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-charcoal/50 leading-relaxed">
-                        🔒 Your payment information is protected with industry-standard encryption
-                      </p>
-                    </div>
-                  </div>
+                <div className="mt-6 text-center text-xs text-charcoal/60">
+                  <p>🔒 Secure checkout powered by Square</p>
+                  <p className="mt-1">Your payment information is protected</p>
                 </div>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Testing Panels - Only show in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <>
+          <CartTestingPanel />
+          <PaymentTestingPanel />
+        </>
+      )}
 
       <Footer />
     </div>
