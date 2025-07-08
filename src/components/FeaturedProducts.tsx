@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useCart } from '@/contexts/CartContext';
 
 interface Product {
   id: string;
@@ -23,6 +24,7 @@ const FeaturedProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     fetchFeaturedProducts();
@@ -75,6 +77,19 @@ const FeaturedProducts = () => {
       'Wood Sublimation': '/products/wood-sublimation'
     };
     return categoryMap[category] || '/products';
+  };
+
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      id: parseInt(product.id.replace(/-/g, '').substring(0, 8), 16),
+      name: product.name,
+      price: product.price,
+      image: getProductImage(product)
+    });
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart`,
+    });
   };
 
   if (loading) {
@@ -179,7 +194,8 @@ const FeaturedProducts = () => {
                     </div>
                     <Button
                       size="sm"
-                      className="opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 text-white font-semibold"
+                      onClick={() => handleAddToCart(product)}
+                      className="transition-all duration-300 hover:scale-105 text-white font-semibold"
                       style={{ backgroundColor: '#E28F84' }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
