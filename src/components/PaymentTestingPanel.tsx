@@ -53,21 +53,52 @@ const PaymentTestingPanel = () => {
   const testFormValidation = () => {
     addTestResult('Form Validation', 'pending', 'Testing form validation...');
     
-    // Simulate validation scenarios
-    const validationTests = [
-      'Empty customer info',
-      'Invalid email format',
-      'Missing shipping address',
-      'Invalid ZIP code format',
-      'Empty cart validation'
-    ];
-
+    // Test actual form validation by checking for required fields
     setTimeout(() => {
-      addTestResult('Form Validation', 'passed', `${validationTests.length} validation scenarios tested`);
-      toast({
-        title: "Validation Test Complete",
-        description: "All form validation scenarios tested successfully",
+      const requiredFields = [
+        'firstName', 'lastName', 'email', 'phone',
+        'shippingAddress', 'shippingCity', 'shippingState', 'shippingZip'
+      ];
+      
+      let missingFields = [];
+      let hasValidation = true;
+      
+      requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId) as HTMLInputElement;
+        if (field) {
+          // Check if field has required attribute
+          if (!field.hasAttribute('required')) {
+            hasValidation = false;
+          }
+          // Check if field is empty (for validation test)
+          if (!field.value.trim()) {
+            missingFields.push(fieldId);
+          }
+        } else {
+          hasValidation = false;
+        }
       });
+
+      if (hasValidation && missingFields.length > 0) {
+        addTestResult('Form Validation', 'passed', `Validation working: ${missingFields.length} empty required fields detected`);
+        toast({
+          title: "Form Validation Test",
+          description: `✅ Validation working - ${missingFields.length} empty required fields detected`,
+        });
+      } else if (hasValidation) {
+        addTestResult('Form Validation', 'passed', 'All required fields have validation');
+        toast({
+          title: "Form Validation Test",
+          description: "✅ All required fields properly configured",
+        });
+      } else {
+        addTestResult('Form Validation', 'failed', 'Some required fields missing validation attributes');
+        toast({
+          title: "Form Validation Test",
+          description: "❌ Missing required attributes on form fields",
+          variant: "destructive",
+        });
+      }
     }, 1000);
   };
 

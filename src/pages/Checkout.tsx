@@ -123,7 +123,9 @@ const Checkout = () => {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="firstName" className="text-charcoal font-medium">
+                      First Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="firstName"
                       value={customerInfo.firstName}
@@ -133,7 +135,9 @@ const Checkout = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="lastName" className="text-charcoal font-medium">
+                      Last Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="lastName"
                       value={customerInfo.lastName}
@@ -143,7 +147,9 @@ const Checkout = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="email" className="text-charcoal font-medium">
+                      Email Address <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="email"
                       type="email"
@@ -154,7 +160,9 @@ const Checkout = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone" className="text-charcoal font-medium">
+                      Phone Number <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -174,7 +182,9 @@ const Checkout = () => {
                 </h2>
                 <div className="space-y-6">
                   <div>
-                    <Label htmlFor="shippingAddress">Street Address</Label>
+                    <Label htmlFor="shippingAddress" className="text-charcoal font-medium">
+                      Street Address <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="shippingAddress"
                       value={shippingAddress.address}
@@ -185,7 +195,9 @@ const Checkout = () => {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <Label htmlFor="shippingCity">City</Label>
+                      <Label htmlFor="shippingCity" className="text-charcoal font-medium">
+                        City <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         id="shippingCity"
                         value={shippingAddress.city}
@@ -195,7 +207,9 @@ const Checkout = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="shippingState">State</Label>
+                      <Label htmlFor="shippingState" className="text-charcoal font-medium">
+                        State <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         id="shippingState"
                         value={shippingAddress.state}
@@ -205,7 +219,9 @@ const Checkout = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="shippingZip">ZIP Code</Label>
+                      <Label htmlFor="shippingZip" className="text-charcoal font-medium">
+                        ZIP Code <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         id="shippingZip"
                         value={shippingAddress.zipCode}
