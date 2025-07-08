@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
 import Auth from './pages/Auth';
@@ -21,6 +20,8 @@ import CustomPhotoSnowGlobe from './pages/CustomPhotoSnowGlobe';
 import Anniversaries from './pages/Anniversaries';
 import Birthdays from './pages/Birthdays';
 import ShippingReturns from './pages/ShippingReturns';
+import CareGuide from './pages/CareGuide';
+import CustomerReviews from './pages/CustomerReviews';
 import OurStory from './pages/OurStory';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -61,6 +62,8 @@ function App() {
             <Route path="/shop/anniversaries" element={<Anniversaries />} />
             <Route path="/shop/birthdays" element={<Birthdays />} />
             <Route path="/shipping-returns" element={<ShippingReturns />} />
+            <Route path="/care-instructions" element={<CareGuide />} />
+            <Route path="/reviews" element={<CustomerReviews />} />
             <Route path="/our-story" element={<OurStory />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
