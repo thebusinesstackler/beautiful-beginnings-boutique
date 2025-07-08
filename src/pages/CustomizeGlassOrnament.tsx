@@ -1,6 +1,5 @@
-
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Camera, CheckCircle, Sparkles } from 'lucide-react';
+import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Camera, CheckCircle, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
@@ -29,6 +28,9 @@ const CustomizeGlassOrnament = () => {
   const [isPhotoConfirmed, setIsPhotoConfirmed] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [relatedLoading, setRelatedLoading] = useState(true);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -46,6 +48,7 @@ const CustomizeGlassOrnament = () => {
       });
       setLoading(false);
     }
+    fetchRelatedProducts();
   }, [productId]);
 
   const fetchProduct = async () => {
@@ -76,6 +79,24 @@ const CustomizeGlassOrnament = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRelatedProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, price, image_url, description, seo_title')
+        .eq('is_active', true)
+        .neq('id', productId || 'none')
+        .limit(4);
+
+      if (error) throw error;
+      setRelatedProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching related products:', error);
+    } finally {
+      setRelatedLoading(false);
     }
   };
 
@@ -140,6 +161,11 @@ const CustomizeGlassOrnament = () => {
     });
   };
 
+  const getShortDescription = (description: string) => {
+    const sentences = description.split('.').filter(s => s.trim());
+    return sentences.slice(0, 2).join('.') + (sentences.length > 2 ? '.' : '');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#faf6ee' }}>
@@ -187,8 +213,9 @@ const CustomizeGlassOrnament = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Preview */}
+          {/* Left Column - Product Image and Upload */}
           <div className="space-y-6">
+            {/* Product Preview */}
             <div className="relative overflow-hidden rounded-2xl bg-white shadow-lg">
               <div className="relative">
                 {photoPreview ? (
@@ -240,6 +267,20 @@ const CustomizeGlassOrnament = () => {
               </button>
             </div>
 
+            {/* Photo Upload Section - Now below the image */}
+            <div className="rounded-xl p-6 shadow-sm border-2" style={{ backgroundColor: 'white', borderColor: '#F6DADA' }}>
+              <div className="flex items-center mb-4">
+                <Camera className="h-6 w-6 mr-3" style={{ color: '#E28F84' }} />
+                <h3 className="text-lg font-semibold" style={{ color: '#2d3436' }}>
+                  Upload Your Photo
+                </h3>
+              </div>
+              <p className="text-sm mb-4" style={{ color: '#6c5548' }}>
+                Choose your favorite photo to create your personalized ornament. For best results, use high-quality images with good lighting.
+              </p>
+              <PhotoUpload onUpload={handlePhotoUpload} />
+            </div>
+
             {/* Upload Status */}
             {uploadedPhoto && (
               <div className="bg-white rounded-xl p-4 border-2" style={{ borderColor: isPhotoConfirmed ? '#10b981' : '#F6DADA' }}>
@@ -272,7 +313,7 @@ const CustomizeGlassOrnament = () => {
             )}
           </div>
 
-          {/* Product Info */}
+          {/* Right Column - Product Info */}
           <div className="space-y-6">
             <div>
               <div className="flex items-center space-x-2 mb-2">
@@ -290,30 +331,40 @@ const CustomizeGlassOrnament = () => {
                 </div>
                 <span className="text-sm" style={{ color: '#a48f4b' }}>(47 reviews)</span>
               </div>
-              <p className="text-2xl font-bold mb-4" style={{ color: '#E28F84' }}>
+              <p className="text-2xl font-bold mb-6" style={{ color: '#E28F84' }}>
                 ${product.price.toFixed(2)}
               </p>
             </div>
 
-            {/* Product Description */}
+            {/* Product Description with Read More */}
             <div className="space-y-4">
-              <p className="leading-relaxed text-lg" style={{ color: '#6c5548' }}>
-                {product.description}
-              </p>
-            </div>
-
-            {/* Photo Upload Section */}
-            <div className="rounded-xl p-6 shadow-sm border-2" style={{ backgroundColor: 'white', borderColor: '#F6DADA' }}>
-              <div className="flex items-center mb-4">
-                <Camera className="h-6 w-6 mr-3" style={{ color: '#E28F84' }} />
-                <h3 className="text-lg font-semibold" style={{ color: '#2d3436' }}>
-                  Upload Your Photo
-                </h3>
+              <h3 className="text-lg font-semibold" style={{ color: '#2d3436' }}>
+                Product Description
+              </h3>
+              <div className="space-y-3">
+                <p className="leading-relaxed" style={{ color: '#6c5548' }}>
+                  {showFullDescription ? product.description : getShortDescription(product.description)}
+                </p>
+                {product.description.split('.').length > 2 && (
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="flex items-center text-sm font-medium hover:opacity-80 transition-opacity"
+                    style={{ color: '#E28F84' }}
+                  >
+                    {showFullDescription ? (
+                      <>
+                        Read less
+                        <ChevronUp className="h-4 w-4 ml-1" />
+                      </>
+                    ) : (
+                      <>
+                        Read more
+                        <ChevronDown className="h-4 w-4 ml-1" />
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
-              <p className="text-sm mb-4" style={{ color: '#6c5548' }}>
-                Choose your favorite photo to create your personalized ornament. For best results, use high-quality images with good lighting.
-              </p>
-              <PhotoUpload onUpload={handlePhotoUpload} />
             </div>
 
             {/* Quantity and Add to Cart */}
@@ -362,6 +413,77 @@ const CustomizeGlassOrnament = () => {
               )}
             </div>
           </div>
+        </div>
+
+        {/* People Also Bought Section */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-playfair font-bold mb-4" style={{ color: '#2d3436' }}>
+              People Also Bought
+            </h2>
+            <p className="text-lg" style={{ color: '#6c5548' }}>
+              Complete your collection with these popular items
+            </p>
+          </div>
+
+          {relatedLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#E28F84] border-t-transparent"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((relatedProduct) => (
+                <div
+                  key={relatedProduct.id}
+                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+                >
+                  <div className="relative aspect-square">
+                    <img
+                      src={relatedProduct.image_url}
+                      alt={relatedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-sm mb-2 line-clamp-2" style={{ color: '#2d3436' }}>
+                      {relatedProduct.name}
+                    </h3>
+                    <p className="text-lg font-bold mb-3" style={{ color: '#E28F84' }}>
+                      ${relatedProduct.price.toFixed(2)}
+                    </p>
+                    <div className="space-y-2">
+                      <Link 
+                        to={`/products/ornaments/customize-glass?product=${relatedProduct.id}`}
+                        className="block"
+                      >
+                        <Button 
+                          size="sm"
+                          variant="outline"
+                          className="w-full text-xs py-1.5 border-2"
+                          style={{ borderColor: '#E28F84', color: '#2d3436' }}
+                        >
+                          Customize
+                        </Button>
+                      </Link>
+                      <Button 
+                        size="sm"
+                        className="w-full text-xs py-1.5 text-white"
+                        style={{ backgroundColor: '#E28F84' }}
+                        onClick={() => addToCart({
+                          id: parseInt(relatedProduct.id),
+                          name: relatedProduct.name,
+                          price: relatedProduct.price,
+                          image: relatedProduct.image_url
+                        })}
+                      >
+                        Add to Cart
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Back to Ornaments */}
