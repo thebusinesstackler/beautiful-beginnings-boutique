@@ -41,12 +41,12 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
 
       console.log('🎯 Creating Square card instance...');
       
-      // Use minimal Square-approved styling only
+      // Use minimal Square-approved styling with correct font family format
       const cardInstance = await paymentsInstance.card({
         style: {
           input: {
             fontSize: '16px',
-            fontFamily: 'system-ui, -apple-system, sans-serif'
+            fontFamily: 'Arial, sans-serif' // Use simple font family that Square accepts
           }
         }
       });
