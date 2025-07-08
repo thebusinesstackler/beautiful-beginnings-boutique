@@ -15,7 +15,7 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
       <div className="px-6 py-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-medium text-gray-900">Payment method</h3>
+            <h3 className="text-lg font-medium text-gray-900">Payment Information</h3>
             <p className="text-sm text-gray-500 mt-1">All transactions are secure and encrypted</p>
           </div>
           <div className="flex items-center space-x-2">
@@ -29,7 +29,6 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
 
       {/* Content */}
       <div className="p-6">
-        {/* SDK Status Sections */}
         {sdkStatus === 'loading' && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
@@ -54,38 +53,20 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
         
         {sdkStatus === 'ready' && (
           <div className="space-y-6">
-            {/* Card Form Container */}
+            {/* Card Form Container - This is what Square expects */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Card information
               </label>
-              <div className="relative">
-                <div 
-                  ref={cardRef} 
-                  id="card-container"
-                  className="w-full p-4 border border-gray-300 rounded-lg bg-white focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors"
-                  style={{
-                    minHeight: '56px',
-                    fontSize: '16px'
-                  }}
-                />
-              </div>
+              <div 
+                ref={cardRef} 
+                id="card-container"
+                data-square-container="true"
+                className="w-full border border-gray-300 rounded-md p-3 bg-white min-h-[60px]"
+              />
             </div>
 
-            {/* Billing Address Notice */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start space-x-3">
-                <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div>
-                  <p className="text-blue-800 text-sm font-medium">Billing address</p>
-                  <p className="text-blue-700 text-sm mt-1">Your billing address will be the same as your shipping address.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Security Features */}
+            {/* Security Message */}
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <div className="flex items-center space-x-3">
                 <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,19 +74,13 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
                 </svg>
                 <div className="flex-1">
                   <p className="text-green-800 text-sm font-medium">Your payment is secure</p>
-                  <p className="text-green-700 text-sm">We use SSL encryption to protect your card information.</p>
-                </div>
-                <div className="text-green-600">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
+                  <p className="text-green-700 text-sm">We protect your card information with SSL encryption.</p>
                 </div>
               </div>
             </div>
           </div>
         )}
         
-        {/* Security Warning for Non-HTTPS */}
         {!isSecureConnection && (
           <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
             <div className="flex items-start space-x-3">

@@ -39,38 +39,28 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         }
       }
 
-      console.log('🎯 Creating Square card instance with minimal styling...');
+      console.log('🎯 Creating Square card instance...');
+      
+      // Use minimal Square-approved styling only
       const cardInstance = await paymentsInstance.card({
         style: {
           input: {
-            fontSize: '16px'
-          },
-          '.input-container': {
-            borderColor: '#d1d5db',
-            borderRadius: '8px'
-          },
-          '.input-container.is-focus': {
-            borderColor: '#10b981'
-          },
-          '.input-container.is-error': {
-            borderColor: '#ef4444'
+            fontSize: '16px',
+            fontFamily: 'system-ui, -apple-system, sans-serif'
           }
         }
       });
       
-      console.log('🎨 Card instance created, preparing container...');
+      console.log('🎨 Card instance created, attaching to container...');
       
-      // Ensure container is clean and ready
+      // Clear container and attach
       if (cardRef.current) {
         cardRef.current.innerHTML = '';
-        console.log('🧹 Card container prepared');
+        await cardInstance.attach(cardRef.current);
+        console.log('✅ Square card form attached successfully!');
       }
       
-      console.log('📎 Attaching card to container...');
-      await cardInstance.attach(cardRef.current);
-      
       setCard(cardInstance);
-      console.log('✅ Square card form attached successfully!');
       
     } catch (error) {
       console.error(`❌ Card initialization failed (attempt ${retryCount + 1}):`, error);
@@ -120,11 +110,6 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
 
       try {
         console.log('🏗️ Creating Square payments instance...');
-        console.log('📋 Square config:', { 
-          appId: squareAppId?.substring(0, 10) + '...', 
-          locationId: squareLocationId?.substring(0, 10) + '...',
-          environment: squareEnvironment 
-        });
         
         const paymentsInstance = window.Square.payments(squareAppId, squareLocationId, squareEnvironment || 'sandbox');
         
@@ -132,10 +117,10 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         console.log('✅ Square payments instance created');
         setSdkStatus('ready');
 
-        // Wait a bit for the component to render before initializing card
+        // Wait for DOM to be ready before initializing card
         setTimeout(() => {
           initializeCard(paymentsInstance);
-        }, 100);
+        }, 200);
         
       } catch (error) {
         console.error('💥 Failed to initialize Square SDK:', error);
@@ -151,7 +136,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
 
     if (squareAppId && squareLocationId) {
       console.log('🎬 Starting Square initialization...');
-      setTimeout(initializeSquare, 100); // Small delay to ensure DOM is ready
+      setTimeout(initializeSquare, 100);
     } else {
       console.log('⚠️ Square credentials not provided, skipping initialization');
     }
