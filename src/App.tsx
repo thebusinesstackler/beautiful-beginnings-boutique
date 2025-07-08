@@ -9,6 +9,7 @@ import Checkout from './pages/Checkout';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import Ornaments from './pages/Ornaments';
 import OrnamentDetail from './pages/OrnamentDetail';
+import CustomizeGlassOrnament from './pages/CustomizeGlassOrnament';
 import Necklaces from './pages/Necklaces';
 import SnowGlobes from './pages/SnowGlobes';
 import ProductDetail from './pages/ProductDetail';
@@ -51,6 +52,7 @@ function App() {
             <Route path="/checkout/success" element={<CheckoutSuccess />} />
             <Route path="/products/ornaments" element={<Ornaments />} />
             <Route path="/products/ornaments/:id" element={<OrnamentDetail />} />
+            <Route path="/products/ornaments/customize-glass" element={<CustomizeGlassOrnament />} />
             <Route path="/products/necklaces" element={<Necklaces />} />
             <Route path="/products/snow-globes" element={<SnowGlobes />} />
             <Route path="/products/snow-globes/:id" element={<ProductDetail />} />
