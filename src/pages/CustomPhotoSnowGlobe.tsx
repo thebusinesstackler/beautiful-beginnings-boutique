@@ -2,52 +2,73 @@
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Camera, Upload, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image_url: string;
+  gallery_images: string[];
+  description: string;
+  category: string;
+}
 
 const CustomPhotoSnowGlobe = () => {
+  const { id } = useParams<{ id: string }>();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const { addToCart } = useCart();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
 
-  const product = {
-    id: 2,
-    name: "Custom Photo Snow Globe",
-    price: 25.00,
-    image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-    description: "Premium snow globe with your favorite photo and enhanced base details",
-    fullDescription: "Transform your most cherished memories into a magical snow globe! Our Custom Photo Snow Globe features your favorite photo beautifully displayed inside a premium glass globe with swirling snow. Each shake brings your memory to life in the most enchanting way. Perfect for preserving special moments, commemorating loved ones, or creating unique gifts that will be treasured forever.",
-    features: [
-      "Your custom photo professionally printed",
-      "Premium quality snow effect",
-      "Enhanced decorative base with details",
-      "High-resolution photo processing",
-      "Protective gift packaging included",
-      "Weather-resistant materials"
-    ],
-    specifications: [
-      "Size: 4.5 inches diameter",
-      "Material: Premium glass and resin",
-      "Photo: High-quality waterproof print",
-      "Base: Decorative weighted base",
-      "Processing: 3-5 business days"
-    ]
+  const fetchProduct = async () => {
+    if (!id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .eq('category', 'Snow Globes')
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      setProduct(data);
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load product details.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddToCart = () => {
+    if (!product) return;
+    
     for (let i = 0; i < quantity; i++) {
       addToCart({
-        id: product.id,
+        id: parseInt(product.id),
         name: product.name,
         price: product.price,
-        image: product.image
+        image: product.image_url
       });
     }
     toast({
@@ -56,12 +77,59 @@ const CustomPhotoSnowGlobe = () => {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent"></div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Product not found</h1>
+            <Link to="/products/snow-globes">
+              <Button variant="outline">Back to Snow Globes</Button>
+            </Link>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const features = [
+    "Your custom photo professionally printed",
+    "Premium quality snow effect",
+    "Enhanced decorative base with details",
+    "High-resolution photo processing",
+    "Protective gift packaging included",
+    "Weather-resistant materials"
+  ];
+
+  const specifications = [
+    "Size: 4.5 inches diameter",
+    "Material: Premium glass and resin",
+    "Photo: High-quality waterproof print",
+    "Base: Decorative weighted base",
+    "Processing: 3-5 business days"
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Breadcrumb */}
         <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
           <Link to="/" className="hover:text-primary">Home</Link>
           <span>/</span>
@@ -71,11 +139,10 @@ const CustomPhotoSnowGlobe = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Image */}
           <div className="space-y-4">
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 p-8">
               <img
-                src={product.image}
+                src={product.image_url}
                 alt={product.name}
                 className="w-full h-96 object-cover rounded-xl"
               />
@@ -90,14 +157,12 @@ const CustomPhotoSnowGlobe = () => {
                 />
               </button>
               
-              {/* Camera icon overlay */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="bg-white/20 backdrop-blur-sm rounded-full p-6">
                   <Camera className="h-12 w-12 text-white" />
                 </div>
               </div>
               
-              {/* Sparkle decorations */}
               <div className="absolute top-8 left-8">
                 <Sparkles className="h-6 w-6 text-purple-300 animate-pulse" />
               </div>
@@ -106,7 +171,6 @@ const CustomPhotoSnowGlobe = () => {
               </div>
             </div>
             
-            {/* Photo Upload Preview */}
             <div className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl p-6 border-2 border-dashed border-primary/20">
               <div className="text-center">
                 <Upload className="h-8 w-8 text-primary mx-auto mb-3" />
@@ -122,7 +186,6 @@ const CustomPhotoSnowGlobe = () => {
             </div>
           </div>
 
-          {/* Product Info */}
           <div className="space-y-6">
             <div>
               <div className="flex items-center space-x-2 mb-2">
@@ -146,10 +209,9 @@ const CustomPhotoSnowGlobe = () => {
             </div>
 
             <p className="text-muted-foreground leading-relaxed text-lg">
-              {product.fullDescription}
+              {product.description}
             </p>
 
-            {/* Customization Notice */}
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
               <div className="flex items-start space-x-3">
                 <Camera className="h-5 w-5 text-amber-600 mt-0.5" />
@@ -162,7 +224,6 @@ const CustomPhotoSnowGlobe = () => {
               </div>
             </div>
 
-            {/* Quantity Selector */}
             <div className="flex items-center space-x-4">
               <span className="text-sm font-medium">Quantity:</span>
               <div className="flex items-center border rounded-lg">
@@ -182,7 +243,6 @@ const CustomPhotoSnowGlobe = () => {
               </div>
             </div>
 
-            {/* Add to Cart Button */}
             <Button 
               size="lg" 
               className="btn-primary w-full text-lg py-4"
@@ -192,14 +252,13 @@ const CustomPhotoSnowGlobe = () => {
               Add to Cart - ${(product.price * quantity).toFixed(2)}
             </Button>
 
-            {/* Features */}
             <div className="space-y-4 bg-gray-50 rounded-xl p-6">
               <h3 className="font-semibold text-foreground flex items-center">
                 <Sparkles className="h-5 w-5 mr-2 text-primary" />
                 Premium Features:
               </h3>
               <ul className="space-y-3">
-                {product.features.map((feature, index) => (
+                {features.map((feature, index) => (
                   <li key={index} className="flex items-center text-sm text-muted-foreground">
                     <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0" />
                     {feature}
@@ -208,11 +267,10 @@ const CustomPhotoSnowGlobe = () => {
               </ul>
             </div>
 
-            {/* Specifications */}
             <div className="space-y-4">
               <h3 className="font-semibold text-foreground">Product Details:</h3>
               <ul className="space-y-2">
-                {product.specifications.map((spec, index) => (
+                {specifications.map((spec, index) => (
                   <li key={index} className="flex items-center text-sm text-muted-foreground">
                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3" />
                     {spec}
@@ -223,7 +281,6 @@ const CustomPhotoSnowGlobe = () => {
           </div>
         </div>
 
-        {/* Back to Snow Globes */}
         <div className="mt-16 text-center">
           <Link to="/products/snow-globes">
             <Button variant="outline" className="px-8 py-3 mr-4">

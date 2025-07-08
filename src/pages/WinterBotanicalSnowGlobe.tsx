@@ -1,16 +1,29 @@
-
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Sparkles, Shield, Truck, RotateCcw, ChevronDown, ChevronUp, Gift, Clock, Camera, Eye, Users, Award, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import PhotoUpload from '@/components/PhotoUpload';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image_url: string;
+  gallery_images: string[];
+  description: string;
+  category: string;
+}
 
 const WinterBotanicalSnowGlobe = () => {
+  const { id } = useParams<{ id: string }>();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -22,44 +35,37 @@ const WinterBotanicalSnowGlobe = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
 
-  const product = {
-    id: 1,
-    name: "Winter Botanical Snow Globe",
-    price: 20.00,
-    images: [
-      "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-      "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
-    ],
-    description: "Beautiful snow globe with winter botanical scene, perfect for holiday displays",
-    fullDescription: "Capture the magic of winter with our enchanting Winter Botanical Snow Globe. This beautifully crafted piece features delicate winter botanicals suspended in swirling snow, creating a mesmerizing display that brings the serenity of a winter garden into your home. Each globe is carefully hand-assembled with premium materials to ensure lasting beauty and durability.",
-    features: [
-      "Hand-crafted winter botanical scene with real preserved elements",
-      "Premium quality snow that swirls beautifully for 30+ seconds",
-      "Durable borosilicate glass globe with scratch-resistant coating",
-      "Weighted wooden base with elegant finish",
-      "Perfect 4-inch size for any display space",
-      "Makes a wonderful heirloom gift"
-    ],
-    specifications: [
-      "Size: 4 inches diameter, 5.5 inches height",
-      "Material: High-quality borosilicate glass and natural wood",
-      "Base: Solid wood, weighted for stability",
-      "Care: Dust with soft microfiber cloth",
-      "Gift packaging included at no extra cost"
-    ],
-    benefits: [
-      "Premium quality botanical elements",
-      "Long-lasting snow effect",
-      "Ships within 3 business days",
-      "Perfect for winter decorating",
-      "Ideal holiday gift for nature lovers"
-    ]
+  const fetchProduct = async () => {
+    if (!id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .eq('category', 'Snow Globes')
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      setProduct(data);
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load product details.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Related products data
   const relatedProducts = [
     {
       id: 2,
@@ -103,12 +109,14 @@ const WinterBotanicalSnowGlobe = () => {
   ];
 
   const handleAddToCart = () => {
+    if (!product) return;
+    
     for (let i = 0; i < quantity; i++) {
       addToCart({
-        id: product.id,
+        id: parseInt(product.id),
         name: product.name,
         price: product.price,
-        image: product.images[0]
+        image: product.image_url
       });
     }
     toast({
@@ -125,12 +133,54 @@ const WinterBotanicalSnowGlobe = () => {
     });
   };
 
+  const getProductImages = () => {
+    if (!product) return [];
+    const images = [];
+    if (product.image_url) images.push(product.image_url);
+    if (product.gallery_images && product.gallery_images.length > 0) {
+      images.push(...product.gallery_images);
+    }
+    return images.length > 0 ? images : ["https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"];
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: '#faf6ee' }}>
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent"></div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: '#faf6ee' }}>
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4" style={{ color: '#2d3436' }}>Product not found</h1>
+            <Link to="/products/snow-globes">
+              <Button variant="outline">Back to Snow Globes</Button>
+            </Link>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const productImages = getProductImages();
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#faf6ee' }}>
       <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Breadcrumb */}
         <div className="flex items-center space-x-2 text-sm mb-8" style={{ color: '#a48f4b' }}>
           <Link to="/" className="hover:opacity-80">Home</Link>
           <span>/</span>
@@ -144,7 +194,7 @@ const WinterBotanicalSnowGlobe = () => {
           <div className="space-y-4">
             <div className="relative overflow-hidden rounded-2xl bg-white shadow-lg">
               <img
-                src={product.images[selectedImage]}
+                src={productImages[selectedImage]}
                 alt={product.name}
                 className="w-full h-96 object-cover"
               />
@@ -170,24 +220,26 @@ const WinterBotanicalSnowGlobe = () => {
             </div>
             
             {/* Image Thumbnails */}
-            <div className="flex space-x-4">
-              {product.images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors shadow-sm ${
-                    selectedImage === index ? 'border-2' : 'border-gray-200'
-                  }`}
-                  style={{ borderColor: selectedImage === index ? '#E28F84' : '#e5e7eb' }}
-                >
-                  <img
-                    src={image}
-                    alt={`${product.name} view ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
+            {productImages.length > 1 && (
+              <div className="flex space-x-4">
+                {productImages.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImage(index)}
+                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors shadow-sm ${
+                      selectedImage === index ? 'border-2' : 'border-gray-200'
+                    }`}
+                    style={{ borderColor: selectedImage === index ? '#E28F84' : '#e5e7eb' }}
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.name} view ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Photo Upload Section */}
             <Card className="border-2 border-dashed" style={{ borderColor: '#F6DADA' }}>
@@ -262,17 +314,16 @@ const WinterBotanicalSnowGlobe = () => {
             </div>
 
             <p className="leading-relaxed text-lg" style={{ color: '#6c5548' }}>
-              {product.fullDescription}
+              {product.description}
             </p>
 
-            {/* Key Benefits */}
             <div className="bg-white rounded-xl p-6 shadow-sm border-2" style={{ borderColor: '#F6DADA' }}>
               <h3 className="font-semibold mb-3 flex items-center" style={{ color: '#2d3436' }}>
                 <Sparkles className="h-5 w-5 mr-2" style={{ color: '#a48f4b' }} />
                 Why You'll Love This Snow Globe:
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {product.benefits.map((benefit, index) => (
+                {relatedProducts.map((benefit, index) => (
                   <div key={index} className="flex items-start space-x-3">
                     <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: '#E28F84' }} />
                     <span className="text-sm" style={{ color: '#6c5548' }}>{benefit}</span>
@@ -285,7 +336,6 @@ const WinterBotanicalSnowGlobe = () => {
               </p>
             </div>
 
-            {/* Delivery Information */}
             <div className="grid grid-cols-3 gap-4">
               <Card className="text-center p-4">
                 <Clock className="h-8 w-8 mx-auto mb-2" style={{ color: '#E28F84' }} />
@@ -304,7 +354,6 @@ const WinterBotanicalSnowGlobe = () => {
               </Card>
             </div>
 
-            {/* Quantity and Add to Cart */}
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
                 <span className="text-sm font-medium" style={{ color: '#2d3436' }}>Quantity:</span>
@@ -325,7 +374,6 @@ const WinterBotanicalSnowGlobe = () => {
                 </div>
               </div>
 
-              {/* Primary Add to Cart Button */}
               <Button 
                 size="lg" 
                 className="w-full font-semibold text-white hover:opacity-90 transition-opacity shadow-md text-lg py-4"
@@ -341,7 +389,6 @@ const WinterBotanicalSnowGlobe = () => {
               </p>
             </div>
 
-            {/* Personalization Toggle */}
             <div className="rounded-xl p-4 shadow-sm border-2 bg-white" style={{ borderColor: '#F6DADA' }}>
               <button
                 onClick={() => setShowPersonalization(!showPersonalization)}
@@ -370,15 +417,13 @@ const WinterBotanicalSnowGlobe = () => {
           </div>
         </div>
 
-        {/* Below the Fold Content */}
         <div className="mt-20 space-y-16">
-          {/* Product Features */}
           <section className="bg-white p-8 rounded-xl shadow-sm">
             <h2 className="text-2xl font-playfair font-bold mb-6" style={{ color: '#2d3436' }}>
               Premium Features
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {product.features.map((feature, index) => (
+              {relatedProducts.map((feature, index) => (
                 <div key={index} className="flex items-start space-x-3">
                   <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: '#E28F84' }} />
                   <span style={{ color: '#6c5548' }}>{feature}</span>
@@ -387,7 +432,6 @@ const WinterBotanicalSnowGlobe = () => {
             </div>
           </section>
 
-          {/* Related Products */}
           <section>
             <h2 className="text-2xl font-playfair font-bold mb-8" style={{ color: '#2d3436' }}>
               Customers Also Bought
@@ -413,7 +457,6 @@ const WinterBotanicalSnowGlobe = () => {
             </div>
           </section>
 
-          {/* Customer Reviews */}
           <section className="bg-white p-8 rounded-xl shadow-sm">
             <h2 className="text-2xl font-playfair font-bold mb-8" style={{ color: '#2d3436' }}>
               Customer Reviews
@@ -438,7 +481,6 @@ const WinterBotanicalSnowGlobe = () => {
             </div>
           </section>
 
-          {/* FAQ Section */}
           <section className="bg-white p-8 rounded-xl shadow-sm">
             <h2 className="text-2xl font-playfair font-bold mb-8" style={{ color: '#2d3436' }}>
               Frequently Asked Questions
@@ -465,7 +507,6 @@ const WinterBotanicalSnowGlobe = () => {
             </div>
           </section>
 
-          {/* Shipping & Returns */}
           <section className="bg-white p-8 rounded-xl shadow-sm">
             <button
               onClick={() => setShowShipping(!showShipping)}
@@ -517,7 +558,6 @@ const WinterBotanicalSnowGlobe = () => {
           </section>
         </div>
 
-        {/* Back Navigation */}
         <div className="mt-16">
           <Link to="/products/snow-globes">
             <Button 
