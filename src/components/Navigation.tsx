@@ -16,7 +16,7 @@ const Navigation = () => {
     { name: 'Ornaments', href: '/products/ornaments' },
     { name: 'Slate Products', href: '/products/slate' },
     { name: 'Wood Pictures', href: '/products/wood-sublimation' },
-    { name: 'About', href: '/about' },
+    { name: 'Shop', href: '/shop' },
   ];
 
   return (
