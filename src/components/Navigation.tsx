@@ -1,13 +1,14 @@
+
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
-import CartDrawer from '@/components/CartDrawer';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { getCartCount } = useCart();
+  const navigate = useNavigate();
 
   const navItems = [
     { name: 'Home', href: '/' },
@@ -19,6 +20,10 @@ const Navigation = () => {
     { name: 'Blog', href: '/blog' },
     { name: 'Shop', href: '/shop' },
   ];
+
+  const handleCartClick = () => {
+    navigate('/cart');
+  };
 
   return (
     <nav className="shadow-lg sticky top-0 z-50" style={{ backgroundColor: '#faf6ee', borderBottom: '1px solid #F6DADA' }}>
@@ -63,28 +68,27 @@ const Navigation = () => {
 
           {/* Cart & Mobile Menu Button */}
           <div className="flex items-center space-x-4">
-            <CartDrawer>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="relative transition-colors duration-200"
-                style={{ 
-                  color: '#a48f4b',
-                  outline: 'none',
-                  boxShadow: 'none',
-                  border: 'none'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F6DADA'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {getCartCount() > 0 && (
-                  <span className="absolute -top-2 -right-2 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium" style={{ backgroundColor: '#E28F84' }}>
-                    {getCartCount()}
-                  </span>
-                )}
-              </Button>
-            </CartDrawer>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCartClick}
+              className="relative transition-colors duration-200"
+              style={{ 
+                color: '#a48f4b',
+                outline: 'none',
+                boxShadow: 'none',
+                border: 'none'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F6DADA'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {getCartCount() > 0 && (
+                <span className="absolute -top-2 -right-2 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium" style={{ backgroundColor: '#E28F84' }}>
+                  {getCartCount()}
+                </span>
+              )}
+            </Button>
 
             {/* Mobile menu button */}
             <div className="md:hidden">
