@@ -51,8 +51,8 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/checkout/success" element={<CheckoutSuccess />} />
             <Route path="/products/ornaments" element={<Ornaments />} />
-            <Route path="/products/ornaments/:id" element={<OrnamentDetail />} />
             <Route path="/products/ornaments/customize-glass" element={<CustomizeGlassOrnament />} />
+            <Route path="/products/ornaments/:id" element={<OrnamentDetail />} />
             <Route path="/products/necklaces" element={<Necklaces />} />
             <Route path="/products/snow-globes" element={<SnowGlobes />} />
             <Route path="/products/snow-globes/:id" element={<ProductDetail />} />

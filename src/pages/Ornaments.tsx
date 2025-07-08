@@ -152,15 +152,17 @@ const Ornaments = () => {
                 Upload your favorite photos and we'll handcraft a beautiful ornament that captures your precious memories forever. 
                 Perfect for gifting or creating your own collection of meaningful decorations.
               </p>
-              <Button 
-                className="text-lg px-8 py-4 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
-                style={{ backgroundColor: '#E28F84' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
-              >
-                <Sparkles className="h-5 w-5 mr-2" />
-                Start Personalizing Now
-              </Button>
+              <Link to="/products/ornaments/customize-glass">
+                <Button 
+                  className="text-lg px-8 py-4 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
+                  style={{ backgroundColor: '#E28F84' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4A79B'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E28F84'}
+                >
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Start Personalizing Now
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -232,7 +234,7 @@ const Ornaments = () => {
                     </div>
                     
                     <div className="space-y-3">
-                      <Link to={`/products/ornaments/${product.id}`} className="block">
+                      <Link to="/products/ornaments/customize-glass" className="block">
                         <Button 
                           size="sm"
                           variant="outline" 
