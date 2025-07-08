@@ -78,7 +78,7 @@ const WinterBotanicalSnowGlobe = () => {
     },
     {
       id: 3,
-      name: "Holiday Memory Ornament",
+      name: "Holiday Memory Ornament", 
       price: 12.00,
       image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400",
       rating: 5,
@@ -106,6 +106,15 @@ const WinterBotanicalSnowGlobe = () => {
     { question: "How long does the snow effect last?", answer: "The premium snow in our globes swirls beautifully for 30+ seconds, much longer than typical snow globes." },
     { question: "Are the botanicals real?", answer: "Yes! We use real preserved botanical elements that are carefully selected and treated for longevity." },
     { question: "Is it safe to ship?", answer: "Absolutely. Each globe is carefully packaged with protective materials and insured during shipping." }
+  ];
+
+  const productFeatures = [
+    "Premium quality snow effect",
+    "Real preserved botanical elements",  
+    "Enhanced decorative base with details",
+    "High-resolution photo processing",
+    "Protective gift packaging included",
+    "Weather-resistant materials"
   ];
 
   const handleAddToCart = () => {
@@ -304,7 +313,7 @@ const WinterBotanicalSnowGlobe = () => {
               </div>
               <div className="flex items-center space-x-4 mb-4">
                 <p className="text-4xl font-bold" style={{ color: '#2d3436' }}>
-                  ${product.price.toFixed(2)}
+                  ${product.price?.toFixed(2)}
                 </p>
                 <div className="text-sm">
                   <p className="font-medium" style={{ color: '#E28F84' }}>Free shipping on orders over $35</p>
@@ -323,10 +332,10 @@ const WinterBotanicalSnowGlobe = () => {
                 Why You'll Love This Snow Globe:
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {relatedProducts.map((benefit, index) => (
+                {productFeatures.map((feature, index) => (
                   <div key={index} className="flex items-start space-x-3">
                     <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: '#E28F84' }} />
-                    <span className="text-sm" style={{ color: '#6c5548' }}>{benefit}</span>
+                    <span className="text-sm" style={{ color: '#6c5548' }}>{feature}</span>
                   </div>
                 ))}
               </div>
@@ -381,7 +390,7 @@ const WinterBotanicalSnowGlobe = () => {
                 style={{ backgroundColor: '#E28F84' }}
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                Add to Cart - ${(product.price * quantity).toFixed(2)}
+                Add to Cart - ${((product.price || 0) * quantity).toFixed(2)}
               </Button>
 
               <p className="text-center text-sm" style={{ color: '#6c5548' }}>
@@ -423,7 +432,7 @@ const WinterBotanicalSnowGlobe = () => {
               Premium Features
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedProducts.map((feature, index) => (
+              {productFeatures.map((feature, index) => (
                 <div key={index} className="flex items-start space-x-3">
                   <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: '#E28F84' }} />
                   <span style={{ color: '#6c5548' }}>{feature}</span>
