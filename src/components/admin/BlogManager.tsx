@@ -1,15 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Clock } from 'lucide-react';
+import { generateSlug, generateExcerpt, calculateReadingTime } from '@/utils/blogUtils';
 
 interface BlogPost {
   id: string;
@@ -41,6 +42,22 @@ const BlogManager = () => {
     publish_date: ''
   });
 
+  // Auto-generate slug when title changes
+  useEffect(() => {
+    if (formData.title && (!formData.slug || !editingPost)) {
+      const autoSlug = generateSlug(formData.title);
+      setFormData(prev => ({ ...prev, slug: autoSlug }));
+    }
+  }, [formData.title, editingPost]);
+
+  // Auto-generate excerpt when content changes and excerpt is empty
+  useEffect(() => {
+    if (formData.content && !formData.excerpt) {
+      const autoExcerpt = generateExcerpt(formData.content);
+      setFormData(prev => ({ ...prev, excerpt: autoExcerpt }));
+    }
+  }, [formData.content]);
+
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -66,10 +83,6 @@ const BlogManager = () => {
     }
   };
 
-  const generateSlug = (title: string) => {
-    return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -77,7 +90,7 @@ const BlogManager = () => {
         title: formData.title,
         slug: formData.slug || generateSlug(formData.title),
         content: formData.content,
-        excerpt: formData.excerpt,
+        excerpt: formData.excerpt || generateExcerpt(formData.content),
         featured_image: formData.featured_image,
         status: formData.status,
         publish_date: formData.publish_date ? new Date(formData.publish_date).toISOString() : null
@@ -162,6 +175,24 @@ const BlogManager = () => {
     });
   };
 
+  // Quill editor modules configuration
+  const quillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      ['link', 'image'],
+      [{ 'align': [] }],
+      ['clean']
+    ],
+  };
+
+  const quillFormats = [
+    'header', 'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet', 'indent', 'link', 'image', 'align'
+  ];
+
   if (loading) {
     return <div className="text-center py-8">Loading blog posts...</div>;
   }
@@ -187,11 +218,11 @@ const BlogManager = () => {
           <CardHeader>
             <CardTitle className="text-charcoal">{editingPost ? 'Edit Blog Post' : 'Create New Blog Post'}</CardTitle>
             <CardDescription>
-              {editingPost ? 'Update blog post content' : 'Write a new blog post'}
+              {editingPost ? 'Update blog post content' : 'Write a new blog post with rich text formatting'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="title" className="text-charcoal">Title *</Label>
@@ -200,7 +231,11 @@ const BlogManager = () => {
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     required
+                    placeholder="Enter an engaging blog post title..."
                   />
+                  <p className="text-xs text-stone mt-1">
+                    {formData.title.length}/80 characters
+                  </p>
                 </div>
                 <div>
                   <Label htmlFor="slug" className="text-charcoal">URL Slug</Label>
@@ -208,8 +243,11 @@ const BlogManager = () => {
                     id="slug"
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    placeholder={generateSlug(formData.title)}
+                    placeholder="Auto-generated from title"
                   />
+                  <p className="text-xs text-stone mt-1">
+                    Preview: /blog/{formData.slug || 'your-slug-here'}
+                  </p>
                 </div>
                 <div>
                   <Label htmlFor="status" className="text-charcoal">Status</Label>
@@ -228,7 +266,7 @@ const BlogManager = () => {
                   <Label htmlFor="publish_date" className="text-charcoal">Publish Date</Label>
                   <Input
                     id="publish_date"
-                    type="date"
+                    type="datetime-local"
                     value={formData.publish_date}
                     onChange={(e) => setFormData({ ...formData, publish_date: e.target.value })}
                   />
@@ -241,29 +279,50 @@ const BlogManager = () => {
                   id="featured_image"
                   value={formData.featured_image}
                   onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
                 />
+              </div>
+
+              <div>
+                <Label htmlFor="content" className="text-charcoal">Content *</Label>
+                <div className="mt-2">
+                  <ReactQuill
+                    value={formData.content}
+                    onChange={(content) => setFormData({ ...formData, content })}
+                    modules={quillModules}
+                    formats={quillFormats}
+                    placeholder="Write your blog post content here. Use the toolbar to format text, add links, and more..."
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: '6px',
+                      minHeight: '200px'
+                    }}
+                  />
+                </div>
+                {formData.content && (
+                  <div className="flex items-center gap-4 mt-2 text-sm text-stone">
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {calculateReadingTime(formData.content)} min read
+                    </span>
+                    <span>{formData.content.replace(/<[^>]*>/g, '').length} characters</span>
+                  </div>
+                )}
               </div>
 
               <div>
                 <Label htmlFor="excerpt" className="text-charcoal">Excerpt</Label>
-                <Textarea
+                <Input
                   id="excerpt"
                   value={formData.excerpt}
                   onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  rows={3}
-                  placeholder="Short description for the blog post..."
+                  placeholder="Auto-generated from content or write a custom excerpt..."
+                  maxLength={200}
                 />
-              </div>
-
-              <div>
-                <Label htmlFor="content" className="text-charcoal">Content</Label>
-                <Textarea
-                  id="content"
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  rows={10}
-                  placeholder="Write your blog post content here..."
-                />
+                <p className="text-xs text-stone mt-1">
+                  {formData.excerpt.length}/200 characters
+                  {!formData.excerpt && formData.content && " (Auto-generated)"}
+                </p>
               </div>
 
               <div className="flex space-x-2">
