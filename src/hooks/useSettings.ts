@@ -9,6 +9,10 @@ interface SiteSettings {
   store_phone: string;
   store_website: string;
   store_address: string;
+  square_app_id?: string;
+  square_location_id?: string;
+  square_access_token?: string;
+  square_environment?: string;
 }
 
 export const useSettings = () => {
