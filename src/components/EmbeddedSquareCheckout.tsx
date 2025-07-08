@@ -93,21 +93,38 @@ const EmbeddedSquareCheckout = ({
 
       try {
         const environment = settings.square_environment || 'sandbox';
-        console.log('Initializing Square Web Payments SDK with:', {
+        const isPreviewEnvironment = window.location.hostname.includes('lovable.app') || 
+                                    window.location.hostname.includes('localhost') ||
+                                    window.location.hostname.includes('127.0.0.1');
+        
+        // Force sandbox for preview/development environments
+        const actualEnvironment = (environment === 'sandbox' || isPreviewEnvironment) ? 'sandbox' : 'production';
+        
+        console.log('Square SDK Environment Detection:', {
+          configuredEnvironment: environment,
+          isPreviewEnvironment,
+          actualEnvironment,
+          hostname: window.location.hostname,
           appId: settings.square_app_id,
-          locationId: settings.square_location_id,
-          environment: environment
+          locationId: settings.square_location_id
         });
 
-        // Initialize with proper environment configuration for sandbox
-        let paymentsInstance;
-        if (environment === 'sandbox') {
-          paymentsInstance = window.Square.payments(settings.square_app_id, settings.square_location_id, {
+        // Initialize with explicit sandbox configuration for development/preview
+        let paymentsConfig = {};
+        if (actualEnvironment === 'sandbox') {
+          paymentsConfig = {
             environment: 'sandbox'
-          });
+          };
+          console.log('Using explicit sandbox configuration');
         } else {
-          paymentsInstance = window.Square.payments(settings.square_app_id, settings.square_location_id);
+          console.log('Using production configuration');
         }
+
+        const paymentsInstance = window.Square.payments(
+          settings.square_app_id, 
+          settings.square_location_id, 
+          paymentsConfig
+        );
         
         setPayments(paymentsInstance);
 
