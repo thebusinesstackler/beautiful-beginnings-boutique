@@ -16,6 +16,8 @@ import HeartPhotoPendant from './pages/HeartPhotoPendant';
 import PhotoMemoryNecklace from './pages/PhotoMemoryNecklace';
 import WinterBotanicalSnowGlobe from './pages/WinterBotanicalSnowGlobe';
 import CustomPhotoSnowGlobe from './pages/CustomPhotoSnowGlobe';
+import Anniversaries from './pages/Anniversaries';
+import Birthdays from './pages/Birthdays';
 import ShippingReturns from './pages/ShippingReturns';
 import OurStory from './pages/OurStory';
 import About from './pages/About';
@@ -53,6 +55,8 @@ function App() {
             <Route path="/products/necklaces/photo-memory-necklace" element={<PhotoMemoryNecklace />} />
             <Route path="/products/snow-globes/winter-botanical" element={<WinterBotanicalSnowGlobe />} />
             <Route path="/products/snow-globes/custom-photo" element={<CustomPhotoSnowGlobe />} />
+            <Route path="/shop/anniversaries" element={<Anniversaries />} />
+            <Route path="/shop/birthdays" element={<Birthdays />} />
             <Route path="/shipping-returns" element={<ShippingReturns />} />
             <Route path="/our-story" element={<OurStory />} />
             <Route path="/about" element={<About />} />

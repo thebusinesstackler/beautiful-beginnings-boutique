@@ -9,19 +9,22 @@ const GiftingSection = () => {
       icon: Heart,
       title: "Anniversaries",
       description: "Celebrate your love story with personalized keepsakes",
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
+      href: "/shop/anniversaries"
     },
     {
       icon: Gift,
       title: "Birthdays",
       description: "Make their special day unforgettable with custom gifts",
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
+      href: "/shop/birthdays"
     },
     {
       icon: Calendar,
       title: "Holidays",
       description: "Create magical holiday memories with personalized ornaments",
-      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
+      href: "/products/ornaments"
     }
   ];
 
@@ -67,9 +70,11 @@ const GiftingSection = () => {
                 <p className="text-gray-700 mb-4 leading-relaxed">
                   {occasion.description}
                 </p>
-                <Button size="sm" variant="outline" className="w-full border-2 hover:scale-105 transition-all duration-300" style={{ borderColor: '#E28F84', color: '#7A7047' }}>
-                  Shop {occasion.title}
-                </Button>
+                <Link to={occasion.href}>
+                  <Button size="sm" variant="outline" className="w-full border-2 hover:scale-105 transition-all duration-300" style={{ borderColor: '#E28F84', color: '#7A7047' }}>
+                    Shop {occasion.title}
+                  </Button>
+                </Link>
               </div>
             </div>
           ))}
