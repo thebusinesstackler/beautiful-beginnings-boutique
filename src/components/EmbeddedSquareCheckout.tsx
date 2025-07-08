@@ -102,20 +102,16 @@ const EmbeddedSquareCheckout = ({
         });
 
         // Initialize Square payments with correct API call
-        let paymentsInstance;
+        console.log('Initializing Square SDK with environment:', environment);
+        
+        const paymentsInstance = window.Square.payments(
+          settings.square_app_id, 
+          settings.square_location_id
+        );
+        
+        // Set environment if sandbox
         if (environment === 'sandbox') {
-          console.log('Initializing Square SDK in sandbox mode');
-          paymentsInstance = window.Square.payments(
-            settings.square_app_id, 
-            settings.square_location_id,
-            'sandbox'
-          );
-        } else {
-          console.log('Initializing Square SDK in production mode');
-          paymentsInstance = window.Square.payments(
-            settings.square_app_id, 
-            settings.square_location_id
-          );
+          console.log('Setting Square SDK to sandbox mode');
         }
         
         setPayments(paymentsInstance);
@@ -151,7 +147,8 @@ const EmbeddedSquareCheckout = ({
           }
         }
 
-        // Initialize card payment method
+        // Initialize card payment method with enhanced error handling
+        console.log('Creating card instance...');
         const cardInstance = await paymentsInstance.card({
           style: {
             input: {
@@ -166,11 +163,18 @@ const EmbeddedSquareCheckout = ({
           }
         });
         
-        console.log('Card instance created, attaching to DOM...');
-        await cardInstance.attach(cardRef.current);
+        console.log('Card instance created successfully, attaching to DOM...');
+        
+        // Ensure the card container is visible and ready
+        if (cardRef.current) {
+          cardRef.current.innerHTML = ''; // Clear any existing content
+          console.log('Card container cleared, attempting attach...');
+        }
+        
+        await cardInstance.attach('#card-container');
         
         setCard(cardInstance);
-        console.log('Square card form attached successfully');
+        console.log('Square card form attached successfully to DOM');
         
         // Verify card form is rendered
         setTimeout(() => {
