@@ -12,7 +12,7 @@ import { useShippingSettings } from '@/hooks/useShippingSettings';
 import { toast } from '@/hooks/use-toast';
 
 const Cart = () => {
-  const { items, removeFromCart, getCartTotal, updatePhoto, addToCart } = useCart();
+  const { items, removeFromCart, getCartTotal, updatePhoto, addToCart, updateQuantity } = useCart();
   const { calculateShipping, getEstimatedDelivery, settings } = useShippingSettings();
   const navigate = useNavigate();
 
@@ -30,10 +30,12 @@ const Cart = () => {
     });
   };
 
-  const handleQuantityChange = (item: any, change: number) => {
-    if (change > 0) {
-      addToCart(item);
-    }
+  const handleQuantityIncrease = (item: any) => {
+    updateQuantity(item.id, item.quantity + 1);
+  };
+
+  const handleQuantityDecrease = (item: any) => {
+    updateQuantity(item.id, item.quantity - 1);
   };
 
   const handleProceedToCheckout = () => {
@@ -156,8 +158,7 @@ const Cart = () => {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => handleQuantityChange(item, -1)}
-                                  disabled={item.quantity <= 1}
+                                  onClick={() => handleQuantityDecrease(item)}
                                   className="h-10 w-10 p-0 hover:bg-stone/20 rounded-lg"
                                 >
                                   <Minus className="h-4 w-4" />
@@ -168,7 +169,7 @@ const Cart = () => {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => handleQuantityChange(item, 1)}
+                                  onClick={() => handleQuantityIncrease(item)}
                                   className="h-10 w-10 p-0 hover:bg-stone/20 rounded-lg"
                                 >
                                   <Plus className="h-4 w-4" />
