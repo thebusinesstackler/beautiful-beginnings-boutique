@@ -112,15 +112,12 @@ const EmbeddedSquareCheckout = ({
         // Initialize Square payments with correct API call
         console.log('Initializing Square SDK with environment:', environment);
         
-        const paymentsInstance = window.Square.payments(
-          settings.square_app_id, 
-          settings.square_location_id
-        );
+        // For sandbox, use the 'sandbox' parameter; for production, omit it
+        const paymentsInstance = environment === 'sandbox' 
+          ? window.Square.payments(settings.square_app_id, settings.square_location_id, 'sandbox')
+          : window.Square.payments(settings.square_app_id, settings.square_location_id);
         
-        // Set environment if sandbox
-        if (environment === 'sandbox') {
-          console.log('Setting Square SDK to sandbox mode');
-        }
+        console.log('Square payments instance created for environment:', environment);
         
         setPayments(paymentsInstance);
         console.log('Square payments instance created successfully');
