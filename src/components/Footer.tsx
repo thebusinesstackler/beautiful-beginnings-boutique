@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook, Mail, Phone, MapPin, Award, Star, LogIn, LogOut, Shield } from 'lucide-react';
+import { Instagram, Facebook, Mail, Phone, Award, Star, LogIn, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
@@ -95,7 +95,7 @@ const Footer = () => {
                 { to: "/about", label: "Our Story" },
                 { to: "/custom-orders", label: "Custom Orders" },
                 { to: "/care-instructions", label: "Care Guide" },
-                { to: "/shipping", label: "Shipping & Returns" },
+                { to: "/shipping-returns", label: "Shipping & Returns" },
                 { to: "/reviews", label: "Customer Reviews" }
               ].map((item) => (
                 <li key={item.to}>
@@ -139,20 +139,6 @@ const Footer = () => {
                 >
                   Contact Us
                 </Link>
-              </div>
-              
-              <div className="flex items-start space-x-3 group">
-                <div className="p-2 rounded-lg bg-sage/10 group-hover:bg-sage/20 transition-colors duration-300 mt-0.5">
-                  <MapPin className="h-4 w-4 text-sage" />
-                </div>
-                <span className="text-sm text-charcoal/70 group-hover:text-charcoal transition-colors duration-300">
-                  {settings.store_address.split('\n').map((line, index) => (
-                    <span key={index}>
-                      {line}
-                      {index < settings.store_address.split('\n').length - 1 && <br />}
-                    </span>
-                  ))}
-                </span>
               </div>
             </div>
 
@@ -223,7 +209,7 @@ const Footer = () => {
         <div className="pt-8 border-t border-stone-200">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-charcoal/70">
-              © 2024 {settings.store_name}. All rights reserved.
+              © 2025 {settings.store_name}. All rights reserved.
             </div>
             <div className="flex space-x-6 text-sm">
               <Link 
