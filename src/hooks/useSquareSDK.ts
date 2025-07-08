@@ -75,7 +75,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         }
       }
 
-      // Initialize card payment method with corrected styling
+      // Initialize card payment method with Square-compatible styling only
       console.log('Creating card instance...');
       const cardInstance = await paymentsInstance.card({
         style: {
@@ -83,8 +83,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
             fontSize: '16px',
             fontFamily: 'Arial, sans-serif',
             color: '#374151',
-            backgroundColor: '#ffffff',
-            lineHeight: '1.5'
+            backgroundColor: '#ffffff'
           },
           '.input-container.is-focus': {
             borderColor: '#86EFAC'
@@ -92,9 +91,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
           '.input-container.is-error': {
             borderColor: '#EF4444'
           }
-        },
-        // Add buyer verification for enhanced security
-        includeInputLabels: true
+        }
       });
       
       console.log('Card instance created successfully, attaching to DOM...');
