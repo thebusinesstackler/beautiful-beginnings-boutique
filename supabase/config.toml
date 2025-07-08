@@ -1,1 +1,4 @@
 project_id = "ibdjzzgvxlscmwlbuewd"
+
+[functions.square-checkout]
+verify_jwt = false

@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface CartItem {
   id: number;
@@ -8,6 +8,7 @@ export interface CartItem {
   image: string;
   quantity: number;
   uploadedPhoto?: File;
+  uploadedPhotoName?: string; // Store file name for persistence
 }
 
 interface CartContextType {
@@ -23,8 +24,53 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// Helper functions for localStorage
+const CART_STORAGE_KEY = 'shopping_cart';
+const CART_FILES_STORAGE_KEY = 'shopping_cart_files';
+
+const saveCartToStorage = (items: CartItem[]) => {
+  try {
+    // Save items without File objects
+    const itemsToSave = items.map(item => ({
+      ...item,
+      uploadedPhoto: undefined, // Remove File object
+      uploadedPhotoName: item.uploadedPhoto?.name // Keep file name
+    }));
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(itemsToSave));
+  } catch (error) {
+    console.error('Failed to save cart to localStorage:', error);
+  }
+};
+
+const loadCartFromStorage = (): CartItem[] => {
+  try {
+    const saved = localStorage.getItem(CART_STORAGE_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch (error) {
+    console.error('Failed to load cart from localStorage:', error);
+  }
+  return [];
+};
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const savedCart = loadCartFromStorage();
+    setItems(savedCart);
+    setIsLoaded(true);
+  }, []);
+
+  // Save cart to localStorage whenever items change
+  useEffect(() => {
+    if (isLoaded) {
+      saveCartToStorage(items);
+    }
+  }, [items, isLoaded]);
 
   const addToCart = (product: Omit<CartItem, 'quantity' | 'uploadedPhoto'>) => {
     setItems(prevItems => {

@@ -17,10 +17,23 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCheckout = async () => {
+    console.log('Square checkout initiated with settings:', {
+      hasAppId: !!settings.square_app_id,
+      hasLocationId: !!settings.square_location_id,
+      hasAccessToken: !!settings.square_access_token,
+      environment: settings.square_environment || 'sandbox',
+      locationId: settings.square_location_id
+    });
+
     if (!settings.square_app_id || !settings.square_location_id || !settings.square_access_token) {
+      const missingFields = [];
+      if (!settings.square_app_id) missingFields.push('App ID');
+      if (!settings.square_location_id) missingFields.push('Location ID');
+      if (!settings.square_access_token) missingFields.push('Access Token');
+      
       toast({
         title: "Configuration Error",
-        description: "Square checkout is not properly configured. Please check admin settings.",
+        description: `Missing Square configuration: ${missingFields.join(', ')}. Please check admin settings.`,
         variant: "destructive",
       });
       return;
@@ -59,24 +72,48 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
         squareCredentials: {
           appId: settings.square_app_id,
           accessToken: settings.square_access_token,
-          environment: settings.square_environment || 'sandbox'
+          environment: settings.square_environment || 'sandbox',
+          locationId: settings.square_location_id
         }
       };
 
-      console.log('Creating Square checkout with credentials from admin settings');
+      console.log('Square checkout request:', JSON.stringify(checkoutRequest, null, 2));
 
       // Call the Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('square-checkout', {
         body: checkoutRequest
       });
 
+      console.log('Supabase Edge Function response:', { data, error });
+
       if (error) {
         console.error('Supabase function error:', error);
+        toast({
+          title: "Checkout Error",
+          description: `Edge function error: ${error.message || 'Unknown error'}`,
+          variant: "destructive",
+        });
         throw new Error(error.message || 'Failed to create checkout');
       }
 
-      if (!data?.checkoutUrl) {
-        throw new Error('No checkout URL received');
+      if (!data) {
+        console.error('No data received from edge function');
+        toast({
+          title: "Checkout Error",
+          description: "No response received from payment processor",
+          variant: "destructive",
+        });
+        throw new Error('No data received from edge function');
+      }
+
+      if (!data.checkoutUrl) {
+        console.error('No checkout URL in response:', data);
+        toast({
+          title: "Checkout Error",
+          description: data.error || "No checkout URL received from payment processor",
+          variant: "destructive",
+        });
+        throw new Error(data.error || 'No checkout URL received');
       }
 
       console.log('Square checkout created successfully:', data);
@@ -84,11 +121,26 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
       // Redirect to Square checkout
       window.location.href = data.checkoutUrl;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Square checkout error:', error);
+      
+      // More specific error handling
+      let errorMessage = "There was an error processing your checkout. Please try again.";
+      if (error.message) {
+        if (error.message.includes('location')) {
+          errorMessage = "Invalid Square location ID. Please check your Square configuration.";
+        } else if (error.message.includes('access')) {
+          errorMessage = "Invalid Square access token. Please check your Square credentials.";
+        } else if (error.message.includes('app')) {
+          errorMessage = "Invalid Square app ID. Please check your Square configuration.";
+        } else {
+          errorMessage = `Checkout failed: ${error.message}`;
+        }
+      }
+      
       toast({
         title: "Checkout Error",
-        description: "There was an error processing your checkout. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
       onError?.(error);
