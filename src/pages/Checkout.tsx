@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,6 @@ import SquareCheckout from '@/components/SquareCheckout';
 
 const Checkout = () => {
   const { items, removeFromCart, getCartTotal, updatePhoto, addToCart } = useCart();
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const handlePhotoUpload = (itemId: number, file: File) => {
     updatePhoto(itemId, file);
@@ -28,18 +28,6 @@ const Checkout = () => {
       // For decreasing quantity, we'd need to add this functionality to CartContext
       // For now, we'll just show the current quantity
     }
-  };
-
-  const handleCheckout = async () => {
-    setIsProcessing(true);
-    // Simulate processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      toast({
-        title: "Order Placed!",
-        description: "Thank you for your order. You'll receive a confirmation email shortly.",
-      });
-    }, 2000);
   };
 
   const handleSquareSuccess = () => {
@@ -207,29 +195,10 @@ const Checkout = () => {
                 </div>
 
                 {/* Square Checkout Button */}
-                <div className="space-y-3">
-                  <SquareCheckout
-                    onSuccess={handleSquareSuccess}
-                    onError={handleSquareError}
-                  />
-                  
-                  {/* Fallback checkout button */}
-                  <Button
-                    onClick={handleCheckout}
-                    disabled={isProcessing}
-                    variant="outline"
-                    className="w-full text-lg font-semibold py-3"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-400 border-t-transparent mr-2"></div>
-                        Processing...
-                      </>
-                    ) : (
-                      'Alternative Checkout'
-                    )}
-                  </Button>
-                </div>
+                <SquareCheckout
+                  onSuccess={handleSquareSuccess}
+                  onError={handleSquareError}
+                />
 
                 <div className="mt-4 text-center text-xs text-gray-500">
                   <p>Secure checkout powered by Square</p>

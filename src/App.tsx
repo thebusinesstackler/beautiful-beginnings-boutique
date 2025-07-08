@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
 import Auth from './pages/Auth';
@@ -5,6 +6,7 @@ import Admin from './pages/Admin';
 import Shop from './pages/Shop';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import CheckoutSuccess from './pages/CheckoutSuccess';
 import Ornaments from './pages/Ornaments';
 import OrnamentDetail from './pages/OrnamentDetail';
 import Necklaces from './pages/Necklaces';
@@ -43,6 +45,7 @@ function App() {
             <Route path="/shop" element={<Shop />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/checkout/success" element={<CheckoutSuccess />} />
             <Route path="/products/ornaments" element={<Ornaments />} />
             <Route path="/products/ornaments/:id" element={<OrnamentDetail />} />
             <Route path="/products/necklaces" element={<Necklaces />} />

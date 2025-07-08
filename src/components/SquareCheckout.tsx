@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { useSettings } from '@/hooks/useSettings';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SquareCheckoutProps {
   onSuccess?: () => void;
@@ -11,28 +12,12 @@ interface SquareCheckoutProps {
 }
 
 const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
-  const { items, getCartTotal, clearCart } = useCart();
+  const { items, getCartTotal } = useCart();
   const { settings } = useSettings();
   const [isLoading, setIsLoading] = useState(false);
-  const [squareReady, setSquareReady] = useState(false);
 
-  useEffect(() => {
-    // Load Square Web SDK
-    const script = document.createElement('script');
-    script.src = 'https://sandbox-web.squarecdn.com/v1/square.js';
-    script.async = true;
-    script.onload = () => {
-      setSquareReady(true);
-    };
-    document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
-
-  const handleSquareCheckout = async () => {
-    if (!squareReady || !settings.square_app_id || !settings.square_location_id) {
+  const handleCheckout = async () => {
+    if (!settings.square_app_id || !settings.square_location_id) {
       toast({
         title: "Configuration Error",
         description: "Square checkout is not properly configured. Please check admin settings.",
@@ -41,20 +26,20 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
       return;
     }
 
+    if (items.length === 0) {
+      toast({
+        title: "Cart Empty",
+        description: "Please add items to your cart before checkout.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // Initialize Square Web SDK
-      const square = (window as any).Square;
-      if (!square) {
-        throw new Error('Square SDK not loaded');
-      }
-
-      const payments = square.payments(settings.square_app_id, settings.square_location_id);
-      
       // Create checkout request
       const checkoutRequest = {
-        requestId: `checkout-${Date.now()}`,
         order: {
           locationId: settings.square_location_id,
           orderSource: 'online',
@@ -73,23 +58,26 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
         note: 'Online order with photo customization'
       };
 
-      // Create checkout link
-      const response = await fetch('/api/square/create-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(checkoutRequest),
+      console.log('Creating Square checkout with request:', checkoutRequest);
+
+      // Call the Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('square-checkout', {
+        body: checkoutRequest
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to create checkout');
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(error.message || 'Failed to create checkout');
       }
 
-      const { checkoutUrl } = await response.json();
+      if (!data?.checkoutUrl) {
+        throw new Error('No checkout URL received');
+      }
+
+      console.log('Square checkout created successfully:', data);
       
       // Redirect to Square checkout
-      window.location.href = checkoutUrl;
+      window.location.href = data.checkoutUrl;
       
     } catch (error) {
       console.error('Square checkout error:', error);
@@ -108,10 +96,21 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
     return null;
   }
 
+  // Show configuration message if Square is not set up
+  if (!settings.square_app_id || !settings.square_location_id) {
+    return (
+      <div className="w-full p-4 bg-amber-50 border border-amber-200 rounded-lg">
+        <p className="text-sm text-amber-800 text-center">
+          Square checkout is not configured. Please configure Square settings in the admin panel.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <Button
-      onClick={handleSquareCheckout}
-      disabled={isLoading || !squareReady}
+      onClick={handleCheckout}
+      disabled={isLoading}
       className="w-full bg-sage hover:bg-forest text-white text-lg font-semibold py-3 rounded-lg transition-colors shadow-md hover:shadow-lg"
     >
       {isLoading ? (
@@ -120,7 +119,7 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
           Processing...
         </>
       ) : (
-        'Pay with Square'
+        'Checkout'
       )}
     </Button>
   );
