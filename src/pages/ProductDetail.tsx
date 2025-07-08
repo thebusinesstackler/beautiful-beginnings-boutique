@@ -34,6 +34,8 @@ const ProductDetail = () => {
   const [showShipping, setShowShipping] = useState(false);
   const [showFAQ, setShowFAQ] = useState<number | null>(null);
   const [customizations, setCustomizations] = useState<any>({});
+  const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -85,10 +87,35 @@ const ProductDetail = () => {
 
   const handlePhotoUpload = (file: File) => {
     console.log('Photo uploaded for product:', file.name);
+    setUploadedPhoto(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPhotoPreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
     toast({
       title: "Photo uploaded!",
       description: "Your photo has been uploaded for personalization.",
     });
+  };
+
+  const handleImageClick = () => {
+    if (hasPersonalization) {
+      // Trigger the hidden file input
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/jpeg,image/png,image/jpg';
+      fileInput.onchange = (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (file) {
+          handlePhotoUpload(file);
+        }
+      };
+      fileInput.click();
+    }
   };
 
   const handleCustomizationChange = (newCustomizations: any) => {
@@ -160,11 +187,33 @@ const ProductDetail = () => {
           {/* Product Image */}
           <div className="space-y-4">
             <div className="relative overflow-hidden rounded-2xl bg-white shadow-lg">
-              <img
-                src={product.image_url}
-                alt={product.name}
-                className="w-full h-96 object-cover"
-              />
+              <div 
+                className={`relative ${hasPersonalization ? 'cursor-pointer group' : ''}`}
+                onClick={handleImageClick}
+              >
+                <img
+                  src={photoPreview || product.image_url}
+                  alt={product.name}
+                  className="w-full h-96 object-cover transition-transform duration-200 group-hover:scale-105"
+                />
+                
+                {/* Upload overlay for personalization */}
+                {hasPersonalization && !photoPreview && (
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-full p-4">
+                      <Camera className="h-8 w-8 text-gray-700" />
+                    </div>
+                  </div>
+                )}
+
+                {/* Uploaded photo indicator */}
+                {photoPreview && (
+                  <div className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    ✓ Photo Uploaded
+                  </div>
+                )}
+              </div>
+
               <button
                 onClick={() => setIsLiked(!isLiked)}
                 className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors duration-200 shadow-md"
@@ -177,25 +226,38 @@ const ProductDetail = () => {
                 />
               </button>
               
-              {hasPersonalization && (
+              {hasPersonalization && !photoPreview && (
                 <>
                   {/* Camera icon overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="bg-white/20 backdrop-blur-sm rounded-full p-6">
                       <Camera className="h-12 w-12 text-white" />
                     </div>
                   </div>
                   
                   {/* Sparkle decorations */}
-                  <div className="absolute top-8 left-8">
+                  <div className="absolute top-8 left-8 pointer-events-none">
                     <Sparkles className="h-6 w-6 text-purple-300 animate-pulse" />
                   </div>
-                  <div className="absolute bottom-8 right-8">
+                  <div className="absolute bottom-8 right-8 pointer-events-none">
                     <Sparkles className="h-4 w-4 text-pink-200 animate-pulse" style={{ animationDelay: '1s' }} />
                   </div>
                 </>
               )}
             </div>
+
+            {/* Click to upload hint */}
+            {hasPersonalization && !photoPreview && (
+              <div className="text-center bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg p-4 border border-primary/20">
+                <Camera className="h-6 w-6 mx-auto mb-2" style={{ color: '#E28F84' }} />
+                <p className="text-sm font-medium" style={{ color: '#2d3436' }}>
+                  Click the image above to upload your photo
+                </p>
+                <p className="text-xs" style={{ color: '#a48f4b' }}>
+                  or scroll down to use the upload tool
+                </p>
+              </div>
+            )}
             
             {/* Wood Photo Upload Guide for Wood Sublimation products */}
             {isWoodSublimation && hasPersonalization && (
@@ -203,17 +265,17 @@ const ProductDetail = () => {
             )}
 
             {/* Photo Upload Preview for personalizable products */}
-            {hasPersonalization && (
+            {hasPersonalization && !photoPreview && (
               <div className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl p-6 border-2 border-dashed border-primary/20">
                 <div className="text-center">
                   <Upload className="h-8 w-8 text-primary mx-auto mb-3" style={{ color: '#E28F84' }} />
                   <h3 className="font-semibold mb-2" style={{ color: '#2d3436' }}>Upload Your Photo</h3>
                   <p className="text-sm mb-4" style={{ color: '#a48f4b' }}>
-                    Add your favorite photo after purchase to personalize your {product.category.toLowerCase()}
+                    Add your favorite photo to personalize your {product.category.toLowerCase()}
                   </p>
-                  <Button variant="outline" size="sm" style={{ color: '#E28F84', borderColor: '#E28F84' }}>
+                  <Button variant="outline" size="sm" style={{ color: '#E28F84', borderColor: '#E28F84' }} onClick={handleImageClick}>
                     <Camera className="h-4 w-4 mr-2" />
-                    Choose Photo Later
+                    Choose Photo
                   </Button>
                 </div>
               </div>
