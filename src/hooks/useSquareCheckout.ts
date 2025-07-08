@@ -8,13 +8,15 @@ export const useSquareCheckout = () => {
   const { settings } = useSettings();
 
   const createCheckout = useCallback(async (orderData: any) => {
-    if (!settings.square_app_id || !settings.square_location_id) {
+    if (!settings.square_app_id || !settings.square_location_id || !settings.square_access_token) {
       throw new Error('Square configuration missing');
     }
 
     setIsLoading(true);
     
     try {
+      // Note: This hook is kept for compatibility but the main checkout logic
+      // is now handled directly in the SquareCheckout component
       const response = await fetch('/api/square/create-checkout', {
         method: 'POST',
         headers: {
@@ -23,6 +25,11 @@ export const useSquareCheckout = () => {
         body: JSON.stringify({
           ...orderData,
           locationId: settings.square_location_id,
+          squareCredentials: {
+            appId: settings.square_app_id,
+            accessToken: settings.square_access_token,
+            environment: settings.square_environment || 'sandbox'
+          }
         }),
       });
 
@@ -41,7 +48,7 @@ export const useSquareCheckout = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [settings.square_app_id, settings.square_location_id]);
+  }, [settings.square_app_id, settings.square_location_id, settings.square_access_token, settings.square_environment]);
 
   return {
     createCheckout,

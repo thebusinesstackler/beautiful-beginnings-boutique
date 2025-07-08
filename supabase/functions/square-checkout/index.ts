@@ -19,16 +19,31 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { order, locationId, redirectUrl, note } = await req.json()
+    const { order, locationId, redirectUrl, note, squareCredentials } = await req.json()
 
-    // Get Square API credentials from Supabase secrets
-    const squareAppId = Deno.env.get('SQUARE_APP_ID')
-    const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN')
-    const squareEnvironment = Deno.env.get('SQUARE_ENVIRONMENT') || 'sandbox'
+    console.log('Received request with Square credentials:', {
+      hasCredentials: !!squareCredentials,
+      environment: squareCredentials?.environment
+    })
+
+    // Use Square credentials from the request (from database settings)
+    let squareAppId = squareCredentials?.appId
+    let squareAccessToken = squareCredentials?.accessToken
+    let squareEnvironment = squareCredentials?.environment || 'sandbox'
+
+    // Fall back to environment variables if not provided in request
+    if (!squareAppId || !squareAccessToken) {
+      console.log('Falling back to environment variables for Square credentials')
+      squareAppId = squareAppId || Deno.env.get('SQUARE_APP_ID')
+      squareAccessToken = squareAccessToken || Deno.env.get('SQUARE_ACCESS_TOKEN')
+      squareEnvironment = squareEnvironment || Deno.env.get('SQUARE_ENVIRONMENT') || 'sandbox'
+    }
 
     if (!squareAppId || !squareAccessToken) {
       throw new Error('Square API credentials not configured')
     }
+
+    console.log('Using Square environment:', squareEnvironment)
 
     // Calculate total amount
     const totalAmount = order.lineItems.reduce((sum: number, item: any) => {

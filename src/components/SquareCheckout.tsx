@@ -17,7 +17,7 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCheckout = async () => {
-    if (!settings.square_app_id || !settings.square_location_id) {
+    if (!settings.square_app_id || !settings.square_location_id || !settings.square_access_token) {
       toast({
         title: "Configuration Error",
         description: "Square checkout is not properly configured. Please check admin settings.",
@@ -38,7 +38,7 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
     setIsLoading(true);
 
     try {
-      // Create checkout request
+      // Create checkout request with Square credentials from settings
       const checkoutRequest = {
         order: {
           locationId: settings.square_location_id,
@@ -55,10 +55,15 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
           }))
         },
         redirectUrl: `${window.location.origin}/checkout/success`,
-        note: 'Online order with photo customization'
+        note: 'Online order with photo customization',
+        squareCredentials: {
+          appId: settings.square_app_id,
+          accessToken: settings.square_access_token,
+          environment: settings.square_environment || 'sandbox'
+        }
       };
 
-      console.log('Creating Square checkout with request:', checkoutRequest);
+      console.log('Creating Square checkout with credentials from admin settings');
 
       // Call the Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('square-checkout', {
@@ -97,7 +102,7 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
   }
 
   // Show configuration message if Square is not set up
-  if (!settings.square_app_id || !settings.square_location_id) {
+  if (!settings.square_app_id || !settings.square_location_id || !settings.square_access_token) {
     return (
       <div className="w-full p-4 bg-amber-50 border border-amber-200 rounded-lg">
         <p className="text-sm text-amber-800 text-center">
