@@ -11,29 +11,98 @@ interface SquareCheckoutProps {
   onError?: (error: any) => void;
 }
 
+// Helper function to validate Square Location ID format
+const isValidLocationId = (locationId: string): boolean => {
+  // Square Location IDs are typically 11-13 characters and alphanumeric
+  return /^[A-Z0-9]{11,13}$/.test(locationId);
+};
+
+// Helper function to validate Square App ID format  
+const isValidAppId = (appId: string): boolean => {
+  // Square App IDs start with "sq0idp-" for production or "sandbox-sq0idb-" for sandbox
+  return /^(sq0idp-|sandbox-sq0idb-)[A-Za-z0-9_-]+$/.test(appId);
+};
+
+// Helper function to validate Square Access Token format
+const isValidAccessToken = (accessToken: string): boolean => {
+  // Square Access Tokens are long alphanumeric strings, often start with "EAAA"
+  return accessToken.length > 20 && /^[A-Za-z0-9_-]+$/.test(accessToken);
+};
+
 const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
   const { items, getCartTotal } = useCart();
   const { settings } = useSettings();
   const [isLoading, setIsLoading] = useState(false);
 
+  // Validate Square configuration on component mount
+  useEffect(() => {
+    if (settings.square_app_id && settings.square_location_id && settings.square_access_token) {
+      const validationErrors = [];
+      
+      if (!isValidAppId(settings.square_app_id)) {
+        validationErrors.push(`Invalid App ID format: ${settings.square_app_id}`);
+      }
+      
+      if (!isValidLocationId(settings.square_location_id)) {
+        validationErrors.push(`Invalid Location ID format: ${settings.square_location_id}. Expected format: 11-13 alphanumeric characters (e.g., L7P8XBGX7GH2J)`);
+      }
+      
+      if (!isValidAccessToken(settings.square_access_token)) {
+        validationErrors.push(`Invalid Access Token format`);
+      }
+      
+      if (validationErrors.length > 0) {
+        console.warn('Square configuration validation failed:', validationErrors);
+        toast({
+          title: "Square Configuration Warning",
+          description: `Potential issues detected: ${validationErrors.join(', ')}`,
+          variant: "destructive",
+        });
+      } else {
+        console.log('Square configuration validation passed');
+      }
+    }
+  }, [settings.square_app_id, settings.square_location_id, settings.square_access_token]);
+
   const handleCheckout = async () => {
-    console.log('Square checkout initiated with settings:', {
-      hasAppId: !!settings.square_app_id,
-      hasLocationId: !!settings.square_location_id,
-      hasAccessToken: !!settings.square_access_token,
+    console.log('=== SQUARE CHECKOUT DEBUG INFO ===');
+    console.log('Cart items:', items.length);
+    console.log('Cart total:', getCartTotal());
+    console.log('Square settings validation:', {
+      appIdValid: isValidAppId(settings.square_app_id || ''),
+      locationIdValid: isValidLocationId(settings.square_location_id || ''),
+      accessTokenValid: isValidAccessToken(settings.square_access_token || ''),
       environment: settings.square_environment || 'sandbox',
-      locationId: settings.square_location_id
+      actualLocationId: settings.square_location_id,
+      locationIdLength: settings.square_location_id?.length
     });
 
-    if (!settings.square_app_id || !settings.square_location_id || !settings.square_access_token) {
-      const missingFields = [];
-      if (!settings.square_app_id) missingFields.push('App ID');
-      if (!settings.square_location_id) missingFields.push('Location ID');
-      if (!settings.square_access_token) missingFields.push('Access Token');
-      
+    // Enhanced validation with specific error messages
+    const validationErrors = [];
+    
+    if (!settings.square_app_id) {
+      validationErrors.push('App ID is missing');
+    } else if (!isValidAppId(settings.square_app_id)) {
+      validationErrors.push(`App ID format is invalid. Expected format: sandbox-sq0idb-[chars] or sq0idp-[chars]`);
+    }
+    
+    if (!settings.square_location_id) {
+      validationErrors.push('Location ID is missing');
+    } else if (!isValidLocationId(settings.square_location_id)) {
+      validationErrors.push(`Location ID format is invalid. Got "${settings.square_location_id}" but expected 11-13 alphanumeric characters like "L7P8XBGX7GH2J"`);
+    }
+    
+    if (!settings.square_access_token) {
+      validationErrors.push('Access Token is missing');
+    } else if (!isValidAccessToken(settings.square_access_token)) {
+      validationErrors.push('Access Token format appears invalid');
+    }
+
+    if (validationErrors.length > 0) {
+      console.error('Square validation failed:', validationErrors);
       toast({
-        title: "Configuration Error",
-        description: `Missing Square configuration: ${missingFields.join(', ')}. Please check admin settings.`,
+        title: "Square Configuration Error",
+        description: validationErrors.join('. '),
         variant: "destructive",
       });
       return;
@@ -127,16 +196,29 @@ const SquareCheckout = ({ onSuccess, onError }: SquareCheckoutProps) => {
       // More specific error handling
       let errorMessage = "There was an error processing your checkout. Please try again.";
       if (error.message) {
-        if (error.message.includes('location')) {
-          errorMessage = "Invalid Square location ID. Please check your Square configuration.";
-        } else if (error.message.includes('access')) {
-          errorMessage = "Invalid Square access token. Please check your Square credentials.";
-        } else if (error.message.includes('app')) {
-          errorMessage = "Invalid Square app ID. Please check your Square configuration.";
+        console.error('Square API Error Details:', error.message);
+        if (error.message.includes('location') || error.message.includes('Invalid location id')) {
+          errorMessage = `Invalid Square Location ID "${settings.square_location_id}". Please get the correct Location ID from your Square Dashboard → Account & Settings → Business → Locations. It should be 11-13 characters like "L7P8XBGX7GH2J", not "${settings.square_location_id}".`;
+        } else if (error.message.includes('access') || error.message.includes('Unauthorized')) {
+          errorMessage = "Invalid Square Access Token. Please check your Square credentials in the admin panel.";
+        } else if (error.message.includes('app') || error.message.includes('application')) {
+          errorMessage = "Invalid Square App ID. Please check your Square configuration in the admin panel.";
+        } else if (error.message.includes('environment')) {
+          errorMessage = "Square environment mismatch. Ensure your credentials match the selected environment (sandbox/production).";
         } else {
-          errorMessage = `Checkout failed: ${error.message}`;
+          errorMessage = `Square API Error: ${error.message}`;
         }
       }
+      
+      console.error('=== SQUARE CHECKOUT ERROR SUMMARY ===');
+      console.error('Error:', error);
+      console.error('Settings used:', {
+        appId: settings.square_app_id?.substring(0, 20) + '...',
+        locationId: settings.square_location_id,
+        environment: settings.square_environment,
+        hasAccessToken: !!settings.square_access_token
+      });
+      console.error('=== END ERROR SUMMARY ===');
       
       toast({
         title: "Checkout Error",

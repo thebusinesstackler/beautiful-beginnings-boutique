@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import SquareCheckout from '@/components/SquareCheckout';
+import CartTestingPanel from '@/components/CartTestingPanel';
 import { useShippingSettings } from '@/hooks/useShippingSettings';
 
 const Checkout = () => {
@@ -397,6 +398,9 @@ const Checkout = () => {
           </div>
         )}
       </div>
+
+      {/* Testing Panel - Only show in development */}
+      {process.env.NODE_ENV === 'development' && <CartTestingPanel />}
 
       <Footer />
     </div>
