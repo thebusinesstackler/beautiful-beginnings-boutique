@@ -28,6 +28,11 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
     setPaymentStatus('processing');
 
     try {
+      // Validate Square credentials before processing
+      if (!paymentRequest.squareCredentials.appId || !paymentRequest.squareCredentials.locationId) {
+        throw new Error('Square credentials are not properly configured. Please contact support.');
+      }
+
       // Tokenize the card with buyer verification
       console.log('Starting card tokenization...');
       const tokenResult = await card.tokenize();
@@ -62,16 +67,34 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
 
         console.log('All collected uploaded images:', uploadedImages);
 
-        // Send payment token to backend with image URLs and cart data
+        // Clean the cart items to avoid circular references
+        const cleanCartItems = paymentRequest.items.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          uploadedPhotoUrl: item.uploadedPhotoUrl || null,
+          willUploadLater: item.willUploadLater || false
+        }));
+
+        // Send payment token to backend with cleaned data
         const requestPayload = {
           ...paymentRequest,
           token: paymentToken,
           uploadedImages: uploadedImages,
-          // Include the full cart items with their uploaded photo data
-          cartItems: paymentRequest.items
+          // Include clean cart items without file objects or circular references
+          cartItems: cleanCartItems,
+          items: cleanCartItems // Also update the main items array
         };
 
-        console.log('Processing payment with full payload:', requestPayload);
+        console.log('Processing payment with clean payload:', {
+          ...requestPayload,
+          squareCredentials: {
+            ...requestPayload.squareCredentials,
+            accessToken: requestPayload.squareCredentials.accessToken ? '[PRESENT]' : '[MISSING]'
+          }
+        });
 
         const { data, error } = await supabase.functions.invoke('square-checkout', {
           body: requestPayload
@@ -79,10 +102,18 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
 
         if (error) {
           console.error('Payment processing error:', error);
-          throw new Error(error.message || 'Payment processing failed');
+          
+          // Provide more specific error messages based on the error
+          if (error.message.includes('unauthorized') || error.message.includes('credentials')) {
+            throw new Error('Square payment configuration error. Please contact support.');
+          } else if (error.message.includes('non-2xx')) {
+            throw new Error('Payment processing service is currently unavailable. Please try again later.');
+          } else {
+            throw new Error(error.message || 'Payment processing failed');
+          }
         }
 
-        if (data.success) {
+        if (data?.success) {
           setPaymentStatus('success');
           console.log('Payment successful:', data);
           
@@ -97,7 +128,7 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
           onSuccess?.();
         } else {
           setPaymentStatus('error');
-          throw new Error(data.error || 'Payment failed');
+          throw new Error(data?.error || 'Payment failed');
         }
       } else {
         setPaymentStatus('error');
@@ -123,6 +154,8 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
         errorMessage = "CVV verification failed. Please check your card's security code.";
       } else if (error.message.includes('INVALID_LOCATION')) {
         errorMessage = "Payment configuration error. Please contact support.";
+      } else if (error.message.includes('credentials') || error.message.includes('configuration')) {
+        errorMessage = "Payment system configuration error. Please contact support.";
       } else if (error.message.includes('card')) {
         errorMessage = "Card information is invalid. Please check your card details.";
       } else if (error.message.includes('amount')) {

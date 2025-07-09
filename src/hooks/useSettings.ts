@@ -44,7 +44,7 @@ export const useSettings = () => {
 
   const fetchSettings = async () => {
     try {
-      console.log('Fetching settings from database...');
+      console.log('Fetching ALL settings from database (including Square credentials)...');
       const { data, error } = await supabase
         .from('settings')
         .select('key, value');
@@ -65,7 +65,7 @@ export const useSettings = () => {
           }
         });
         
-        console.log('Parsed settings object:', settingsObject);
+        console.log('Parsed settings object with Square credentials:', settingsObject);
         setSettings(prev => ({ ...prev, ...settingsObject }));
       }
     } catch (error) {
@@ -85,7 +85,7 @@ export const useSettings = () => {
       
       // Update each setting in the database
       for (const [key, value] of Object.entries(newSettings)) {
-        console.log(`Updating setting: ${key} = ${value}`);
+        console.log(`Updating setting: ${key} = ${value ? '[SET]' : '[EMPTY]'}`);
         const { error } = await supabase
           .from('settings')
           .upsert(

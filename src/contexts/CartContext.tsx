@@ -37,7 +37,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     if (storedCart) {
       try {
         const parsedItems = JSON.parse(storedCart);
-        // Ensure all items have the correct structure
+        // Ensure all items have the correct structure and clean data
         const validatedItems = parsedItems.map((item: any) => ({
           id: item.id,
           name: item.name,
@@ -49,6 +49,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           willUploadLater: item.willUploadLater || false
         }));
         setItems(validatedItems);
+        console.log('Cart restored from localStorage:', validatedItems);
       } catch (error) {
         console.error('Error parsing stored cart:', error);
         localStorage.removeItem('cartItems');
@@ -57,12 +58,19 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    // Store cart items but exclude file objects
+    // Store cart items but exclude file objects and clean up undefined values
     const itemsToStore = items.map(item => ({
-      ...item,
-      uploadedPhoto: undefined // Don't store file objects
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      image: item.image,
+      uploadedPhotoUrl: item.uploadedPhotoUrl || null,
+      willUploadLater: item.willUploadLater || false
+      // Don't store uploadedPhoto file objects
     }));
     localStorage.setItem('cartItems', JSON.stringify(itemsToStore));
+    console.log('Cart saved to localStorage:', itemsToStore);
   }, [items]);
 
   const addToCart = (product: any, quantity: number = 1) => {
@@ -78,12 +86,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       const existingItemIndex = prevItems.findIndex(item => item.name === newItem.name);
       if (existingItemIndex >= 0) {
         // Update existing item quantity
-        return prevItems.map((item, index) =>
+        const updatedItems = prevItems.map((item, index) =>
           index === existingItemIndex
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
+        console.log('Updated existing cart item:', updatedItems[existingItemIndex]);
+        return updatedItems;
       }
+      console.log('Added new item to cart:', newItem);
       return [...prevItems, newItem];
     });
 
@@ -94,7 +105,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const removeFromCart = (itemId: number) => {
-    setItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    setItems(prevItems => {
+      const filteredItems = prevItems.filter(item => item.id !== itemId);
+      console.log('Removed item from cart, remaining items:', filteredItems);
+      return filteredItems;
+    });
     toast({
       title: "Item removed",
       description: "Item has been removed from your cart.",
@@ -115,15 +130,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const updatePhoto = async (itemId: number, file: File) => {
-    console.log('Updating photo for item:', itemId, 'File:', file.name);
+    console.log('Updating photo for item:', itemId, 'File:', file.name, 'Size:', file.size);
     
     try {
       // Upload the photo and get the URL
       const photoUrl = await uploadPhoto(file);
       
       if (photoUrl) {
-        setItems(prevItems =>
-          prevItems.map(item =>
+        setItems(prevItems => {
+          const updatedItems = prevItems.map(item =>
             item.id === itemId
               ? { 
                   ...item, 
@@ -132,15 +147,20 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                   willUploadLater: false
                 }
               : item
-          )
-        );
-        
-        console.log('Photo updated successfully for item:', itemId, 'URL:', photoUrl);
+          );
+          
+          const updatedItem = updatedItems.find(item => item.id === itemId);
+          console.log('Photo updated successfully for item:', itemId, 'URL:', photoUrl, 'Updated item:', updatedItem);
+          
+          return updatedItems;
+        });
         
         toast({
           title: "Photo uploaded!",
           description: "Your custom photo has been saved successfully.",
         });
+      } else {
+        throw new Error('Failed to get photo URL after upload');
       }
     } catch (error) {
       console.error('Error updating photo:', error);
@@ -153,16 +173,19 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const updateItemProperty = (itemId: number, property: string, value: any) => {
-    setItems(prevItems =>
-      prevItems.map(item =>
+    setItems(prevItems => {
+      const updatedItems = prevItems.map(item =>
         item.id === itemId ? { ...item, [property]: value } : item
-      )
-    );
+      );
+      console.log(`Updated item ${itemId} property ${property}:`, value);
+      return updatedItems;
+    });
   };
 
   const clearCart = () => {
     setItems([]);
     localStorage.removeItem('cartItems');
+    console.log('Cart cleared');
   };
 
   const getCartTotal = () => {

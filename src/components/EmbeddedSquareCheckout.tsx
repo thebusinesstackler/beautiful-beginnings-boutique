@@ -67,6 +67,24 @@ const EmbeddedSquareCheckout = ({
       return;
     }
 
+    // Check Square configuration before processing
+    if (!settings.square_app_id || !settings.square_location_id) {
+      toast({
+        title: "Payment Configuration Error",
+        description: "Square payment system is not properly configured. Please contact support.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Log current Square configuration (without sensitive data)
+    console.log('Square Configuration Check:', {
+      hasAppId: !!settings.square_app_id,
+      hasLocationId: !!settings.square_location_id,
+      hasAccessToken: !!settings.square_access_token,
+      environment: settings.square_environment || 'sandbox'
+    });
+
     const paymentRequest: PaymentRequest = {
       token: '', // Will be set by processPayment
       customerInfo,
@@ -82,7 +100,7 @@ const EmbeddedSquareCheckout = ({
       },
       squareCredentials: {
         appId: settings.square_app_id || '',
-        accessToken: '', // This will be handled by the Edge Function
+        accessToken: settings.square_access_token || '', // Include access token from settings
         environment: settings.square_environment || 'sandbox',
         locationId: settings.square_location_id || ''
       }
@@ -114,6 +132,7 @@ const EmbeddedSquareCheckout = ({
               <p>Missing configuration:</p>
               {!settings.square_app_id && <p>• Square Application ID</p>}
               {!settings.square_location_id && <p>• Square Location ID</p>}
+              {!settings.square_access_token && <p>• Square Access Token</p>}
             </div>
           </div>
         </div>
