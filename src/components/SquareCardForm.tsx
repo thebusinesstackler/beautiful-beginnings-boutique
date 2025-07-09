@@ -11,11 +11,11 @@ const SquareCardForm = ({
   sdkStatus,
   isSecureConnection
 }: SquareCardFormProps) => {
-  return <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden" style={{
+  return <div style={{
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-  }}>
+  }} className="rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-slate-100">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-100">
+      <div className="py-4 border-b border-gray-100 px-[15px] my-[34px]">
         <div className="flex items-center space-x-2">
           <Lock className="h-4 w-4 text-blue-600" />
           <h3 className="text-lg font-semibold text-gray-900">Secure Payment</h3>
@@ -46,7 +46,7 @@ const SquareCardForm = ({
         {sdkStatus === 'ready' && <div className="space-y-6">
             {/* Card Form Container */}
             <div className="space-y-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2 mx-[25px]">
                 Card Information
               </label>
               <div ref={cardRef} id="card-container" data-square-container="true" style={{
@@ -62,7 +62,7 @@ const SquareCardForm = ({
             '--sq-input-padding': '12px',
             '--sq-input-text-color': '#374151',
             '--sq-input-placeholder-color': '#9ca3af'
-          } as React.CSSProperties} className="w-full border border-gray-300 rounded-lg p-4 min-h-[120px] transition-all duration-200 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 px-0 py-[10px]" />
+          } as React.CSSProperties} className="w-full border border-gray-300 rounded-lg p-4 min-h-[120px] transition-all-blue-600 focus-within:ring-2 focus-within:ring-blue-100 px-0 py-[10px]" />
             </div>
           </div>}
         

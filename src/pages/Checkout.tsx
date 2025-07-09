@@ -261,7 +261,7 @@ const Checkout = () => {
 
             {/* Order Summary */}
             <div className="xl:col-span-1">
-              <div className="backdrop-blur-sm shadow-lg border border-sage/10 p-8 sticky top-8 py-[5px] rounded-3xl bg-slate-50 mx-[8px] my-0 px-[21px]">
+              <div className="backdrop-blur-sm shadow-lg border border-sage/10 p-8 sticky top-8 py-[5px] rounded-3xl mx-[8px] my-0 px-[21px] bg-[#fffafa]">
                 <h3 className="text-2xl font-semibold text-charcoal font-playfair mb-8">Order Summary</h3>
                 
                 <div className="space-y-4 mb-8">
