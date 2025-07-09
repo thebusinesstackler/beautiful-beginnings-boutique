@@ -61,3 +61,5 @@ export interface EmbeddedSquareCheckoutProps {
 }
 
 export type PaymentStatus = 'idle' | 'processing' | 'success' | 'error';
+
+export type SDKStatus = 'loading' | 'ready' | 'error';
