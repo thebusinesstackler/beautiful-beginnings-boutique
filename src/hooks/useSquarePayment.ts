@@ -36,21 +36,42 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
         const paymentToken = tokenResult.token;
         
         // Collect uploaded image URLs from cart items
-        const uploadedImages = paymentRequest.items
-          .filter(item => item.uploadedPhotoUrl)
-          .map(item => item.uploadedPhotoUrl)
-          .filter(Boolean);
+        const uploadedImages = [];
+        
+        // Check each item for uploaded photos
+        paymentRequest.items.forEach((item: any) => {
+          console.log('Checking item for uploaded photos:', item);
+          
+          // Check for uploadedPhotoUrl
+          if (item.uploadedPhotoUrl) {
+            uploadedImages.push(item.uploadedPhotoUrl);
+            console.log('Found uploadedPhotoUrl:', item.uploadedPhotoUrl);
+          }
+          
+          // Check for uploadedPhoto file that needs to be converted to URL
+          if (item.uploadedPhoto && item.uploadedPhoto instanceof File) {
+            console.log('Found uploaded photo file, will be processed by backend:', item.uploadedPhoto.name);
+          }
+        });
 
-        console.log('Collected uploaded images:', uploadedImages);
+        // Also check for any global uploaded images in the payment request
+        if (paymentRequest.uploadedImages && Array.isArray(paymentRequest.uploadedImages)) {
+          uploadedImages.push(...paymentRequest.uploadedImages);
+          console.log('Added global uploaded images:', paymentRequest.uploadedImages);
+        }
 
-        // Send payment token to backend with image URLs
+        console.log('All collected uploaded images:', uploadedImages);
+
+        // Send payment token to backend with image URLs and cart data
         const requestPayload = {
           ...paymentRequest,
           token: paymentToken,
-          uploadedImages: uploadedImages
+          uploadedImages: uploadedImages,
+          // Include the full cart items with their uploaded photo data
+          cartItems: paymentRequest.items
         };
 
-        console.log('Processing payment with token and images:', requestPayload);
+        console.log('Processing payment with full payload:', requestPayload);
 
         const { data, error } = await supabase.functions.invoke('square-checkout', {
           body: requestPayload
