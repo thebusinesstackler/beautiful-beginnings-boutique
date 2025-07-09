@@ -9,10 +9,6 @@ interface SiteSettings {
   store_phone: string;
   store_website: string;
   store_address: string;
-  square_app_id?: string;
-  square_location_id?: string;
-  square_access_token?: string;
-  square_environment?: string;
   domestic_shipping?: string;
   international_shipping?: string;
   free_shipping_threshold?: string;
@@ -47,7 +43,8 @@ export const useSettings = () => {
       console.log('Fetching settings from database...');
       const { data, error } = await supabase
         .from('settings')
-        .select('key, value');
+        .select('key, value')
+        .not('key', 'in', '(square_access_token,square_app_id,square_location_id,square_environment)'); // Exclude sensitive Square settings
 
       if (error) {
         console.error('Error fetching settings:', error);
@@ -83,8 +80,14 @@ export const useSettings = () => {
     try {
       console.log('Updating settings:', newSettings);
       
-      // Update each setting in the database
+      // Update each setting in the database (excluding sensitive Square settings)
       for (const [key, value] of Object.entries(newSettings)) {
+        // Skip Square credentials - these should only be in Edge Function secrets
+        if (key.startsWith('square_')) {
+          console.warn(`Skipping Square credential: ${key} - should be in Edge Function secrets`);
+          continue;
+        }
+
         console.log(`Updating setting: ${key} = ${value}`);
         const { error } = await supabase
           .from('settings')
