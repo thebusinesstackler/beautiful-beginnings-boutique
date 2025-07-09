@@ -13,7 +13,7 @@ const SquareCardForm = ({
 }: SquareCardFormProps) => {
   return <div style={{
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-  }} className="rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-slate-100">
+  }} className="rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">
       {/* Header */}
       <div className="py-4 border-b border-gray-100 px-[15px] my-[34px]">
         <div className="flex items-center space-x-2">
@@ -62,7 +62,7 @@ const SquareCardForm = ({
             '--sq-input-padding': '12px',
             '--sq-input-text-color': '#374151',
             '--sq-input-placeholder-color': '#9ca3af'
-          } as React.CSSProperties} className="w-full border border-gray-300 rounded-lg p-4 min-h-[120px] transition-all-blue-600 focus-within:ring-2 focus-within:ring-blue-100 px-0 py-[10px]" />
+          } as React.CSSProperties} className="w-full border border-gray-300 rounded-lg p-4 min-h-[120px] transition-all-blue-600 focus-within:ring-2 focus-within:ring-blue-100 px-0 py-0" />
             </div>
           </div>}
         
