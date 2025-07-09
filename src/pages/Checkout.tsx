@@ -237,7 +237,57 @@ const Checkout = () => {
                   </div>}
               </div>
 
-              {/* Order Summary - Show items with photos if uploaded */}
+              {/* Order Items Review */}
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-6">
+                <h2 className="text-xl font-semibold text-charcoal font-playfair mb-4">
+                  Order Items
+                </h2>
+                <div className="space-y-4">
+                  {items.map((item) => (
+                    <div key={item.id} className="flex items-start gap-4 p-4 border border-stone/20 rounded-lg bg-white/50">
+                      {/* Product Image */}
+                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-stone/10 flex-shrink-0">
+                        <img 
+                          src={item.image} 
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      
+                      {/* Product Details */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-charcoal text-sm truncate">{item.name}</h3>
+                        <p className="text-charcoal/60 text-sm">Quantity: {item.quantity}</p>
+                        <p className="font-semibold text-sage text-sm">${(item.price * item.quantity).toFixed(2)}</p>
+                        
+                        {/* Uploaded Photo Display */}
+                        {item.uploadedPhotoUrl && (
+                          <div className="mt-2">
+                            <p className="text-xs text-charcoal/60 mb-1">Custom Photo:</p>
+                            <div className="w-12 h-12 rounded border border-sage/30 overflow-hidden bg-white">
+                              <img 
+                                src={item.uploadedPhotoUrl} 
+                                alt="Custom uploaded photo"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Will Upload Later indicator */}
+                        {item.willUploadLater && !item.uploadedPhotoUrl && (
+                          <div className="mt-2">
+                            <div className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 border border-amber-200 rounded text-xs text-amber-700">
+                              <span>📷</span>
+                              <span>Photo will be uploaded later</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
               
             </div>
 
