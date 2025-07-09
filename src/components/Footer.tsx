@@ -7,7 +7,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useEffect } from 'react';
 
 const Footer = () => {
-  const { user, profile, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const { settings, fetchSettings } = useSettings();
 
   const handleSignOut = async () => {
@@ -164,7 +164,7 @@ const Footer = () => {
                     Welcome, {user.email}
                   </p>
                   <div className="flex flex-col space-y-2">
-                    {profile?.is_admin && (
+                    {isAdmin && (
                       <Link to="/admin">
                         <Button
                           variant="outline"
