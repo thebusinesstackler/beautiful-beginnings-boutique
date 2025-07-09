@@ -24,7 +24,7 @@ const SquareCardForm = ({
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 bg-white py-0 px-0">
         {sdkStatus === 'loading' && <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent mx-auto mb-4"></div>
@@ -62,7 +62,7 @@ const SquareCardForm = ({
             '--sq-input-padding': '12px',
             '--sq-input-text-color': '#374151',
             '--sq-input-placeholder-color': '#9ca3af'
-          } as React.CSSProperties} className="w-full border border-gray-300 rounded-lg p-4 min-h-[120px] transition-all duration-200 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 px-0 py-0" />
+          } as React.CSSProperties} className="w-full border border-gray-300 rounded-lg p-4 min-h-[120px] transition-all duration-200 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 px-0 py-[10px]" />
             </div>
           </div>}
         
