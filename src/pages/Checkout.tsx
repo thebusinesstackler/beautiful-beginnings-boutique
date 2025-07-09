@@ -96,7 +96,7 @@ const Checkout = () => {
             </Link>
           </div> : <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
             {/* Checkout Form */}
-            <div className="xl:col-span-2 space-y-8">
+            <div className="xl:col-span-2 space-y-8 px-0 my-0 py-0">
               {/* Customer Information */}
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8">
                 <h2 className="text-2xl font-semibold text-charcoal font-playfair mb-6">
@@ -261,7 +261,7 @@ const Checkout = () => {
 
             {/* Order Summary */}
             <div className="xl:col-span-1">
-              <div className="bg-white/90 backdrop-blur-sm shadow-lg border border-sage/10 p-8 sticky top-8 px-0 py-[5px] rounded">
+              <div className="backdrop-blur-sm shadow-lg border border-sage/10 p-8 sticky top-8 py-[5px] rounded-3xl bg-slate-50 mx-[8px] my-0 px-[21px]">
                 <h3 className="text-2xl font-semibold text-charcoal font-playfair mb-8">Order Summary</h3>
                 
                 <div className="space-y-4 mb-8">
