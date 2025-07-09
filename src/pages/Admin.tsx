@@ -39,20 +39,20 @@ const Admin = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-cream to-pearl">
       <Navigation />
       
-      <main className="flex-1 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 py-4 md:py-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
           {/* Header Section */}
-          <div className="mb-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-sage/10 rounded-full mb-4">
-              <span className="text-2xl">🛠️</span>
+          <div className="mb-6 md:mb-8 text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-sage/10 rounded-full mb-3 md:mb-4">
+              <span className="text-lg md:text-2xl">🛠️</span>
             </div>
-            <h1 className="text-3xl font-bold text-charcoal mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-charcoal mb-2">
               Beautiful Beginnings
             </h1>
-            <h2 className="text-xl font-medium text-chocolate mb-3">
+            <h2 className="text-lg md:text-xl font-medium text-chocolate mb-2 md:mb-3">
               Admin Dashboard
             </h2>
-            <p className="text-stone max-w-2xl mx-auto leading-relaxed">
+            <p className="text-stone max-w-2xl mx-auto leading-relaxed text-sm md:text-base px-4">
               Manage your handcrafted keepsake business with our comprehensive dashboard. 
               Monitor orders, update inventory, and grow your beautiful brand.
             </p>
