@@ -201,7 +201,7 @@ serve(async (req) => {
       ? 'https://connect.squareup.com' 
       : 'https://connect.squareupsandbox.com';
 
-    // Process payment with Square - Updated API structure
+    // Process payment with Square - Simplified approach for debugging
     const paymentData = {
       source_id: token,
       idempotency_key: crypto.randomUUID(),
@@ -209,24 +209,18 @@ serve(async (req) => {
         amount: sanitizedAmount,
         currency: 'USD'
       },
-      location_id: settings.square_location_id,
-      buyer_email_address: sanitizedCustomerInfo.email,
-      billing_address: {
-        address_line_1: sanitizedBillingAddress.address,
-        locality: sanitizedBillingAddress.city,
-        administrative_district_level_1: sanitizedBillingAddress.state,
-        postal_code: sanitizedBillingAddress.zipCode,
-        country: 'US'
-      },
-      shipping_address: {
-        address_line_1: sanitizedShippingAddress.address,
-        locality: sanitizedShippingAddress.city,
-        administrative_district_level_1: sanitizedShippingAddress.state,
-        postal_code: sanitizedShippingAddress.zipCode,
-        country: 'US'
-      },
-      note: `Order for ${sanitizedCustomerInfo.firstName} ${sanitizedCustomerInfo.lastName}`
+      location_id: settings.square_location_id
     };
+
+    // Only add optional fields if they have valid data
+    if (sanitizedCustomerInfo.email) {
+      paymentData.buyer_email_address = sanitizedCustomerInfo.email;
+    }
+
+    // Add note if we have customer name
+    if (sanitizedCustomerInfo.firstName && sanitizedCustomerInfo.lastName) {
+      paymentData.note = `Order for ${sanitizedCustomerInfo.firstName} ${sanitizedCustomerInfo.lastName}`;
+    }
 
     console.log('Processing payment with Square...');
     console.log('Square API URL:', squareApiUrl);
