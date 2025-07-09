@@ -7,7 +7,7 @@ import { useCart } from '@/contexts/CartContext';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { getCartCount } = useCart();
+  const { getCartItemCount } = useCart();
   const navigate = useNavigate();
 
   const navItems = [
@@ -83,9 +83,9 @@ const Navigation = () => {
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
               <ShoppingCart className="h-5 w-5" />
-              {getCartCount() > 0 && (
+              {getCartItemCount() > 0 && (
                 <span className="absolute -top-2 -right-2 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium" style={{ backgroundColor: '#E28F84' }}>
-                  {getCartCount()}
+                  {getCartItemCount()}
                 </span>
               )}
             </Button>

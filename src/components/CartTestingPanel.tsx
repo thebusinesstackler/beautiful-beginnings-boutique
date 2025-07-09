@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
@@ -5,7 +6,7 @@ import { toast } from '@/hooks/use-toast';
 import { RefreshCw, TestTube, CheckCircle, XCircle } from 'lucide-react';
 
 const CartTestingPanel = () => {
-  const { items, addToCart, clearCart, getCartTotal, getCartCount } = useCart();
+  const { items, addToCart, clearCart, getCartTotal, getCartItemCount } = useCart();
   const [testResults, setTestResults] = useState<Array<{test: string, passed: boolean, message: string}>>([]);
   const [isTestingCart, setIsTestingCart] = useState(false);
   const [testStartValues, setTestStartValues] = useState<{count: number, total: number} | null>(null);
@@ -13,7 +14,7 @@ const CartTestingPanel = () => {
   // Use useEffect to wait for cart state changes during testing
   useEffect(() => {
     if (isTestingCart && testStartValues) {
-      const currentCount = getCartCount();
+      const currentCount = getCartItemCount();
       const currentTotal = getCartTotal();
       
       // Check if the state has actually changed from our starting values
@@ -70,13 +71,13 @@ const CartTestingPanel = () => {
         });
       }
     }
-  }, [items, isTestingCart, testStartValues, getCartCount, getCartTotal]);
+  }, [items, isTestingCart, testStartValues, getCartItemCount, getCartTotal]);
 
   const runTests = () => {
     const results = [];
     
     // Test 1: Cart persistence
-    const beforeCount = getCartCount();
+    const beforeCount = getCartItemCount();
     const beforeTotal = getCartTotal();
     
     // Store starting values for useEffect to compare against
@@ -189,7 +190,7 @@ const CartTestingPanel = () => {
       )}
       
       <div className="mt-3 pt-2 border-t border-gray-100 text-xs text-gray-500">
-        Cart: {getCartCount()} items | ${getCartTotal().toFixed(2)}
+        Cart: {getCartItemCount()} items | ${getCartTotal().toFixed(2)}
       </div>
     </div>
   );

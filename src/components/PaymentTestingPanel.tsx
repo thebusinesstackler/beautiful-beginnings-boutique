@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -7,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, CheckCircle, XCircle, TestTube, Clock, CreditCard } from 'lucide-react';
 
 const PaymentTestingPanel = () => {
-  const { addToCart, clearCart, getCartTotal, getCartCount } = useCart();
+  const { addToCart, clearCart, getCartTotal, getCartItemCount } = useCart();
   const [testResults, setTestResults] = useState<Array<{
     test: string;
     status: 'passed' | 'failed' | 'pending';
@@ -223,7 +224,7 @@ const PaymentTestingPanel = () => {
             Payment Testing Panel
           </h3>
           <Badge variant="outline" className="text-xs">
-            {getCartCount()} items | ${getCartTotal().toFixed(2)}
+            {getCartItemCount()} items | ${getCartTotal().toFixed(2)}
           </Badge>
         </div>
       </div>
