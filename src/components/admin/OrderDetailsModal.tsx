@@ -22,6 +22,7 @@ interface Order {
   tracking_number: string;
   notes: string;
   fulfilled_at: string;
+  customer_id: string;
 }
 
 interface OrderDetailsModalProps {
@@ -102,6 +103,11 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
             <div className="flex items-center space-x-2 mb-4">
               <User className="h-5 w-5 text-sage" />
               <span className="font-medium text-charcoal">Customer Information</span>
+              {order.customer_id && (
+                <Badge variant="outline" className="ml-2">
+                  Customer ID: {order.customer_id.slice(0, 8)}
+                </Badge>
+              )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>

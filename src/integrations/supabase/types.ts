@@ -420,6 +420,7 @@ export type Database = {
           billing_address: Json | null
           created_at: string | null
           customer_email: string
+          customer_id: string | null
           customer_name: string | null
           customer_phone: string | null
           fulfilled_at: string | null
@@ -440,6 +441,7 @@ export type Database = {
           billing_address?: Json | null
           created_at?: string | null
           customer_email: string
+          customer_id?: string | null
           customer_name?: string | null
           customer_phone?: string | null
           fulfilled_at?: string | null
@@ -460,6 +462,7 @@ export type Database = {
           billing_address?: Json | null
           created_at?: string | null
           customer_email?: string
+          customer_id?: string | null
           customer_name?: string | null
           customer_phone?: string | null
           fulfilled_at?: string | null
@@ -476,7 +479,15 @@ export type Database = {
           updated_at?: string | null
           uploaded_images?: string[] | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_categories: {
         Row: {

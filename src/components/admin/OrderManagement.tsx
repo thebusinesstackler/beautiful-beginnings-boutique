@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Download, Eye, CheckCircle } from 'lucide-react';
+import { Package, Download, Eye, CheckCircle, Users } from 'lucide-react';
 import OrderDetailsModal from './OrderDetailsModal';
 
 interface Order {
@@ -25,6 +26,7 @@ interface Order {
   tracking_number: string;
   notes: string;
   fulfilled_at: string;
+  customer_id: string;
 }
 
 const OrderManagement = () => {
@@ -94,9 +96,10 @@ const OrderManagement = () => {
 
   const exportOrders = () => {
     const csvContent = [
-      ['Order ID', 'Customer Email', 'Customer Name', 'Status', 'Amount', 'Date'],
+      ['Order ID', 'Customer ID', 'Customer Email', 'Customer Name', 'Status', 'Amount', 'Date'],
       ...orders.map(order => [
         order.id,
+        order.customer_id || '',
         order.customer_email,
         order.customer_name || '',
         order.status,
@@ -133,7 +136,8 @@ const OrderManagement = () => {
     pending: orders.filter(o => o.status === 'pending').length,
     paid: orders.filter(o => o.status === 'paid').length,
     fulfilled: orders.filter(o => o.status === 'fulfilled').length,
-    revenue: orders.reduce((sum, order) => sum + (order.total_amount || 0), 0)
+    revenue: orders.reduce((sum, order) => sum + (order.total_amount || 0), 0),
+    uniqueCustomers: new Set(orders.filter(o => o.customer_id).map(o => o.customer_id)).size
   };
 
   if (loading) {
@@ -154,7 +158,7 @@ const OrderManagement = () => {
       </div>
 
       {/* Order Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
         <Card className="bg-cream/50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-charcoal">Total Orders</CardTitle>
@@ -189,6 +193,16 @@ const OrderManagement = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{orderStats.fulfilled}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-purple-50 border-0 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-charcoal">Customers</CardTitle>
+            <Users className="h-4 w-4 text-stone" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-600">{orderStats.uniqueCustomers}</div>
           </CardContent>
         </Card>
 
@@ -239,6 +253,14 @@ const OrderManagement = () => {
                     <p className="text-sm text-stone">{order.customer_email}</p>
                     {order.customer_name && (
                       <p className="text-sm text-stone">{order.customer_name}</p>
+                    )}
+                    {order.customer_id && (
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs">
+                          <Users className="h-3 w-3 mr-1" />
+                          Customer ID: {order.customer_id.slice(0, 8)}
+                        </Badge>
+                      </div>
                     )}
                     <p className="text-sm text-stone">
                       {new Date(order.created_at).toLocaleDateString()}
