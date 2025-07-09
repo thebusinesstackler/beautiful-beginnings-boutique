@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { validateInput } from '@/utils/inputValidation';
+import { InputValidator } from '@/utils/inputValidation';
 import { sanitizeInput } from '@/utils/sanitization';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB - matches bucket limit
@@ -51,8 +51,9 @@ export const useSecurePhotoUpload = () => {
       return false;
     }
 
-    // Security validation for filename
-    if (!validateInput(file.name, 'filename')) {
+    // Security validation for filename using InputValidator
+    const sanitizedFileName = InputValidator.sanitizeFileName(file.name);
+    if (sanitizedFileName !== file.name || sanitizedFileName.length === 0) {
       toast({
         title: "Invalid File Name",
         description: "File name contains invalid characters",
@@ -124,8 +125,9 @@ export const useSecurePhotoUpload = () => {
 
   const deletePhoto = async (url: string): Promise<boolean> => {
     try {
-      // Validate and sanitize URL
-      if (!validateInput(url, 'url')) {
+      // Validate and sanitize URL using InputValidator
+      const sanitizedUrl = InputValidator.sanitizeUrl(url);
+      if (!sanitizedUrl) {
         console.error('Invalid URL format for deletion');
         return false;
       }
