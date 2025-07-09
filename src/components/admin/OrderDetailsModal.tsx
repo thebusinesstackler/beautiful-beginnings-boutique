@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -185,6 +186,72 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
             </div>
           </div>
 
+          {/* Customer Uploaded Images - Main Display Area */}
+          <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
+            <div className="flex items-center space-x-2 mb-4">
+              <Eye className="h-6 w-6 text-blue-600" />
+              <span className="font-bold text-lg text-charcoal">
+                Customer Uploaded Images
+              </span>
+            </div>
+            
+            {allImages && allImages.length > 0 ? (
+              <div className="space-y-4">
+                <p className="text-blue-700 font-medium">
+                  Found {allImages.length} image{allImages.length !== 1 ? 's' : ''} from customer
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {allImages.map((imageData, index) => (
+                    <div key={`${imageData.source}-${imageData.index}`} className="bg-white rounded-lg p-3 shadow-md border">
+                      <div className="aspect-square bg-gray-100 rounded-lg border-2 border-gray-200 overflow-hidden mb-3">
+                        <img
+                          src={imageData.url}
+                          alt={imageData.description}
+                          className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
+                          onClick={() => handleImageClick(imageData.url)}
+                          onError={handleImageError}
+                          onLoad={() => console.log('Image loaded successfully:', imageData.url)}
+                          crossOrigin="anonymous"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-blue-600">{imageData.description}</p>
+                        <p className="text-xs text-gray-500 capitalize">Source: {imageData.source}</p>
+                        <div className="p-2 bg-gray-50 rounded text-xs text-gray-600 break-all font-mono">
+                          {imageData.url}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 p-3 bg-blue-100 rounded-lg">
+                  <p className="text-sm text-blue-700 font-medium flex items-center">
+                    <Eye className="h-4 w-4 mr-2" />
+                    Click on any image to view full size in a new tab
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="bg-gray-100 rounded-lg p-6 border-2 border-dashed border-gray-300">
+                  <Eye className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-600 mb-2">No Images Found</h3>
+                  <p className="text-gray-500 mb-4">
+                    No customer uploaded images were found for this order.
+                  </p>
+                  <div className="text-xs text-gray-400 space-y-1">
+                    <p>Checked sources:</p>
+                    <ul className="list-disc list-inside">
+                      <li>order.uploaded_images: {order.uploaded_images ? `${order.uploaded_images.length} items` : 'null'}</li>
+                      <li>personalization_data.uploadedImages: {order.personalization_data?.uploadedImages ? `${order.personalization_data.uploadedImages.length} items` : 'not found'}</li>
+                      <li>product.uploadedPhotoUrl: checked in product data</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Products Ordered - Enhanced for order fulfillment */}
           <div className="bg-green-50 rounded-lg p-6 border-2 border-green-200">
             <div className="flex items-center space-x-2 mb-4">
@@ -253,58 +320,6 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
               </div>
             )}
           </div>
-
-          {/* Customer Uploaded Images - Enhanced display */}
-          {allImages && allImages.length > 0 ? (
-            <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
-              <div className="flex items-center space-x-2 mb-4">
-                <Eye className="h-6 w-6 text-blue-600" />
-                <span className="font-bold text-lg text-charcoal">
-                  Customer Uploaded Images ({allImages.length})
-                </span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {allImages.map((imageData, index) => (
-                  <div key={`${imageData.source}-${imageData.index}`} className="relative group bg-white rounded-lg p-2 shadow-md">
-                    <div className="w-full h-48 bg-gray-100 rounded-lg border-2 border-gray-200 overflow-hidden">
-                      <img
-                        src={imageData.url}
-                        alt={imageData.description}
-                        className="w-full h-full object-contain cursor-pointer hover:scale-105 transition-transform"
-                        onClick={() => handleImageClick(imageData.url)}
-                        onError={handleImageError}
-                        onLoad={() => console.log('Image loaded successfully:', imageData.url)}
-                        crossOrigin="anonymous"
-                      />
-                    </div>
-                    <div className="absolute inset-2 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-opacity flex items-center justify-center pointer-events-none">
-                      <Eye className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    <div className="mt-2 p-2">
-                      <p className="text-xs text-blue-600 font-medium">{imageData.description}</p>
-                      <p className="text-xs text-gray-500 capitalize">Source: {imageData.source}</p>
-                      <p className="text-xs text-gray-600 break-all font-mono bg-gray-100 p-1 rounded mt-1">
-                        {imageData.url}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm text-blue-700 mt-4 font-medium">
-                📸 Click on any image to view full size in a new tab
-              </p>
-            </div>
-          ) : (
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="flex items-center space-x-2">
-                <Eye className="h-5 w-5 text-gray-400" />
-                <span className="text-gray-600">No images uploaded by customer</span>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Checked: order.uploaded_images, personalization_data.uploadedImages, and product.uploadedPhotoUrl
-              </p>
-            </div>
-          )}
 
           {/* Customer Information */}
           <div className="bg-blush/20 rounded-lg p-4">
