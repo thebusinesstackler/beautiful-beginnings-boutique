@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import type { CustomerInfo, Address } from '@/types/SquareCheckout';
 
@@ -52,6 +53,13 @@ export const useSquareValidation = ({
 
     // Cart validation
     if (items.length === 0) errors.push("Your cart is empty");
+
+    // Photo upload validation - check each item
+    items.forEach((item, index) => {
+      if (!item.uploadedPhoto && !item.willUploadLater) {
+        errors.push(`Please upload a photo for "${item.name}" or select "Upload Later"`);
+      }
+    });
 
     setValidationErrors(errors);
     return errors.length === 0;

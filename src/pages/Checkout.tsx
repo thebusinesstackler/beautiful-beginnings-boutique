@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,7 @@ import SquareCheckout from '@/components/SquareCheckout';
 import { useShippingSettings } from '@/hooks/useShippingSettings';
 
 const Checkout = () => {
-  const { items, removeFromCart, getCartTotal, updatePhoto } = useCart();
+  const { items, removeFromCart, getCartTotal, updatePhoto, updateItemProperty } = useCart();
   const { calculateShipping } = useShippingSettings();
   
   // Customer Information
@@ -51,10 +50,22 @@ const Checkout = () => {
 
   const handlePhotoChange = (itemId: number, file: File) => {
     updatePhoto(itemId, file);
+    // Remove "will upload later" flag when photo is uploaded
+    updateItemProperty(itemId, 'willUploadLater', false);
     toast({
       title: "Photo updated!",
       description: "Your custom photo has been updated.",
     });
+  };
+
+  const handleUploadLaterToggle = (itemId: number, checked: boolean) => {
+    updateItemProperty(itemId, 'willUploadLater', checked);
+    if (checked) {
+      toast({
+        title: "Upload Later Selected",
+        description: "You can upload your photo after placing the order.",
+      });
+    }
   };
 
   const handleSquareSuccess = () => {
@@ -297,29 +308,35 @@ const Checkout = () => {
                 )}
               </div>
 
-              {/* Order Items */}
+              {/* Order Items with Photo Upload */}
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8">
                 <h2 className="text-2xl font-semibold text-charcoal font-playfair mb-6">
-                  Your Items
+                  Your Items & Photo Upload
                 </h2>
                 <div className="space-y-6">
                   {items.map((item) => (
-                    <div key={item.id} className="flex items-start space-x-4 p-4 border border-stone/20 rounded-xl">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-medium text-charcoal">{item.name}</h3>
-                        <p className="text-sage font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
-                        <p className="text-sm text-charcoal/60">Quantity: {item.quantity}</p>
+                    <div key={item.id} className="border border-stone/20 rounded-xl p-6">
+                      <div className="flex items-start space-x-4 mb-4">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-medium text-charcoal">{item.name}</h3>
+                          <p className="text-sage font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                          <p className="text-sm text-charcoal/60">Quantity: {item.quantity}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Photo Upload Section */}
+                      <div className="mt-4 p-4 bg-stone-50 rounded-lg">
+                        <h4 className="font-medium text-charcoal mb-3">Custom Photo Required</h4>
                         
-                        {/* Photo Display */}
                         {item.uploadedPhoto ? (
-                          <div className="mt-3 p-3 bg-sage/10 rounded-lg">
+                          <div className="mb-4 p-3 bg-sage/10 rounded-lg">
                             <p className="text-sm text-sage font-medium mb-2">
-                              ✓ Custom photo: {item.uploadedPhoto.name}
+                              ✓ Photo uploaded: {item.uploadedPhoto.name}
                             </p>
                             <Button
                               variant="outline"
@@ -340,10 +357,7 @@ const Checkout = () => {
                             </Button>
                           </div>
                         ) : (
-                          <div className="mt-3 p-3 bg-amber-50 rounded-lg">
-                            <p className="text-sm text-amber-800 mb-2">
-                              No custom photo uploaded
-                            </p>
+                          <div className="mb-4">
                             <Button
                               variant="outline"
                               size="sm"
@@ -357,11 +371,34 @@ const Checkout = () => {
                                 };
                                 input.click();
                               }}
-                              className="text-xs"
+                              className="text-xs mb-3"
                             >
-                              Upload Photo
+                              Upload Photo Now
                             </Button>
                           </div>
+                        )}
+                        
+                        {/* Upload Later Option */}
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`upload-later-${item.id}`}
+                            checked={item.willUploadLater || false}
+                            onChange={(e) => handleUploadLaterToggle(item.id, e.target.checked)}
+                            className="w-4 h-4 text-sage bg-white border-stone-300 rounded focus:ring-sage focus:ring-2"
+                          />
+                          <label 
+                            htmlFor={`upload-later-${item.id}`}
+                            className="text-sm text-charcoal cursor-pointer"
+                          >
+                            I'll upload my photo later (after placing the order)
+                          </label>
+                        </div>
+                        
+                        {(!item.uploadedPhoto && !item.willUploadLater) && (
+                          <p className="text-sm text-amber-700 mt-2 bg-amber-50 p-2 rounded">
+                            ⚠️ Please upload a photo or select "Upload Later" to continue
+                          </p>
                         )}
                       </div>
                     </div>
