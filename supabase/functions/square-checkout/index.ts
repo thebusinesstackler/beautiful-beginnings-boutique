@@ -231,6 +231,17 @@ serve(async (req) => {
     console.log('Processing payment with Square...');
     console.log('Square API URL:', squareApiUrl);
     console.log('Payment data amount:', sanitizedAmount);
+    console.log('Full payment data being sent to Square:', JSON.stringify(paymentData, null, 2));
+    
+    // Validate required fields before sending
+    if (!token || !settings.square_access_token || !settings.square_location_id) {
+      console.error('Missing required Square data:', {
+        hasToken: !!token,
+        hasAccessToken: !!settings.square_access_token,
+        hasLocationId: !!settings.square_location_id
+      });
+      throw new Error('Missing required Square configuration or payment token');
+    }
 
     const squareResponse = await fetch(`${squareApiUrl}/v2/payments`, {
       method: 'POST',
