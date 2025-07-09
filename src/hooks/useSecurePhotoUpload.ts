@@ -2,8 +2,10 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { validateInput } from '@/utils/inputValidation';
+import { sanitizeInput } from '@/utils/sanitization';
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB - matches bucket limit
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 export const useSecurePhotoUpload = () => {
@@ -11,6 +13,7 @@ export const useSecurePhotoUpload = () => {
   const { toast } = useToast();
 
   const validateFile = (file: File): boolean => {
+    // File size validation (matches bucket limit)
     if (file.size > MAX_FILE_SIZE) {
       toast({
         title: "File Too Large",
@@ -20,10 +23,39 @@ export const useSecurePhotoUpload = () => {
       return false;
     }
 
+    // MIME type validation (matches bucket restrictions)
     if (!ALLOWED_TYPES.includes(file.type)) {
       toast({
         title: "Invalid File Type",
         description: "Please select a JPEG, PNG, or WebP image",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // File extension validation
+    const extension = file.name.toLowerCase().split('.').pop();
+    const expectedExtensions: Record<string, string[]> = {
+      'image/jpeg': ['jpg', 'jpeg'],
+      'image/png': ['png'],
+      'image/webp': ['webp']
+    };
+
+    const validExtensions = expectedExtensions[file.type] || [];
+    if (!extension || !validExtensions.includes(extension)) {
+      toast({
+        title: "File Extension Mismatch",
+        description: "File extension does not match the file type",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Security validation for filename
+    if (!validateInput(file.name, 'filename')) {
+      toast({
+        title: "Invalid File Name",
+        description: "File name contains invalid characters",
         variant: "destructive",
       });
       return false;
@@ -41,7 +73,8 @@ export const useSecurePhotoUpload = () => {
     
     try {
       const fileExt = file.name.split('.').pop();
-      const uniqueFileName = fileName || `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const sanitizedFileName = fileName ? sanitizeInput(fileName) : `${Date.now()}_${Math.random().toString(36).substring(2)}`;
+      const uniqueFileName = `${sanitizedFileName}.${fileExt}`;
       const filePath = `customer-photos/${uniqueFileName}`;
 
       console.log('Uploading file to secure bucket:', filePath);
@@ -91,6 +124,12 @@ export const useSecurePhotoUpload = () => {
 
   const deletePhoto = async (url: string): Promise<boolean> => {
     try {
+      // Validate and sanitize URL
+      if (!validateInput(url, 'url')) {
+        console.error('Invalid URL format for deletion');
+        return false;
+      }
+
       // Extract file path from URL
       const urlParts = url.split('/customer-uploads/');
       if (urlParts.length !== 2) {

@@ -5,7 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Link, Image as ImageIcon } from 'lucide-react';
+import { Upload, Link, Image as ImageIcon, Shield } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface FeaturedProductImageUploaderProps {
   currentImage: string;
@@ -20,8 +22,18 @@ const FeaturedProductImageUploader: React.FC<FeaturedProductImageUploaderProps> 
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { isAdmin } = useAuth();
 
   const handleImageUpload = async (file: File) => {
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only administrators can upload featured product images",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
@@ -30,23 +42,18 @@ const FeaturedProductImageUploader: React.FC<FeaturedProductImageUploaderProps> 
 
       console.log('Uploading featured product image:', fileName);
 
-      // Create bucket if it doesn't exist
-      const { data: buckets } = await supabase.storage.listBuckets();
-      const bucketExists = buckets?.some(bucket => bucket.name === 'featured-images');
-      
-      if (!bucketExists) {
-        console.log('Creating featured-images bucket...');
-        await supabase.storage.createBucket('featured-images', { public: true });
-      }
-
+      // Try to upload to product-images bucket with enhanced security
       const { error: uploadError } = await supabase.storage
-        .from('featured-images')
-        .upload(filePath, file);
+        .from('product-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage
-        .from('featured-images')
+        .from('product-images')
         .getPublicUrl(filePath);
 
       console.log('Featured product image uploaded successfully:', data.publicUrl);
@@ -72,21 +79,21 @@ const FeaturedProductImageUploader: React.FC<FeaturedProductImageUploaderProps> 
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
+    // Enhanced validation matching bucket restrictions
+    if (!file.type.match(/^image\/(jpeg|jpg|png|webp)$/)) {
       toast({
         title: "Error",
-        description: "Please select an image file",
+        description: "Please select a JPEG, PNG, or WebP image file",
         variant: "destructive",
       });
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Check file size (10MB limit matching bucket)
+    if (file.size > 10 * 1024 * 1024) {
       toast({
         title: "Error",
-        description: "Image must be smaller than 5MB",
+        description: "Image must be smaller than 10MB",
         variant: "destructive",
       });
       return;
@@ -101,6 +108,15 @@ const FeaturedProductImageUploader: React.FC<FeaturedProductImageUploaderProps> 
   };
 
   const handleUrlAdd = () => {
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only administrators can add featured product images",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (imageUrl.trim()) {
       console.log('Adding featured product image URL:', imageUrl.trim());
       onImageChange(imageUrl.trim());
@@ -114,25 +130,35 @@ const FeaturedProductImageUploader: React.FC<FeaturedProductImageUploaderProps> 
 
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    const file = event.dataTransfer.files[0];
     
-    if (!file) return;
-    
-    if (!file.type.startsWith('image/')) {
+    if (!isAdmin) {
       toast({
-        title: "Error",
-        description: "Please drop an image file",
+        title: "Access Denied",
+        description: "Only administrators can upload featured product images",
         variant: "destructive",
       });
       return;
     }
 
-    if (file.size <= 5 * 1024 * 1024) {
+    const file = event.dataTransfer.files[0];
+    
+    if (!file) return;
+    
+    if (!file.type.match(/^image\/(jpeg|jpg|png|webp)$/)) {
+      toast({
+        title: "Error",
+        description: "Please drop a JPEG, PNG, or WebP image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size <= 10 * 1024 * 1024) {
       await handleImageUpload(file);
     } else {
       toast({
         title: "Error",
-        description: "Image must be smaller than 5MB",
+        description: "Image must be smaller than 10MB",
         variant: "destructive",
       });
     }
@@ -142,8 +168,28 @@ const FeaturedProductImageUploader: React.FC<FeaturedProductImageUploaderProps> 
     event.preventDefault();
   };
 
+  if (!isAdmin) {
+    return (
+      <Alert className="bg-red-50 border-red-200">
+        <Shield className="h-4 w-4 text-red-600" />
+        <AlertDescription className="text-red-800">
+          <strong>Access Restricted:</strong> Only administrators can upload featured product images.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   return (
     <div className="space-y-4">
+      {/* Enhanced Security Notice */}
+      <Alert className="bg-blue-50 border-blue-200">
+        <Shield className="h-4 w-4 text-blue-600" />
+        <AlertDescription className="text-blue-800">
+          <strong>Enhanced Security:</strong> Files are validated with bucket-level restrictions. 
+          Only JPEG, PNG, and WebP images up to 10MB are accepted.
+        </AlertDescription>
+      </Alert>
+
       {/* Current Image Preview */}
       {currentImage && (
         <div className="mb-4">
@@ -183,11 +229,11 @@ const FeaturedProductImageUploader: React.FC<FeaturedProductImageUploaderProps> 
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/jpg,image/png,image/webp"
             onChange={handleFileSelect}
             className="hidden"
           />
-          <p className="text-xs text-gray-500 mt-2">Max 5MB. JPG, PNG, WebP supported.</p>
+          <p className="text-xs text-gray-500 mt-2">Max 10MB. JPG, PNG, WebP supported.</p>
         </div>
       </div>
 

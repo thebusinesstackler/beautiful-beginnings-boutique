@@ -5,8 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, X, Plus, AlertTriangle } from 'lucide-react';
+import { Upload, X, Plus, AlertTriangle, Shield } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ProductImageUploaderProps {
   onImageUploaded: (imageUrl: string) => void;
@@ -25,9 +26,10 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
   const [imageUrl, setImageUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { isAdmin } = useAuth();
 
   const validateFile = (file: File): boolean => {
-    // Check file size
+    // Check file size (now matches bucket limit)
     if (file.size > MAX_FILE_SIZE) {
       toast({
         title: "File Too Large",
@@ -37,7 +39,7 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
       return false;
     }
 
-    // Check MIME type
+    // Check MIME type (matches bucket restrictions)
     if (!ALLOWED_TYPES.includes(file.type)) {
       toast({
         title: "Invalid File Type",
@@ -79,6 +81,15 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
   };
 
   const handleImageUpload = async (file: File) => {
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only administrators can upload product images",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!validateFile(file)) {
       return;
     }
@@ -91,7 +102,7 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
 
       console.log('Uploading file:', fileName);
 
-      const { error: uploadError, data: uploadData } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('product-images')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -100,21 +111,7 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
 
       if (uploadError) {
         console.error('Upload error:', uploadError);
-        // If bucket doesn't exist, create it first
-        if (uploadError.message.includes('Bucket not found')) {
-          console.log('Creating bucket...');
-          await supabase.storage.createBucket('product-images', { public: true });
-          // Retry upload
-          const { error: retryError } = await supabase.storage
-            .from('product-images')
-            .upload(filePath, file, {
-              cacheControl: '3600',
-              upsert: false
-            });
-          if (retryError) throw retryError;
-        } else {
-          throw uploadError;
-        }
+        throw uploadError;
       }
 
       const { data } = supabase.storage
@@ -156,6 +153,15 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
   };
 
   const handleUrlAdd = () => {
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only administrators can add product images",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (imageUrl.trim()) {
       // Basic URL validation
       try {
@@ -179,6 +185,16 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
 
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
+
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only administrators can upload product images",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const files = Array.from(event.dataTransfer.files);
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
     
@@ -200,14 +216,25 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
     event.preventDefault();
   };
 
+  if (!isAdmin) {
+    return (
+      <Alert className="bg-red-50 border-red-200">
+        <Shield className="h-4 w-4 text-red-600" />
+        <AlertDescription className="text-red-800">
+          <strong>Access Restricted:</strong> Only administrators can upload product images.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      {/* Security Notice */}
+      {/* Enhanced Security Notice */}
       <Alert className="bg-blue-50 border-blue-200">
-        <AlertTriangle className="h-4 w-4 text-blue-600" />
+        <Shield className="h-4 w-4 text-blue-600" />
         <AlertDescription className="text-blue-800">
-          <strong>Secure Upload:</strong> Files are validated for type, size, and security before processing.
-          Only JPEG, PNG, and WebP images up to 10MB are accepted.
+          <strong>Enhanced Security:</strong> Files are validated for type, size, and security. 
+          Only JPEG, PNG, and WebP images up to 10MB are accepted. Bucket-level restrictions are enforced.
         </AlertDescription>
       </Alert>
 
