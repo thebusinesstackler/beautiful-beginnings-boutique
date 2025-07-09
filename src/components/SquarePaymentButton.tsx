@@ -38,9 +38,7 @@ const SquarePaymentButton = ({
       </Button>
       
       {/* Status Messages */}
-      {sdkStatus === 'loading' && <div className="text-center p-3 border border-blue-200 bg-[#78ed0d]/0 text-[#13e513] rounded-xl">
-          <p className="text-blue-700 text-sm">Initializing secure payment system...</p>
-        </div>}
+      {sdkStatus === 'loading'}
       
       {sdkStatus === 'error' && <div className="text-center p-3 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-red-700 font-medium text-sm">Unable to load payment system</p>
