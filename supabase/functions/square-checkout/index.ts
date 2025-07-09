@@ -237,7 +237,7 @@ serve(async (req) => {
       headers: {
         'Authorization': `Bearer ${settings.square_access_token}`,
         'Content-Type': 'application/json',
-        'Square-Version': '2023-10-18',
+        'Square-Version': '2022-02-16',
         'Accept': 'application/json'
       },
       body: JSON.stringify(paymentData)
