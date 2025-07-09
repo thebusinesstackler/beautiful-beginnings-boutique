@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, User, MapPin, CreditCard, Package, Eye } from 'lucide-react';
+import { Calendar, User, MapPin, CreditCard, Package, Eye, ShoppingBag } from 'lucide-react';
 
 interface Order {
   id: string;
@@ -96,6 +96,72 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Products Ordered - Enhanced for order fulfillment */}
+          <div className="bg-green-50 rounded-lg p-6 border-2 border-green-200">
+            <div className="flex items-center space-x-2 mb-4">
+              <ShoppingBag className="h-6 w-6 text-green-600" />
+              <span className="font-bold text-lg text-charcoal">Products to Fulfill</span>
+            </div>
+            {order.personalization_data && (
+              <div className="grid gap-4">
+                {Object.entries(order.personalization_data).map(([key, value]: [string, any], index) => (
+                  <div key={index} className="bg-white rounded-lg p-4 border border-green-300 shadow-sm">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h4 className="text-lg font-semibold text-charcoal mb-2">
+                          Product #{index + 1}
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="font-medium text-stone">Product Name:</span>
+                            <p className="text-charcoal">{value.name || 'Custom Product'}</p>
+                          </div>
+                          <div>
+                            <span className="font-medium text-stone">Price:</span>
+                            <p className="text-charcoal font-semibold">${value.price || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <span className="font-medium text-stone">Quantity:</span>
+                            <p className="text-charcoal">{value.quantity || 1}</p>
+                          </div>
+                          {value.id && (
+                            <div>
+                              <span className="font-medium text-stone">Product ID:</span>
+                              <p className="text-charcoal font-mono text-xs">{value.id}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Product customization details */}
+                    {Object.keys(value).filter(k => !['name', 'price', 'quantity', 'id'].includes(k)).length > 0 && (
+                      <div className="mt-3 p-3 bg-gray-50 rounded border">
+                        <h5 className="text-sm font-medium text-charcoal mb-2">Customization Details:</h5>
+                        <div className="space-y-1 text-xs">
+                          {Object.entries(value)
+                            .filter(([k]) => !['name', 'price', 'quantity', 'id'].includes(k))
+                            .map(([k, v]: [string, any]) => (
+                              <div key={k} className="flex justify-between">
+                                <span className="font-medium text-stone capitalize">{k.replace(/([A-Z])/g, ' $1')}:</span>
+                                <span className="text-charcoal">{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {!order.personalization_data && (
+              <div className="bg-white rounded-lg p-4 border border-green-300">
+                <p className="text-gray-600">No product details available for this order.</p>
+              </div>
+            )}
           </div>
 
           {/* Customer Information */}
@@ -216,19 +282,6 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
               )}
             </div>
           </div>
-
-          {/* Personalization Data */}
-          {order.personalization_data && (
-            <div className="bg-purple-50 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-4">
-                <Package className="h-5 w-5 text-sage" />
-                <span className="font-medium text-charcoal">Personalization Details</span>
-              </div>
-              <pre className="text-sm text-charcoal bg-white p-3 rounded border overflow-auto">
-                {JSON.stringify(order.personalization_data, null, 2)}
-              </pre>
-            </div>
-          )}
 
           {/* Tracking Information */}
           {order.tracking_number && (

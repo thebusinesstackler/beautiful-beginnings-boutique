@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState } from 'react';
 
 interface CartItem {
@@ -17,6 +18,7 @@ interface CartContextType {
   updateQuantity: (id: number, quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
+  getCartCount: () => number;
   updatePhoto: (id: number, file: File) => void;
   updateItemProperty: (id: number, property: keyof CartItem, value: any) => void;
 }
@@ -67,6 +69,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     return items.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
+  const getCartCount = () => {
+    return items.reduce((total, item) => total + item.quantity, 0);
+  };
+
   const updatePhoto = (id: number, file: File) => {
     setItems(prevItems =>
       prevItems.map(item =>
@@ -90,6 +96,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     updateQuantity,
     clearCart,
     getCartTotal,
+    getCartCount,
     updatePhoto,
     updateItemProperty
   };
