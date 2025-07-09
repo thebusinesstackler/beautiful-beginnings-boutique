@@ -40,14 +40,14 @@ const SquarePaymentButton = ({
           w-full h-12 text-base font-bold rounded-lg transition-all duration-200 cursor-pointer
           ${isDisabled 
             ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
-            : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg'
+            : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg'
           }
         `}
         style={{
           padding: '12px 24px',
           borderRadius: '6px',
           border: 'none',
-          boxShadow: isDisabled ? 'none' : '0 2px 4px rgba(0,119,255,0.2)'
+          boxShadow: isDisabled ? 'none' : '0 2px 4px rgba(34,197,94,0.2)'
         }}
       >
         <div className="flex items-center justify-center space-x-2">
@@ -73,9 +73,9 @@ const SquarePaymentButton = ({
       )}
       
       {!isSecureConnection && (
-        <div className="text-center p-3 bg-amber-50 border border-amber-200 rounded-lg">
-          <p className="text-amber-800 font-medium text-sm">Secure connection required</p>
-          <p className="text-amber-700 text-xs mt-1">HTTPS is required for payment processing</p>
+        <div className="text-center p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-800 font-medium text-sm">Secure connection required</p>
+          <p className="text-red-700 text-xs mt-1">HTTPS is required for payment processing</p>
         </div>
       )}
 
