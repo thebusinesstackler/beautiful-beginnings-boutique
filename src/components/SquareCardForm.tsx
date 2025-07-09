@@ -41,7 +41,7 @@ const SquareCardForm = ({
               </svg>
             </div>
             <h4 className="text-red-700 font-medium mb-2">Payment system temporarily unavailable</h4>
-            <p className="text-red-600 text-sm">Please refresh the page and try again</p>
+            <p className="text-red-600 text-sm py-[9px] my-0 px-[20px]">Please refresh the page and try again</p>
           </div>}
         
         {sdkStatus === 'ready' && <div className="space-y-6 bg-white">
