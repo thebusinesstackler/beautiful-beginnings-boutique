@@ -1,8 +1,6 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import type { SDKStatus } from '@/types/SquareCheckout';
-
 interface SquarePaymentButtonProps {
   onPayment: () => void;
   isLoading: boolean;
@@ -11,7 +9,6 @@ interface SquarePaymentButtonProps {
   isSecureConnection: boolean;
   total: number;
 }
-
 const SquarePaymentButton = ({
   onPayment,
   isLoading,
@@ -20,90 +17,61 @@ const SquarePaymentButton = ({
   isSecureConnection,
   total
 }: SquarePaymentButtonProps) => {
-  const [isHovered, setIsHovered] = useState(false);
-
   const getButtonText = () => {
-    if (isLoading) return 'Processing...';
-    if (sdkStatus === 'loading') return 'Loading...';
-    if (sdkStatus === 'error') return 'Payment unavailable';
+    if (isLoading) return 'Processing your payment...';
+    if (sdkStatus === 'loading') return 'Loading payment form...';
+    if (sdkStatus === 'error') return 'Payment form unavailable';
     if (!isSecureConnection) return 'Secure connection required';
-    return `Pay $${total.toFixed(2)}`;
+    return `Place your order - $${total.toFixed(2)}`;
   };
-
   const isDisabled = isLoading || sdkStatus !== 'ready' || !isSecureConnection;
-
-  const getButtonStyles = () => {
-    if (isDisabled) {
-      return {
-        backgroundColor: '#9CA3AF',
-        color: '#6B7280',
-        cursor: 'not-allowed',
-        boxShadow: 'none'
-      };
-    }
-
-    return {
-      backgroundColor: isHovered ? '#15803D' : '#16A34A', // green-700 : green-600
-      color: '#ffffff',
-      cursor: 'pointer',
-      boxShadow: isHovered ? '0 4px 8px rgba(34,197,94,0.3)' : '0 2px 4px rgba(34,197,94,0.2)'
-    };
-  };
-
-  return (
-    <div className="space-y-4 bg-zinc-200" style={{ margin: '16px 0' }}>
+  return <div className="space-y-4">
       {/* Main Payment Button */}
-      <button
-        onClick={onPayment}
-        disabled={isDisabled}
-        onMouseEnter={() => !isDisabled && setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className="w-full h-12 text-base font-bold rounded-lg transition-all duration-200"
-        style={{
-          padding: '12px 24px',
-          borderRadius: '6px',
-          border: 'none',
-          ...getButtonStyles()
-        }}
-      >
-        <div className="flex items-center justify-center space-x-2">
-          {isLoading && (
-            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-          )}
+      <Button onClick={onPayment} disabled={isDisabled} className="w-full h-12 text-base font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md bg-sage hover:bg-forest text-white border-none disabled:bg-gray-400 disabled:text-gray-600">
+        <div className="flex items-center justify-center space-x-3">
+          {isLoading && <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>}
           <span>{getButtonText()}</span>
+          {!isLoading && sdkStatus === 'ready' && isSecureConnection && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>}
         </div>
-      </button>
+      </Button>
       
       {/* Status Messages */}
-      {sdkStatus === 'loading' && (
-        <div className="text-center p-2 text-sm text-gray-600">
-          <p>Initializing secure payment system...</p>
-        </div>
-      )}
+      {sdkStatus === 'loading' && <div className="text-center p-3 border border-blue-200 bg-[#78ed0d]/0 text-[#13e513] rounded-xl">
+          <p className="text-blue-700 text-sm">Initializing secure payment system...</p>
+        </div>}
       
-      {sdkStatus === 'error' && (
-        <div className="text-center p-3 bg-red-50 border border-red-200 rounded-lg">
+      {sdkStatus === 'error' && <div className="text-center p-3 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-red-700 font-medium text-sm">Unable to load payment system</p>
           <p className="text-red-600 text-xs mt-1">Please refresh the page and try again</p>
-        </div>
-      )}
+        </div>}
       
-      {!isSecureConnection && (
-        <div className="text-center p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800 font-medium text-sm">Secure connection required</p>
-          <p className="text-red-700 text-xs mt-1">HTTPS is required for payment processing</p>
-        </div>
-      )}
+      {!isSecureConnection && <div className="text-center p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <p className="text-amber-800 font-medium text-sm">Secure connection required</p>
+          <p className="text-amber-700 text-xs mt-1">HTTPS is required for payment processing</p>
+        </div>}
 
-      {/* Powered by Square - visually separated */}
-      <div className="pt-4 border-t border-gray-100">
-        <div className="text-center text-xs text-gray-500">
-          <p>🔒 Powered by Square</p>
-          <p className="mt-1">Your payment information is never stored on our servers</p>
+      {/* Trust Indicators */}
+      <div className="text-center space-y-2">
+        <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
+          <div className="flex items-center space-x-1">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span>SSL Secured</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>PCI Compliant</span>
+          </div>
         </div>
+        <p className="text-xs text-gray-500">
+          🔒 Secure payment powered by Square
+        </p>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default SquarePaymentButton;

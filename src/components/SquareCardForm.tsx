@@ -1,5 +1,4 @@
 import React from 'react';
-import { Lock } from 'lucide-react';
 import type { SDKStatus } from '@/types/SquareCheckout';
 interface SquareCardFormProps {
   cardRef: React.RefObject<HTMLDivElement>;
@@ -11,24 +10,26 @@ const SquareCardForm = ({
   sdkStatus,
   isSecureConnection
 }: SquareCardFormProps) => {
-  return <div style={{
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-  }} className="rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">
+  return <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
       {/* Header */}
-      <div className="py-4 border-b border-gray-100 px-[15px] my-[34px]">
-        <div className="flex items-center space-x-2">
-          <Lock className="h-4 w-4 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Secure Payment</h3>
+      <div className="px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-medium text-gray-900">Payment Information</h3>
+            <p className="text-sm text-gray-500 mt-1">All transactions are secure and encrypted</p>
+          </div>
+          <div className="flex items-center space-x-2 text-xs text-sage/60">
+            <span>We accept all major cards</span>
+          </div>
         </div>
-        <p className="text-sm text-gray-600 mt-1">Your payment information is protected with SSL encryption</p>
       </div>
 
       {/* Content */}
-      <div className="p-6 bg-white py-0 px-0">
+      <div className="p-6">
         {sdkStatus === 'loading' && <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent mx-auto mb-4"></div>
-              <p className="text-gray-700 font-medium">Setting up secure payment...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
+              <p className="text-gray-600 font-medium">Setting up secure payment...</p>
               <p className="text-gray-500 text-sm mt-1">Please wait a moment</p>
             </div>
           </div>}
@@ -43,26 +44,57 @@ const SquareCardForm = ({
             <p className="text-red-600 text-sm">Please refresh the page and try again</p>
           </div>}
         
-        {sdkStatus === 'ready' && <div className="space-y-6">
-            {/* Card Form Container */}
-            <div className="space-y-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2 mx-[25px]">
-                Card Information
+        {sdkStatus === 'ready' && <div className="space-y-6 bg-white">
+            {/* Card Form Container - This is what Square expects */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Card information
               </label>
-              <div ref={cardRef} id="card-container" data-square-container="true" style={{
-            backgroundColor: '#f9f9f9',
-            '--sq-input-background-color': '#f9f9f9',
-            '--sq-input-border-color': 'transparent',
-            '--sq-input-border-color-focus': 'transparent',
-            '--sq-input-border-radius': '6px',
-            '--sq-input-font-family': 'Inter, system-ui, -apple-system, sans-serif',
-            '--sq-input-font-size': '16px',
-            '--sq-input-font-weight': '400',
-            '--sq-input-line-height': '1.5',
-            '--sq-input-padding': '12px',
-            '--sq-input-text-color': '#374151',
-            '--sq-input-placeholder-color': '#9ca3af'
-          } as React.CSSProperties} className="w-full border border-gray-300 rounded-lg p-4 min-h-[120px] transition-all-blue-600 focus-within:ring-2 focus-within:ring-blue-100 px-0 py-0" />
+              <div ref={cardRef} id="card-container" data-square-container="true" className="w-full border border-gray-300 rounded-md p-3 bg-white min-h-[60px]" />
+            </div>
+
+            {/* Test Card Numbers Section */}
+            <div className="bg-sage/5 border border-sage/20 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-sage mb-3 flex items-center">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                Test Card Numbers (Sandbox Mode)
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-charcoal">
+                <div className="flex justify-between">
+                  <span className="font-mono">4111 1111 1111 1111</span>
+                  <span className="text-green-600">Success</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono">4000 0000 0000 0002</span>
+                  <span className="text-red-600">Declined</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono">4000 0000 0000 9995</span>
+                  <span className="text-orange-600">Insufficient Funds</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono">4000 0000 0000 0069</span>
+                  <span className="text-gray-600">Expired</span>
+                </div>
+              </div>
+              <p className="text-xs text-charcoal/60 mt-2">
+                Use any future expiration date and any 3-digit CVV
+              </p>
+            </div>
+
+            {/* Security Message */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-center space-x-3">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <div className="flex-1">
+                  <p className="text-green-800 text-sm font-medium">Your payment is secure</p>
+                  <p className="text-green-700 text-sm">We protect your card information with SSL encryption.</p>
+                </div>
+              </div>
             </div>
           </div>}
         
