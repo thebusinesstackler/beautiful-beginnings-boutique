@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -59,7 +58,10 @@ const OrderManagement = () => {
           uploaded_images: order.uploaded_images,
           uploaded_images_count: order.uploaded_images?.length || 0,
           personalization_data: order.personalization_data,
-          has_personlization_uploadedImages: !!order.personalization_data?.uploadedImages
+          has_personalization_uploadedImages: !!(order.personalization_data && 
+            typeof order.personalization_data === 'object' && 
+            order.personalization_data !== null && 
+            'uploadedImages' in order.personalization_data)
         });
       });
       
@@ -143,11 +145,9 @@ const OrderManagement = () => {
     setSelectedOrder(null);
   };
 
-  // Helper function to get all uploaded images from an order - matching the modal logic
   const getAllOrderImages = (order: Order) => {
     const images = [];
     
-    // Primary source: order.uploaded_images array (main source from updated flow)
     if (order.uploaded_images && Array.isArray(order.uploaded_images)) {
       order.uploaded_images.forEach(imageUrl => {
         if (imageUrl && typeof imageUrl === 'string') {
@@ -156,25 +156,29 @@ const OrderManagement = () => {
       });
     }
     
-    // Secondary source: personalization_data.uploadedImages
-    if (order.personalization_data?.uploadedImages && Array.isArray(order.personalization_data.uploadedImages)) {
-      order.personalization_data.uploadedImages.forEach((imageUrl: string) => {
-        if (imageUrl && typeof imageUrl === 'string') {
-          images.push(imageUrl);
-        }
-      });
+    if (order.personalization_data && 
+        typeof order.personalization_data === 'object' && 
+        order.personalization_data !== null) {
+      
+      const personalizationData = order.personalization_data as Record<string, any>;
+      
+      if (personalizationData.uploadedImages && Array.isArray(personalizationData.uploadedImages)) {
+        personalizationData.uploadedImages.forEach((imageUrl: string) => {
+          if (imageUrl && typeof imageUrl === 'string') {
+            images.push(imageUrl);
+          }
+        });
+      }
+      
+      if (personalizationData.items && Array.isArray(personalizationData.items)) {
+        personalizationData.items.forEach((item: any) => {
+          if (item.uploadedPhotoUrl && typeof item.uploadedPhotoUrl === 'string') {
+            images.push(item.uploadedPhotoUrl);
+          }
+        });
+      }
     }
     
-    // Tertiary source: individual items with uploadedPhotoUrl
-    if (order.personalization_data?.items && Array.isArray(order.personalization_data.items)) {
-      order.personalization_data.items.forEach((item: any) => {
-        if (item.uploadedPhotoUrl && typeof item.uploadedPhotoUrl === 'string') {
-          images.push(item.uploadedPhotoUrl);
-        }
-      });
-    }
-    
-    // Handle case where personalization_data is an array of items directly
     if (Array.isArray(order.personalization_data)) {
       order.personalization_data.forEach((item: any) => {
         if (item.uploadedPhotoUrl && typeof item.uploadedPhotoUrl === 'string') {
@@ -183,7 +187,6 @@ const OrderManagement = () => {
       });
     }
     
-    // Remove duplicates
     return [...new Set(images)];
   };
 
