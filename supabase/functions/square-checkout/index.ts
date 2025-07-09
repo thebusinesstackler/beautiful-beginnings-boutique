@@ -1,5 +1,5 @@
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
@@ -7,59 +7,128 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-interface CheckoutRequest {
-  orderData: {
-    items: Array<{
-      name: string;
-      price: number;
-      quantity: number;
-      product_id?: string;
-    }>;
-    total: number;
-    customer_email: string;
-    customer_name?: string;
-    customer_phone?: string;
-    personalization_data?: any;
-    uploaded_images?: string[];
-  };
-  redirectUrl: string;
+// Input validation and sanitization utilities
+const sanitizeString = (input: any, maxLength: number = 1000): string => {
+  if (typeof input !== 'string') return '';
+  return input.trim().slice(0, maxLength).replace(/[<>\"'&]/g, '');
 }
 
-const validateCheckoutRequest = (data: any): CheckoutRequest | null => {
-  if (!data.orderData || !data.redirectUrl) {
-    return null;
+const sanitizeEmail = (email: any): string => {
+  if (typeof email !== 'string') return '';
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const sanitized = email.trim().toLowerCase().slice(0, 254);
+  return emailRegex.test(sanitized) ? sanitized : '';
+}
+
+const sanitizePhone = (phone: any): string => {
+  if (typeof phone !== 'string') return '';
+  return phone.replace(/[^\d\+\-\(\)\s]/g, '').slice(0, 20);
+}
+
+const sanitizeAmount = (amount: any): number => {
+  const num = Number(amount);
+  if (isNaN(num) || num < 0 || num > 999999) return 0;
+  return Math.round(num);
+}
+
+const validateAndSanitizeAddress = (address: any) => {
+  if (!address || typeof address !== 'object') {
+    throw new Error('Invalid address format');
   }
 
-  const { orderData } = data;
-  
-  // Validate required fields
-  if (!orderData.items || !Array.isArray(orderData.items) || orderData.items.length === 0) {
-    return null;
+  return {
+    address: sanitizeString(address.address, 200),
+    city: sanitizeString(address.city, 100),
+    state: sanitizeString(address.state, 50),
+    zipCode: sanitizeString(address.zipCode, 20),
+    country: sanitizeString(address.country, 100) || 'United States'
+  };
+}
+
+const validateAndSanitizeCustomerInfo = (customerInfo: any) => {
+  if (!customerInfo || typeof customerInfo !== 'object') {
+    throw new Error('Invalid customer information');
   }
 
-  if (!orderData.customer_email || typeof orderData.customer_email !== 'string') {
-    return null;
+  const email = sanitizeEmail(customerInfo.email);
+  if (!email) {
+    throw new Error('Valid email is required');
   }
 
-  if (typeof orderData.total !== 'number' || orderData.total <= 0) {
-    return null;
+  return {
+    firstName: sanitizeString(customerInfo.firstName, 50),
+    lastName: sanitizeString(customerInfo.lastName, 50),
+    email: email,
+    phone: sanitizePhone(customerInfo.phone)
+  };
+}
+
+const validateAndSanitizeItems = (items: any[]) => {
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error('Valid items array is required');
   }
 
-  // Validate items
-  for (const item of orderData.items) {
-    if (!item.name || typeof item.name !== 'string') return null;
-    if (typeof item.price !== 'number' || item.price <= 0) return null;
-    if (typeof item.quantity !== 'number' || item.quantity <= 0) return null;
+  if (items.length > 50) {
+    throw new Error('Too many items in cart');
   }
 
-  // Validate total matches sum of items
-  const calculatedTotal = orderData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  if (Math.abs(calculatedTotal - orderData.total) > 0.01) {
-    return null;
+  return items.map((item, index) => {
+    if (!item || typeof item !== 'object') {
+      throw new Error(`Invalid item at index ${index}`);
+    }
+
+    const quantity = Number(item.quantity);
+    if (isNaN(quantity) || quantity < 1 || quantity > 999) {
+      throw new Error(`Invalid quantity for item at index ${index}`);
+    }
+
+    const price = Number(item.price);
+    if (isNaN(price) || price < 0 || price > 99999) {
+      throw new Error(`Invalid price for item at index ${index}`);
+    }
+
+    return {
+      id: sanitizeString(item.id, 100),
+      name: sanitizeString(item.name, 200),
+      quantity: quantity,
+      price: price,
+      image: sanitizeString(item.image, 500),
+      uploadedPhotoUrl: item.uploadedPhotoUrl ? sanitizeString(item.uploadedPhotoUrl, 500) : undefined
+    };
+  });
+}
+
+const validateSquareCredentials = (credentials: any) => {
+  if (!credentials || typeof credentials !== 'object') {
+    throw new Error('Square credentials are required');
   }
 
-  return data as CheckoutRequest;
-};
+  const { appId, accessToken, locationId, environment } = credentials;
+
+  if (!appId || typeof appId !== 'string' || appId.length < 10) {
+    throw new Error('Invalid Square App ID');
+  }
+
+  if (!accessToken || typeof accessToken !== 'string' || accessToken.length < 20) {
+    throw new Error('Invalid Square Access Token');
+  }
+
+  if (!locationId || typeof locationId !== 'string' || locationId.length < 10) {
+    throw new Error('Invalid Square Location ID');
+  }
+
+  const validEnvironments = ['sandbox', 'production'];
+  if (!validEnvironments.includes(environment)) {
+    throw new Error('Invalid Square environment');
+  }
+
+  return {
+    appId: sanitizeString(appId, 100),
+    accessToken: sanitizeString(accessToken, 200),
+    locationId: sanitizeString(locationId, 100),
+    environment: environment
+  };
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -68,52 +137,127 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    // Rate limiting check
+    const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+    console.log(`Square checkout request from IP: ${clientIP}`);
 
-    // Get Square credentials from secrets
-    const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN');
-    const squareLocationId = Deno.env.get('SQUARE_LOCATION_ID');
-    const squareEnvironment = Deno.env.get('SQUARE_ENVIRONMENT') || 'sandbox';
-
-    if (!squareAccessToken || !squareLocationId) {
-      console.error('Missing Square credentials');
-      return new Response(
-        JSON.stringify({ error: 'Payment system configuration error' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
+    // Parse and validate request body
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch {
+      throw new Error('Invalid JSON in request body');
     }
 
-    const requestData = await req.json();
-    const validatedData = validateCheckoutRequest(requestData);
+    // Comprehensive input validation and sanitization
+    const {
+      customerInfo,
+      shippingAddress,
+      billingAddress,
+      items,
+      amount,
+      breakdown,
+      squareCredentials
+    } = requestBody;
 
-    if (!validatedData) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid request data' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
+    // Validate and sanitize all inputs
+    const sanitizedCustomerInfo = validateAndSanitizeCustomerInfo(customerInfo);
+    const sanitizedShippingAddress = validateAndSanitizeAddress(shippingAddress);
+    const sanitizedBillingAddress = validateAndSanitizeAddress(billingAddress);
+    const sanitizedItems = validateAndSanitizeItems(items);
+    const sanitizedAmount = sanitizeAmount(amount);
+    const sanitizedCredentials = validateSquareCredentials(squareCredentials);
+
+    // Validate breakdown amounts
+    if (!breakdown || typeof breakdown !== 'object') {
+      throw new Error('Invalid breakdown format');
     }
 
-    const { orderData, redirectUrl } = validatedData;
+    const sanitizedBreakdown = {
+      subtotal: sanitizeAmount(breakdown.subtotal),
+      shipping: sanitizeAmount(breakdown.shipping),
+      tax: sanitizeAmount(breakdown.tax),
+      total: sanitizeAmount(breakdown.total)
+    };
 
-    // Create order in database first
-    const { data: order, error: orderError } = await supabaseClient
+    // Verify amount consistency
+    const calculatedTotal = sanitizedBreakdown.subtotal + sanitizedBreakdown.shipping + sanitizedBreakdown.tax;
+    if (Math.abs(calculatedTotal - sanitizedBreakdown.total) > 1) {
+      throw new Error('Amount breakdown inconsistency detected');
+    }
+
+    if (sanitizedAmount !== sanitizedBreakdown.total) {
+      throw new Error('Total amount mismatch');
+    }
+
+    // Verify items total matches subtotal
+    const itemsTotal = sanitizedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    if (Math.abs(itemsTotal * 100 - sanitizedBreakdown.subtotal) > 1) {
+      throw new Error('Items total does not match subtotal');
+    }
+
+    console.log('All inputs validated and sanitized successfully');
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Create Square API client
+    const squareApiUrl = sanitizedCredentials.environment === 'production' 
+      ? 'https://connect.squareup.com' 
+      : 'https://connect.squareupsandbox.com';
+
+    // Create Square checkout
+    const checkoutData = {
+      idempotency_key: crypto.randomUUID(),
+      checkout: {
+        redirect_url: `${req.headers.get('origin')}/checkout-success`,
+        order: {
+          location_id: sanitizedCredentials.locationId,
+          line_items: sanitizedItems.map(item => ({
+            name: item.name,
+            quantity: item.quantity.toString(),
+            base_price_money: {
+              amount: Math.round(item.price * 100),
+              currency: 'USD'
+            }
+          }))
+        }
+      }
+    };
+
+    console.log('Creating Square checkout with sanitized data');
+
+    const squareResponse = await fetch(`${squareApiUrl}/v2/online-checkout/payment-links`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${sanitizedCredentials.accessToken}`,
+        'Content-Type': 'application/json',
+        'Square-Version': '2023-10-18'
+      },
+      body: JSON.stringify(checkoutData)
+    });
+
+    if (!squareResponse.ok) {
+      const errorText = await squareResponse.text();
+      console.error('Square API error:', errorText);
+      throw new Error('Failed to create Square checkout');
+    }
+
+    const checkoutResult = await squareResponse.json();
+    
+    // Store order in database with sanitized data
+    const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .insert({
-        customer_email: orderData.customer_email,
-        customer_name: orderData.customer_name,
-        customer_phone: orderData.customer_phone,
-        total_amount: orderData.total,
-        personalization_data: orderData.personalization_data,
-        uploaded_images: orderData.uploaded_images,
+        customer_email: sanitizedCustomerInfo.email,
+        customer_name: `${sanitizedCustomerInfo.firstName} ${sanitizedCustomerInfo.lastName}`,
+        customer_phone: sanitizedCustomerInfo.phone,
+        total_amount: sanitizedAmount / 100,
+        shipping_address: sanitizedShippingAddress,
+        billing_address: sanitizedBillingAddress,
+        square_checkout_id: checkoutResult.payment_link?.id,
         status: 'pending'
       })
       .select()
@@ -121,91 +265,53 @@ serve(async (req) => {
 
     if (orderError) {
       console.error('Database error:', orderError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to create order' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
+      throw new Error('Failed to create order record');
     }
 
-    // Create checkout with Square
-    const squareApiUrl = squareEnvironment === 'production' 
-      ? 'https://connect.squareup.com/v2/online-checkout/payment-links'
-      : 'https://connect.squareupsandbox.com/v2/online-checkout/payment-links';
+    // Store order items with sanitized data
+    const orderItems = sanitizedItems.map(item => ({
+      order_id: orderData.id,
+      product_name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+      product_image: item.image,
+      personalization_data: item.uploadedPhotoUrl ? { uploadedPhotoUrl: item.uploadedPhotoUrl } : null
+    }));
 
-    const checkoutRequest = {
-      quick_pay: {
-        name: `Order #${order.id.slice(0, 8)}`,
-        price_money: {
-          amount: Math.round(orderData.total * 100), // Convert to cents
-          currency: 'USD'
-        },
-        location_id: squareLocationId
-      },
-      checkout_options: {
-        redirect_url: `${redirectUrl}?order_id=${order.id}`,
-        ask_for_shipping_address: true
-      }
-    };
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems);
 
-    const squareResponse = await fetch(squareApiUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${squareAccessToken}`,
-        'Content-Type': 'application/json',
-        'Square-Version': '2023-10-18'
-      },
-      body: JSON.stringify(checkoutRequest)
-    });
-
-    const squareData = await squareResponse.json();
-
-    if (!squareResponse.ok) {
-      console.error('Square API error:', squareData);
-      
-      // Delete the order if Square checkout failed
-      await supabaseClient
-        .from('orders')
-        .delete()
-        .eq('id', order.id);
-
-      return new Response(
-        JSON.stringify({ error: 'Payment system error' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
+    if (itemsError) {
+      console.error('Order items error:', itemsError);
+      throw new Error('Failed to create order items');
     }
 
-    // Update order with Square checkout ID
-    await supabaseClient
-      .from('orders')
-      .update({ 
-        square_checkout_id: squareData.payment_link?.id,
-        square_order_id: squareData.payment_link?.order_id 
-      })
-      .eq('id', order.id);
+    console.log('Square checkout created successfully');
 
     return new Response(
       JSON.stringify({
-        checkout_url: squareData.payment_link?.url,
-        order_id: order.id
+        success: true,
+        checkout_url: checkoutResult.payment_link?.url,
+        order_id: orderData.id
       }),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
       }
     );
 
   } catch (error) {
-    console.error('Checkout error:', error);
+    console.error('Square checkout error:', error);
+    
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      JSON.stringify({
+        success: false,
+        error: error.message || 'Internal server error'
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400
       }
     );
   }

@@ -1,5 +1,6 @@
 
 import DOMPurify from 'dompurify';
+import { InputValidator, ValidationError, SecurityError } from './inputValidation';
 
 // Configure DOMPurify with strict settings
 const createSanitizer = () => {
@@ -32,46 +33,130 @@ const { purify, blogConfig, textConfig } = createSanitizer();
 
 export const sanitizeHtml = (dirty: string): string => {
   if (!dirty || typeof dirty !== 'string') return '';
+  
+  // Check for potential SQL injection attempts
+  if (InputValidator.containsSqlInjection(dirty)) {
+    throw new SecurityError('Potential SQL injection detected');
+  }
+  
   return purify.sanitize(dirty, blogConfig);
 };
 
 export const sanitizeText = (dirty: string): string => {
   if (!dirty || typeof dirty !== 'string') return '';
+  
+  // Check for potential SQL injection attempts
+  if (InputValidator.containsSqlInjection(dirty)) {
+    throw new SecurityError('Potential SQL injection detected');
+  }
+  
   return purify.sanitize(dirty, textConfig);
 };
 
 export const sanitizeUrl = (url: string): string => {
   if (!url || typeof url !== 'string') return '';
   
-  try {
-    const urlObj = new URL(url);
-    // Only allow http, https, and mailto protocols
-    if (!['http:', 'https:', 'mailto:'].includes(urlObj.protocol)) {
-      return '';
-    }
-    return urlObj.toString();
-  } catch {
-    return '';
-  }
+  return InputValidator.sanitizeUrl(url);
 };
 
-// Input validation utilities
+// Enhanced input validation utilities using the new validator
 export const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email) && email.length <= 254;
+  const sanitized = InputValidator.sanitizeEmail(email);
+  return sanitized.length > 0 && sanitized === email.toLowerCase().trim();
 };
 
 export const validatePhone = (phone: string): boolean => {
   const phoneRegex = /^\+?[\d\s\-\(\)]{10,15}$/;
-  return phoneRegex.test(phone);
+  const sanitized = InputValidator.sanitizePhone(phone);
+  return phoneRegex.test(sanitized) && sanitized.length >= 10;
 };
 
 export const validateSlug = (slug: string): boolean => {
   const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-  return slugRegex.test(slug) && slug.length <= 100;
+  const sanitized = InputValidator.sanitizeString(slug, 100);
+  return slugRegex.test(sanitized) && sanitized.length <= 100;
 };
 
 export const sanitizeInput = (input: string, maxLength: number = 1000): string => {
   if (!input || typeof input !== 'string') return '';
-  return input.trim().slice(0, maxLength);
+  
+  // Check for potential security threats
+  if (InputValidator.containsSqlInjection(input)) {
+    throw new SecurityError('Potential SQL injection detected');
+  }
+  
+  return InputValidator.sanitizeString(input, maxLength);
 };
+
+// New comprehensive validation functions
+export const validateAndSanitizeCustomerData = (data: any) => {
+  if (!InputValidator.validateObject(data, ['firstName', 'lastName', 'email'])) {
+    throw new ValidationError('Missing required customer fields');
+  }
+
+  const email = InputValidator.sanitizeEmail(data.email);
+  if (!email) {
+    throw new ValidationError('Invalid email address', 'email');
+  }
+
+  return {
+    firstName: InputValidator.sanitizeString(data.firstName, 50),
+    lastName: InputValidator.sanitizeString(data.lastName, 50),
+    email: email,
+    phone: InputValidator.sanitizePhone(data.phone || '')
+  };
+};
+
+export const validateAndSanitizeAddress = (data: any) => {
+  if (!InputValidator.validateObject(data, ['address', 'city', 'state', 'zipCode'])) {
+    throw new ValidationError('Missing required address fields');
+  }
+
+  return {
+    address: InputValidator.sanitizeString(data.address, 200),
+    city: InputValidator.sanitizeString(data.city, 100),
+    state: InputValidator.sanitizeString(data.state, 50),
+    zipCode: InputValidator.sanitizeString(data.zipCode, 20),
+    country: InputValidator.sanitizeString(data.country || 'United States', 100)
+  };
+};
+
+// File upload validation with enhanced security
+export const validateFileUpload = (file: File): { isValid: boolean; error?: string } => {
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  
+  // Check file type
+  if (!allowedTypes.includes(file.type)) {
+    return { isValid: false, error: 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.' };
+  }
+  
+  // Check file size
+  if (file.size > maxSize) {
+    return { isValid: false, error: 'File too large. Maximum size is 10MB.' };
+  }
+  
+  // Check file name
+  const sanitizedName = InputValidator.sanitizeFileName(file.name);
+  if (sanitizedName !== file.name || sanitizedName.length === 0) {
+    return { isValid: false, error: 'Invalid file name. Use only letters, numbers, hyphens, and underscores.' };
+  }
+  
+  // Check file extension matches MIME type
+  const extension = file.name.toLowerCase().split('.').pop();
+  const expectedExtensions: Record<string, string[]> = {
+    'image/jpeg': ['jpg', 'jpeg'],
+    'image/png': ['png'],
+    'image/webp': ['webp']
+  };
+  
+  const validExtensions = expectedExtensions[file.type] || [];
+  if (!extension || !validExtensions.includes(extension)) {
+    return { isValid: false, error: 'File extension does not match file type.' };
+  }
+  
+  return { isValid: true };
+};
+
+// Export the validator for direct use
+export { InputValidator, ValidationError, SecurityError };
