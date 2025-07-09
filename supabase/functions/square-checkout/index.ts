@@ -317,15 +317,21 @@ serve(async (req) => {
       throw new Error('Failed to create order record');
     }
 
-    // Store order items
+    // Store order items with proper personalization data
     const orderItems = sanitizedItems.map(item => ({
       order_id: orderData.id,
       product_name: item.name,
       quantity: item.quantity,
       price: item.price,
       product_image: item.image,
-      personalization_data: item.uploadedPhotoUrl ? { uploadedPhotoUrl: item.uploadedPhotoUrl } : null
+      personalization_data: item.uploadedPhotoUrl ? { 
+        uploadedPhotoUrl: item.uploadedPhotoUrl,
+        hasPhoto: true,
+        photoProcessed: true
+      } : null
     }));
+
+    console.log('Order items being saved:', orderItems);
 
     const { error: itemsError } = await supabase
       .from('order_items')
