@@ -53,18 +53,90 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
     window.open(imageUrl, '_blank');
   };
 
-  // Extract product information from Square checkout data
+  // Get all uploaded images from various sources in the order data
+  const getAllUploadedImages = () => {
+    const images = [];
+    
+    console.log('Order data for image extraction:', {
+      uploaded_images: order.uploaded_images,
+      personalization_data: order.personalization_data
+    });
+    
+    // Primary source: order.uploaded_images array (this should be the main source from our updated flow)
+    if (order.uploaded_images && Array.isArray(order.uploaded_images)) {
+      order.uploaded_images.forEach((imageUrl, index) => {
+        if (imageUrl && typeof imageUrl === 'string') {
+          images.push({
+            url: imageUrl,
+            source: 'order_uploaded_images',
+            index,
+            description: `Customer upload ${index + 1}`
+          });
+        }
+      });
+    }
+    
+    // Secondary source: personalization_data.uploadedImages (backup)
+    if (order.personalization_data?.uploadedImages && Array.isArray(order.personalization_data.uploadedImages)) {
+      order.personalization_data.uploadedImages.forEach((imageUrl: string, index: number) => {
+        if (imageUrl && typeof imageUrl === 'string') {
+          images.push({
+            url: imageUrl,
+            source: 'personalization_uploaded_images',
+            index,
+            description: `Personalization upload ${index + 1}`
+          });
+        }
+      });
+    }
+    
+    // Tertiary source: individual items with uploadedPhotoUrl
+    if (order.personalization_data?.items && Array.isArray(order.personalization_data.items)) {
+      order.personalization_data.items.forEach((item: any, itemIndex: number) => {
+        if (item.uploadedPhotoUrl && typeof item.uploadedPhotoUrl === 'string') {
+          images.push({
+            url: item.uploadedPhotoUrl,
+            source: 'item_photo',
+            index: itemIndex,
+            description: `${item.name || 'Product'} photo`
+          });
+        }
+      });
+    }
+    
+    // Handle case where personalization_data is an array of items directly
+    if (Array.isArray(order.personalization_data)) {
+      order.personalization_data.forEach((item: any, itemIndex: number) => {
+        if (item.uploadedPhotoUrl && typeof item.uploadedPhotoUrl === 'string') {
+          images.push({
+            url: item.uploadedPhotoUrl,
+            source: 'direct_item_photo',
+            index: itemIndex,
+            description: `${item.name || 'Product'} photo`
+          });
+        }
+      });
+    }
+    
+    // Remove duplicates by URL
+    const uniqueImages = images.filter((image, index, self) => 
+      index === self.findIndex(img => img.url === image.url)
+    );
+    
+    console.log('Extracted images:', uniqueImages);
+    return uniqueImages;
+  };
+
+  // Extract product information from order data
   const getProductDetails = () => {
-    console.log('Full order personalization_data:', order.personalization_data);
+    console.log('Extracting product details from:', order.personalization_data);
     
     if (!order.personalization_data) {
-      console.log('No personalization_data found');
       return [];
     }
     
     // Check for Square embedded payment items
     if (order.personalization_data.square_embedded_payment && order.personalization_data.items) {
-      console.log('Found Square embedded payment items:', order.personalization_data.items);
       return order.personalization_data.items.map((item: any, index: number) => ({
         id: index,
         name: item.name || 'Product',
@@ -77,71 +149,19 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
     
     // Check for cart items data
     if (Array.isArray(order.personalization_data)) {
-      console.log('Found array of personalization data:', order.personalization_data);
       return order.personalization_data;
     }
     
     // Check for single product object
     if (typeof order.personalization_data === 'object') {
-      console.log('Found single personalization object:', order.personalization_data);
       return [order.personalization_data];
     }
     
-    console.log('No valid product data structure found');
     return [];
   };
 
-  // Get all uploaded images from various sources
-  const getAllUploadedImages = () => {
-    const images = [];
-    
-    // Add images from order.uploaded_images
-    if (order.uploaded_images && Array.isArray(order.uploaded_images)) {
-      order.uploaded_images.forEach((imageUrl, index) => {
-        images.push({
-          url: imageUrl,
-          source: 'order',
-          index,
-          description: `Order image ${index + 1}`
-        });
-      });
-    }
-    
-    // Add images from personalization_data
-    const products = getProductDetails();
-    products.forEach((product: any, productIndex) => {
-      if (product.uploadedPhotoUrl) {
-        images.push({
-          url: product.uploadedPhotoUrl,
-          source: 'product',
-          index: productIndex,
-          description: `Product: ${product.name || 'Unknown'}`
-        });
-      }
-    });
-    
-    // Also check for uploadedImages in personalization_data (from checkout)
-    if (order.personalization_data && order.personalization_data.uploadedImages) {
-      order.personalization_data.uploadedImages.forEach((imageUrl: string, index: number) => {
-        images.push({
-          url: imageUrl,
-          source: 'checkout',
-          index,
-          description: `Checkout image ${index + 1}`
-        });
-      });
-    }
-    
-    console.log('All collected images:', images);
-    return images;
-  };
-
-  const productDetails = getProductDetails();
   const allImages = getAllUploadedImages();
-
-  console.log('Order data:', order);
-  console.log('Product details extracted:', productDetails);
-  console.log('All images found:', allImages);
+  const productDetails = getProductDetails();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -186,7 +206,7 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
             </div>
           </div>
 
-          {/* Customer Uploaded Images - Main Display Area */}
+          {/* Customer Uploaded Images - Enhanced Display */}
           <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
             <div className="flex items-center space-x-2 mb-4">
               <Eye className="h-6 w-6 text-blue-600" />
@@ -202,7 +222,7 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {allImages.map((imageData, index) => (
-                    <div key={`${imageData.source}-${imageData.index}`} className="bg-white rounded-lg p-3 shadow-md border">
+                    <div key={`${imageData.source}-${imageData.index}-${index}`} className="bg-white rounded-lg p-3 shadow-md border">
                       <div className="aspect-square bg-gray-100 rounded-lg border-2 border-gray-200 overflow-hidden mb-3">
                         <img
                           src={imageData.url}
@@ -216,7 +236,7 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                       </div>
                       <div className="space-y-1">
                         <p className="text-sm font-medium text-blue-600">{imageData.description}</p>
-                        <p className="text-xs text-gray-500 capitalize">Source: {imageData.source}</p>
+                        <p className="text-xs text-gray-500 capitalize">Source: {imageData.source.replace(/_/g, ' ')}</p>
                         <div className="p-2 bg-gray-50 rounded text-xs text-gray-600 break-all font-mono">
                           {imageData.url}
                         </div>
@@ -244,7 +264,7 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                     <ul className="list-disc list-inside">
                       <li>order.uploaded_images: {order.uploaded_images ? `${order.uploaded_images.length} items` : 'null'}</li>
                       <li>personalization_data.uploadedImages: {order.personalization_data?.uploadedImages ? `${order.personalization_data.uploadedImages.length} items` : 'not found'}</li>
-                      <li>product.uploadedPhotoUrl: checked in product data</li>
+                      <li>individual product photos: checked</li>
                     </ul>
                   </div>
                 </div>
@@ -252,7 +272,7 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
             )}
           </div>
 
-          {/* Products Ordered - Enhanced for order fulfillment */}
+          {/* Products Ordered */}
           <div className="bg-green-50 rounded-lg p-6 border-2 border-green-200">
             <div className="flex items-center space-x-2 mb-4">
               <ShoppingBag className="h-6 w-6 text-green-600" />
@@ -316,7 +336,6 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
               <div className="bg-white rounded-lg p-4 border border-green-300">
                 <p className="text-gray-600">Product details not available in standard format.</p>
                 <p className="text-sm text-gray-500 mt-1">Order total: ${order.total_amount?.toFixed(2)}</p>
-                <p className="text-xs text-gray-400 mt-2">Raw data available in order notes section below</p>
               </div>
             )}
           </div>
@@ -406,11 +425,11 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
             </div>
           )}
 
-          {/* Notes & Raw Data for Debugging */}
+          {/* Raw Data for Debugging */}
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center space-x-2 mb-4">
               <Calendar className="h-5 w-5 text-sage" />
-              <span className="font-medium text-charcoal">Order Data & Notes</span>
+              <span className="font-medium text-charcoal">Order Data (Debug Info)</span>
             </div>
             {order.notes && (
               <div className="mb-4">
@@ -419,10 +438,21 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
               </div>
             )}
             <div className="mt-4">
-              <h5 className="text-sm font-medium text-charcoal mb-2">Raw Personalization Data (for debugging):</h5>
-              <pre className="text-xs bg-white p-3 rounded border overflow-x-auto max-h-40 text-gray-700">
-                {JSON.stringify(order.personalization_data, null, 2)}
-              </pre>
+              <h5 className="text-sm font-medium text-charcoal mb-2">Raw Data:</h5>
+              <div className="space-y-2">
+                <div>
+                  <h6 className="text-xs font-medium text-gray-600">uploaded_images:</h6>
+                  <pre className="text-xs bg-white p-2 rounded border max-h-20 overflow-y-auto text-gray-700">
+                    {JSON.stringify(order.uploaded_images, null, 2)}
+                  </pre>
+                </div>
+                <div>
+                  <h6 className="text-xs font-medium text-gray-600">personalization_data:</h6>
+                  <pre className="text-xs bg-white p-2 rounded border max-h-32 overflow-y-auto text-gray-700">
+                    {JSON.stringify(order.personalization_data, null, 2)}
+                  </pre>
+                </div>
+              </div>
             </div>
           </div>
         </div>

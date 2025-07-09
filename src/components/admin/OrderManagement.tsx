@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,11 +53,13 @@ const OrderManagement = () => {
       
       console.log('Fetched orders:', data);
       
-      // Log image data for debugging
+      // Log image data for each order to help with debugging
       data?.forEach(order => {
         console.log(`Order ${order.id}:`, {
           uploaded_images: order.uploaded_images,
-          personalization_data: order.personalization_data
+          uploaded_images_count: order.uploaded_images?.length || 0,
+          personalization_data: order.personalization_data,
+          has_personlization_uploadedImages: !!order.personalization_data?.uploadedImages
         });
       });
       
@@ -88,7 +91,7 @@ const OrderManagement = () => {
       if (error) throw error;
 
       setOrders(orders.map(order => 
-        order.id === orderId ? { ...order, status: newStatus } : order
+        order.id === orderId ? { ...order, status: newStatus, ...updateData } : order
       ));
 
       toast({
@@ -107,7 +110,7 @@ const OrderManagement = () => {
 
   const exportOrders = () => {
     const csvContent = [
-      ['Order ID', 'Customer ID', 'Customer Email', 'Customer Name', 'Status', 'Amount', 'Date'],
+      ['Order ID', 'Customer ID', 'Customer Email', 'Customer Name', 'Status', 'Amount', 'Date', 'Has Images'],
       ...orders.map(order => [
         order.id,
         order.customer_id || '',
@@ -115,7 +118,8 @@ const OrderManagement = () => {
         order.customer_name || '',
         order.status,
         order.total_amount,
-        new Date(order.created_at).toLocaleDateString()
+        new Date(order.created_at).toLocaleDateString(),
+        getAllOrderImages(order).length > 0 ? 'Yes' : 'No'
       ])
     ].map(row => row.join(',')).join('\n');
 
@@ -139,42 +143,48 @@ const OrderManagement = () => {
     setSelectedOrder(null);
   };
 
-  // Helper function to get all uploaded images from an order
+  // Helper function to get all uploaded images from an order - matching the modal logic
   const getAllOrderImages = (order: Order) => {
     const images = [];
     
-    // Add images from uploaded_images array
+    // Primary source: order.uploaded_images array (main source from updated flow)
     if (order.uploaded_images && Array.isArray(order.uploaded_images)) {
-      images.push(...order.uploaded_images);
+      order.uploaded_images.forEach(imageUrl => {
+        if (imageUrl && typeof imageUrl === 'string') {
+          images.push(imageUrl);
+        }
+      });
     }
     
-    // Add images from personalization_data
-    if (order.personalization_data) {
-      // Check for uploadedImages in personalization_data
-      if (order.personalization_data.uploadedImages && Array.isArray(order.personalization_data.uploadedImages)) {
-        images.push(...order.personalization_data.uploadedImages);
-      }
-      
-      // Check for items with uploadedPhotoUrl
-      if (order.personalization_data.items && Array.isArray(order.personalization_data.items)) {
-        order.personalization_data.items.forEach((item: any) => {
-          if (item.uploadedPhotoUrl) {
-            images.push(item.uploadedPhotoUrl);
-          }
-        });
-      }
-      
-      // Check if personalization_data is an array of items
-      if (Array.isArray(order.personalization_data)) {
-        order.personalization_data.forEach((item: any) => {
-          if (item.uploadedPhotoUrl) {
-            images.push(item.uploadedPhotoUrl);
-          }
-        });
-      }
+    // Secondary source: personalization_data.uploadedImages
+    if (order.personalization_data?.uploadedImages && Array.isArray(order.personalization_data.uploadedImages)) {
+      order.personalization_data.uploadedImages.forEach((imageUrl: string) => {
+        if (imageUrl && typeof imageUrl === 'string') {
+          images.push(imageUrl);
+        }
+      });
     }
     
-    return [...new Set(images)]; // Remove duplicates
+    // Tertiary source: individual items with uploadedPhotoUrl
+    if (order.personalization_data?.items && Array.isArray(order.personalization_data.items)) {
+      order.personalization_data.items.forEach((item: any) => {
+        if (item.uploadedPhotoUrl && typeof item.uploadedPhotoUrl === 'string') {
+          images.push(item.uploadedPhotoUrl);
+        }
+      });
+    }
+    
+    // Handle case where personalization_data is an array of items directly
+    if (Array.isArray(order.personalization_data)) {
+      order.personalization_data.forEach((item: any) => {
+        if (item.uploadedPhotoUrl && typeof item.uploadedPhotoUrl === 'string') {
+          images.push(item.uploadedPhotoUrl);
+        }
+      });
+    }
+    
+    // Remove duplicates
+    return [...new Set(images)];
   };
 
   const filteredOrders = filterStatus === 'all' 
@@ -187,7 +197,8 @@ const OrderManagement = () => {
     paid: orders.filter(o => o.status === 'paid').length,
     fulfilled: orders.filter(o => o.status === 'fulfilled').length,
     revenue: orders.reduce((sum, order) => sum + (order.total_amount || 0), 0),
-    uniqueCustomers: new Set(orders.filter(o => o.customer_id).map(o => o.customer_id)).size
+    uniqueCustomers: new Set(orders.filter(o => o.customer_id).map(o => o.customer_id)).size,
+    withImages: orders.filter(o => getAllOrderImages(o).length > 0).length
   };
 
   if (loading) {
@@ -199,7 +210,7 @@ const OrderManagement = () => {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-2">Order Management</h2>
-          <p className="text-stone text-sm sm:text-base">View and manage customer orders</p>
+          <p className="text-stone text-sm sm:text-base">View and manage customer orders with uploaded photos</p>
         </div>
         <Button onClick={exportOrders} variant="outline" className="border-stone text-charcoal hover:bg-cream/50 w-full sm:w-auto">
           <Download className="h-4 w-4 mr-2" />
@@ -208,7 +219,7 @@ const OrderManagement = () => {
       </div>
 
       {/* Order Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3 sm:gap-4">
         <Card className="bg-cream/50 border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs sm:text-sm font-medium text-charcoal">Total Orders</CardTitle>
@@ -253,6 +264,16 @@ const OrderManagement = () => {
           </CardHeader>
           <CardContent>
             <div className="text-lg sm:text-2xl font-bold text-purple-600">{orderStats.uniqueCustomers}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-pink-50 border-0 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium text-charcoal">With Images</CardTitle>
+            <ImageIcon className="h-3 w-3 sm:h-4 sm:w-4 text-stone" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg sm:text-2xl font-bold text-pink-600">{orderStats.withImages}</div>
           </CardContent>
         </Card>
 
@@ -352,6 +373,7 @@ const OrderManagement = () => {
                                 console.error('Failed to load image:', imageUrl);
                                 e.currentTarget.style.display = 'none';
                               }}
+                              onLoad={() => console.log('Thumbnail loaded:', imageUrl)}
                             />
                           </div>
                         ))}
