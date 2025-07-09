@@ -279,6 +279,21 @@ serve(async (req) => {
 
     console.log('Payment processed successfully:', paymentResult.payment.id);
     
+    // Collect uploaded images from request
+    const uploadedImages = requestBody.uploadedImages || [];
+    console.log('Uploaded images from request:', uploadedImages);
+    
+    // Collect personalization data from items
+    const personalizationData = {};
+    sanitizedItems.forEach((item, index) => {
+      if (item.uploadedPhotoUrl) {
+        personalizationData[`item_${index}`] = {
+          name: item.name,
+          uploadedPhotoUrl: item.uploadedPhotoUrl
+        };
+      }
+    });
+    
     // Store order in database
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
@@ -290,7 +305,9 @@ serve(async (req) => {
         shipping_address: sanitizedShippingAddress,
         billing_address: sanitizedBillingAddress,
         payment_id: paymentResult.payment.id,
-        status: 'paid'
+        status: 'paid',
+        uploaded_images: uploadedImages.length > 0 ? uploadedImages : null,
+        personalization_data: Object.keys(personalizationData).length > 0 ? personalizationData : null
       })
       .select()
       .single();

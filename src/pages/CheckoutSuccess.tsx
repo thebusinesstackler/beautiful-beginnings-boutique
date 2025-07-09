@@ -38,7 +38,7 @@ const CheckoutSuccess = () => {
             Thank You for Your Order!
           </h1>
           <p className="text-xl text-charcoal/70 mb-8 max-w-2xl mx-auto">
-            Your payment has been processed successfully. We're excited to create your personalized keepsake!
+            We received your order! We're excited to create your personalized keepsake!
           </p>
 
           {/* Order Details Card */}
