@@ -36,9 +36,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [rolesFetched, setRolesFetched] = useState(false);
 
   const fetchProfile = async (userId: string) => {
+    // Prevent multiple concurrent fetches
+    if (rolesFetched) return;
+    
     try {
+      console.log('Fetching profile for user:', userId);
+      
       // Fetch user roles
       const { data: rolesData, error: rolesError } = await supabase
         .from('user_roles')
@@ -47,11 +53,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (rolesError) {
         console.error('Error fetching roles:', rolesError);
+        // Set empty profile with just email to prevent infinite retries
+        setProfile({
+          id: userId,
+          email: user?.email || session?.user?.email || '',
+          roles: []
+        });
+        setRolesFetched(true);
+        return;
       }
 
       const roles = rolesData?.map(r => r.role) || [];
-
-      // Get user email from session
       const userEmail = user?.email || session?.user?.email || '';
 
       setProfile({
@@ -59,9 +71,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: userEmail,
         roles
       });
+      
+      setRolesFetched(true);
+      console.log('Profile fetched successfully:', { userId, email: userEmail, roles });
     } catch (error) {
       console.error('Error fetching profile:', error);
-      setProfile(null);
+      // Set empty profile to prevent infinite retries
+      setProfile({
+        id: userId,
+        email: user?.email || session?.user?.email || '',
+        roles: []
+      });
+      setRolesFetched(true);
     }
   };
 
@@ -72,18 +93,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isAdmin = hasRole('admin');
 
   useEffect(() => {
+    console.log('Setting up auth state listener');
+    
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state changed:', event, !!session);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
+          // Reset roles fetched flag when user changes
+          setRolesFetched(false);
+          // Use setTimeout to prevent blocking the auth state change
           setTimeout(() => {
             fetchProfile(session.user.id);
-          }, 0);
+          }, 100);
         } else {
           setProfile(null);
+          setRolesFetched(false);
         }
         
         setLoading(false);
@@ -92,6 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', !!session);
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -102,8 +131,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
-  }, [user]);
+    return () => {
+      console.log('Cleaning up auth subscription');
+      subscription.unsubscribe();
+    };
+  }, []); // Remove user dependency to prevent infinite loops
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -127,6 +159,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    setRolesFetched(false);
     await supabase.auth.signOut();
   };
 
