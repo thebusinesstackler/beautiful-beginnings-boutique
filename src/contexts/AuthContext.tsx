@@ -7,6 +7,7 @@ interface Profile {
   id: string;
   email: string;
   is_admin: boolean;
+  roles?: string[];
 }
 
 interface AuthContextType {
@@ -17,6 +18,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  hasRole: (role: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,18 +39,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      // Fetch profile
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
       
-      if (error) throw error;
-      setProfile(data);
+      if (profileError) throw profileError;
+
+      // Fetch user roles
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId);
+
+      if (rolesError) {
+        console.error('Error fetching roles:', rolesError);
+      }
+
+      const roles = rolesData?.map(r => r.role) || [];
+      const isAdmin = roles.includes('admin') || profileData.is_admin;
+
+      setProfile({
+        ...profileData,
+        is_admin: isAdmin,
+        roles
+      });
     } catch (error) {
       console.error('Error fetching profile:', error);
       setProfile(null);
     }
+  };
+
+  const hasRole = (role: string): boolean => {
+    return profile?.roles?.includes(role) || false;
   };
 
   useEffect(() => {
@@ -118,6 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signUp,
     signOut,
+    hasRole,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
