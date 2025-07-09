@@ -1,15 +1,17 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, Store, Truck, Mail, CreditCard, AlertCircle } from 'lucide-react';
+import { Settings, Store, Truck, Mail, CreditCard, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 
 const AdminSettings = () => {
   const { settings, updateSettings, loading } = useSettings();
   const [formData, setFormData] = useState(settings);
+  const [showAccessToken, setShowAccessToken] = useState(false);
 
   React.useEffect(() => {
     setFormData(settings);
@@ -36,6 +38,7 @@ const AdminSettings = () => {
     updateSettings({
       square_app_id: formData.square_app_id,
       square_location_id: formData.square_location_id,
+      square_access_token: formData.square_access_token,
       square_environment: formData.square_environment
     });
   };
@@ -160,8 +163,8 @@ const AdminSettings = () => {
                 <p className="font-semibold mb-2">Square Configuration Required</p>
                 <ul className="space-y-1 text-xs">
                   <li>• Get your Square credentials from the <a href="https://developer.squareup.com/apps" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Square Developer Dashboard</a></li>
-                  <li>• Your Access Token is stored securely in server environment variables</li>
-                  <li>• Only public configuration settings are managed here</li>
+                  <li>• Access Token is used for API authentication</li>
+                  <li>• Use sandbox tokens for testing, production tokens for live payments</li>
                 </ul>
               </div>
             </div>
@@ -200,7 +203,7 @@ const AdminSettings = () => {
               </p>
             </div>
             
-            <div className="space-y-2 md:col-span-1">
+            <div className="space-y-2">
               <Label htmlFor="square_environment" className="text-charcoal font-medium">
                 Environment *
               </Label>
@@ -215,6 +218,36 @@ const AdminSettings = () => {
               </select>
               <p className="text-xs text-gray-600">
                 Use Sandbox for testing, Production for live payments
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="square_access_token" className="text-charcoal font-medium">
+                Access Token *
+              </Label>
+              <div className="relative">
+                <Input 
+                  id="square_access_token" 
+                  type={showAccessToken ? "text" : "password"}
+                  value={formData.square_access_token || ''}
+                  onChange={(e) => handleInputChange('square_access_token', e.target.value)}
+                  placeholder="EAAAl... (Sandbox) or sq0atp-... (Production)"
+                  className="font-mono text-sm pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowAccessToken(!showAccessToken)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
+                >
+                  {showAccessToken ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-gray-600">
+                Sandbox tokens start with "EAAAl", Production with "sq0atp-"
               </p>
             </div>
           </div>
@@ -233,6 +266,12 @@ const AdminSettings = () => {
                 <div className={`w-2 h-2 rounded-full ${formData.square_location_id ? 'bg-green-500' : 'bg-red-500'}`}></div>
                 <span className={formData.square_location_id ? 'text-green-700' : 'text-red-700'}>
                   Location ID: {formData.square_location_id ? 'Configured' : 'Missing'}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${formData.square_access_token ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className={formData.square_access_token ? 'text-green-700' : 'text-red-700'}>
+                  Access Token: {formData.square_access_token ? 'Configured' : 'Missing'}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
