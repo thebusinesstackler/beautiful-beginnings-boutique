@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Lock } from 'lucide-react';
 import type { SDKStatus } from '@/types/SquareCheckout';
 
 interface SquareCardFormProps {
@@ -10,11 +11,14 @@ interface SquareCardFormProps {
 
 const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFormProps) => {
   return (
-    <div className="bg-white rounded-xl border border-sage/20 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
       {/* Header */}
-      <div className="px-6 py-4 border-b border-sage/10">
-        <h3 className="text-lg font-semibold text-charcoal">Payment</h3>
-        <p className="text-sm text-charcoal/60 mt-1">All transactions are secure and encrypted</p>
+      <div className="px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center space-x-2">
+          <Lock className="h-4 w-4 text-blue-600" />
+          <h3 className="text-lg font-semibold text-gray-900">Secure Payment</h3>
+        </div>
+        <p className="text-sm text-gray-600 mt-1">Your payment information is protected with SSL encryption</p>
       </div>
 
       {/* Content */}
@@ -22,9 +26,9 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
         {sdkStatus === 'loading' && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
-              <p className="text-charcoal/70 font-medium">Setting up secure payment...</p>
-              <p className="text-charcoal/50 text-sm mt-1">Please wait a moment</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent mx-auto mb-4"></div>
+              <p className="text-gray-700 font-medium">Setting up secure payment...</p>
+              <p className="text-gray-500 text-sm mt-1">Please wait a moment</p>
             </div>
           </div>
         )}
@@ -42,43 +46,24 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
         )}
         
         {sdkStatus === 'ready' && (
-          <div className="space-y-4">
-            {/* Google Pay Button Placeholder */}
-            <div className="w-full">
-              <button 
-                type="button"
-                className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium text-center hover:bg-gray-800 transition-colors flex items-center justify-center space-x-2"
-                disabled
-              >
-                <span className="text-lg">G</span>
-                <span>Pay</span>
-              </button>
-              <p className="text-xs text-charcoal/50 text-center mt-2">Or pay with card</p>
-            </div>
-
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-sage/20"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-charcoal/50">or</span>
-              </div>
-            </div>
-
+          <div className="space-y-6">
             {/* Card Form Container */}
             <div className="space-y-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Card Information
+              </label>
               <div 
                 ref={cardRef} 
                 id="card-container"
                 data-square-container="true"
-                className="w-full border border-sage/30 rounded-lg p-4 bg-white min-h-[120px] focus-within:border-sage focus-within:ring-2 focus-within:ring-sage/20 transition-all"
+                className="w-full border border-gray-300 rounded-lg p-4 min-h-[120px] transition-all duration-200 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100"
                 style={{
-                  '--sq-input-background-color': '#ffffff',
-                  '--sq-input-border-color': '#e5e7eb',
-                  '--sq-input-border-color-focus': '#6b7280',
+                  backgroundColor: '#f9f9f9',
+                  '--sq-input-background-color': '#f9f9f9',
+                  '--sq-input-border-color': 'transparent',
+                  '--sq-input-border-color-focus': 'transparent',
                   '--sq-input-border-radius': '6px',
-                  '--sq-input-font-family': 'system-ui, -apple-system, sans-serif',
+                  '--sq-input-font-family': 'Inter, system-ui, -apple-system, sans-serif',
                   '--sq-input-font-size': '16px',
                   '--sq-input-font-weight': '400',
                   '--sq-input-line-height': '1.5',
@@ -87,14 +72,6 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
                   '--sq-input-placeholder-color': '#9ca3af'
                 } as React.CSSProperties}
               />
-            </div>
-
-            {/* Security Message */}
-            <div className="flex items-center space-x-2 text-sm text-charcoal/60">
-              <svg className="w-4 h-4 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              <span>Your payment information is protected with SSL encryption</span>
             </div>
           </div>
         )}

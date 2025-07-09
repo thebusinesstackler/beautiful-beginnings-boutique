@@ -31,12 +31,24 @@ const SquarePaymentButton = ({
   const isDisabled = isLoading || sdkStatus !== 'ready' || !isSecureConnection;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4" style={{ margin: '16px 0' }}>
       {/* Main Payment Button */}
-      <Button
+      <button
         onClick={onPayment}
         disabled={isDisabled}
-        className="w-full h-12 text-base font-semibold rounded-lg transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white border-none disabled:bg-gray-400 disabled:text-gray-600"
+        className={`
+          w-full h-12 text-base font-bold rounded-lg transition-all duration-200 cursor-pointer
+          ${isDisabled 
+            ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+            : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg'
+          }
+        `}
+        style={{
+          padding: '12px 24px',
+          borderRadius: '6px',
+          border: 'none',
+          boxShadow: isDisabled ? 'none' : '0 2px 4px rgba(0,119,255,0.2)'
+        }}
       >
         <div className="flex items-center justify-center space-x-2">
           {isLoading && (
@@ -44,11 +56,11 @@ const SquarePaymentButton = ({
           )}
           <span>{getButtonText()}</span>
         </div>
-      </Button>
+      </button>
       
       {/* Status Messages */}
       {sdkStatus === 'loading' && (
-        <div className="text-center p-2 text-sm text-charcoal/60">
+        <div className="text-center p-2 text-sm text-gray-600">
           <p>Initializing secure payment system...</p>
         </div>
       )}
@@ -66,6 +78,14 @@ const SquarePaymentButton = ({
           <p className="text-amber-700 text-xs mt-1">HTTPS is required for payment processing</p>
         </div>
       )}
+
+      {/* Powered by Square - visually separated */}
+      <div className="pt-4 border-t border-gray-100">
+        <div className="text-center text-xs text-gray-500">
+          <p>🔒 Powered by Square</p>
+          <p className="mt-1">Your payment information is never stored on our servers</p>
+        </div>
+      </div>
     </div>
   );
 };
