@@ -6,7 +6,6 @@ import { supabase } from '@/integrations/supabase/client';
 interface Profile {
   id: string;
   email: string;
-  is_admin: boolean;
   roles?: string[];
 }
 
@@ -19,6 +18,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   hasRole: (role: string) => boolean;
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,15 +39,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     try {
-      // Fetch profile
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      if (profileError) throw profileError;
-
       // Fetch user roles
       const { data: rolesData, error: rolesError } = await supabase
         .from('user_roles')
@@ -59,11 +50,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const roles = rolesData?.map(r => r.role) || [];
-      const isAdmin = roles.includes('admin') || profileData.is_admin;
+
+      // Get user email from session
+      const userEmail = user?.email || session?.user?.email || '';
 
       setProfile({
-        ...profileData,
-        is_admin: isAdmin,
+        id: userId,
+        email: userEmail,
         roles
       });
     } catch (error) {
@@ -75,6 +68,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const hasRole = (role: string): boolean => {
     return profile?.roles?.includes(role) || false;
   };
+
+  const isAdmin = hasRole('admin');
 
   useEffect(() => {
     // Set up auth state listener
@@ -108,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [user]);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -144,6 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp,
     signOut,
     hasRole,
+    isAdmin,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

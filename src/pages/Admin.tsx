@@ -7,14 +7,14 @@ import Footer from '@/components/Footer';
 import AdminTabs from '@/components/admin/AdminTabs';
 
 const Admin = () => {
-  const { profile, loading: authLoading } = useAuth();
+  const { isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authLoading && (!profile || !profile.is_admin)) {
+    if (!authLoading && !isAdmin) {
       navigate('/auth');
     }
-  }, [profile, authLoading, navigate]);
+  }, [isAdmin, authLoading, navigate]);
 
   if (authLoading) {
     return (
@@ -31,7 +31,7 @@ const Admin = () => {
     );
   }
 
-  if (!profile?.is_admin) {
+  if (!isAdmin) {
     return null;
   }
 

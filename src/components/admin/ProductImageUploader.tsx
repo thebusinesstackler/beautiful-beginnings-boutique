@@ -5,13 +5,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, X, Plus } from 'lucide-react';
+import { Upload, X, Plus, AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ProductImageUploaderProps {
   onImageUploaded: (imageUrl: string) => void;
   uploading: boolean;
   setUploading: (uploading: boolean) => void;
 }
+
+const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
   onImageUploaded,
@@ -22,7 +26,63 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
+  const validateFile = (file: File): boolean => {
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "File Too Large",
+        description: "File size must be less than 10MB",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Check MIME type
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast({
+        title: "Invalid File Type",
+        description: "Only JPEG, PNG, and WebP images are allowed",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Check file extension matches MIME type
+    const extension = file.name.toLowerCase().split('.').pop();
+    const expectedExtensions: Record<string, string[]> = {
+      'image/jpeg': ['jpg', 'jpeg'],
+      'image/png': ['png'],
+      'image/webp': ['webp']
+    };
+
+    const validExtensions = expectedExtensions[file.type] || [];
+    if (!extension || !validExtensions.includes(extension)) {
+      toast({
+        title: "File Extension Mismatch",
+        description: "File extension does not match the file type",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Security check for file name
+    if (file.name.includes('..') || file.name.includes('/') || file.name.includes('\\')) {
+      toast({
+        title: "Invalid File Name",
+        description: "File name contains invalid characters",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleImageUpload = async (file: File) => {
+    if (!validateFile(file)) {
+      return;
+    }
+
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
@@ -33,7 +93,10 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
 
       const { error: uploadError, data: uploadData } = await supabase.storage
         .from('product-images')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) {
         console.error('Upload error:', uploadError);
@@ -44,7 +107,10 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
           // Retry upload
           const { error: retryError } = await supabase.storage
             .from('product-images')
-            .upload(filePath, file);
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: false
+            });
           if (retryError) throw retryError;
         } else {
           throw uploadError;
@@ -80,27 +146,6 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Error",
-          description: "Please select image files only",
-          variant: "destructive",
-        });
-        continue;
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "Error",
-          description: `${file.name} is too large (max 5MB)`,
-          variant: "destructive",
-        });
-        continue;
-      }
-
       await handleImageUpload(file);
     }
     
@@ -112,13 +157,23 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
 
   const handleUrlAdd = () => {
     if (imageUrl.trim()) {
-      console.log('Adding image URL:', imageUrl.trim());
-      onImageUploaded(imageUrl.trim());
-      setImageUrl('');
-      toast({
-        title: "Success",
-        description: "Image URL added successfully",
-      });
+      // Basic URL validation
+      try {
+        new URL(imageUrl.trim());
+        console.log('Adding image URL:', imageUrl.trim());
+        onImageUploaded(imageUrl.trim());
+        setImageUrl('');
+        toast({
+          title: "Success",
+          description: "Image URL added successfully",
+        });
+      } catch {
+        toast({
+          title: "Invalid URL",
+          description: "Please enter a valid image URL",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -137,15 +192,7 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
     }
 
     for (const file of imageFiles) {
-      if (file.size <= 5 * 1024 * 1024) {
-        await handleImageUpload(file);
-      } else {
-        toast({
-          title: "Error",
-          description: `${file.name} is too large (max 5MB)`,
-          variant: "destructive",
-        });
-      }
+      await handleImageUpload(file);
     }
   };
 
@@ -155,6 +202,15 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Security Notice */}
+      <Alert className="bg-blue-50 border-blue-200">
+        <AlertTriangle className="h-4 w-4 text-blue-600" />
+        <AlertDescription className="text-blue-800">
+          <strong>Secure Upload:</strong> Files are validated for type, size, and security before processing.
+          Only JPEG, PNG, and WebP images up to 10MB are accepted.
+        </AlertDescription>
+      </Alert>
+
       {/* File Upload */}
       <div
         className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-sage transition-colors"
@@ -176,12 +232,12 @@ const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/jpg,image/png,image/webp"
           multiple
           onChange={handleFileSelect}
           className="hidden"
         />
-        <p className="text-xs text-gray-500">Max 5MB per image. JPG, PNG, WebP supported.</p>
+        <p className="text-xs text-gray-500">Max 10MB per image. JPG, PNG, WebP supported.</p>
       </div>
 
       {/* URL Input */}
