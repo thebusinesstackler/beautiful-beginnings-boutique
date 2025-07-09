@@ -96,7 +96,7 @@ const Checkout = () => {
             </Link>
           </div> : <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
             {/* Checkout Form */}
-            <div className="xl:col-span-2 space-y-8 px-0 my-0 py-0">
+            <div className="xl:col-span-2 space-y-8">
               {/* Customer Information */}
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8">
                 <h2 className="text-2xl font-semibold text-charcoal font-playfair mb-6">
@@ -236,32 +236,12 @@ const Checkout = () => {
               </div>
 
               {/* Order Summary - Show items with photos if uploaded */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8">
-                <h2 className="text-2xl font-semibold text-charcoal font-playfair mb-6">
-                  Order Review
-                </h2>
-                <div className="space-y-4">
-                  {items.map(item => <div key={item.id} className="flex items-center space-x-4 p-4 border border-stone/20 rounded-lg">
-                      <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg flex-shrink-0" />
-                      <div className="flex-1">
-                        <h3 className="font-medium text-charcoal">{item.name}</h3>
-                        <p className="text-sage font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
-                        <p className="text-sm text-charcoal/60">Quantity: {item.quantity}</p>
-                        {item.uploadedPhotoUrl && <div className="mt-2 flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-sage/10 rounded-full flex items-center justify-center">
-                              <span className="text-xs text-sage">📸</span>
-                            </div>
-                            <span className="text-xs text-sage font-medium">Custom photo uploaded</span>
-                          </div>}
-                      </div>
-                    </div>)}
-                </div>
-              </div>
+              
             </div>
 
             {/* Order Summary */}
             <div className="xl:col-span-1">
-              <div className="backdrop-blur-sm shadow-lg border border-sage/10 p-8 sticky top-8 py-[5px] rounded-3xl mx-[8px] my-0 px-[21px] bg-[#fffafa]">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8 sticky top-8">
                 <h3 className="text-2xl font-semibold text-charcoal font-playfair mb-8">Order Summary</h3>
                 
                 <div className="space-y-4 mb-8">
