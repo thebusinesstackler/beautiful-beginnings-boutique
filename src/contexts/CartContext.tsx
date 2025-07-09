@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { usePhotoUpload } from '@/hooks/usePhotoUpload';
@@ -34,12 +35,34 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const storedCart = localStorage.getItem('cartItems');
     if (storedCart) {
-      setItems(JSON.parse(storedCart));
+      try {
+        const parsedItems = JSON.parse(storedCart);
+        // Ensure all items have the correct structure
+        const validatedItems = parsedItems.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          uploadedPhoto: undefined, // Don't restore file objects
+          uploadedPhotoUrl: item.uploadedPhotoUrl || null,
+          willUploadLater: item.willUploadLater || false
+        }));
+        setItems(validatedItems);
+      } catch (error) {
+        console.error('Error parsing stored cart:', error);
+        localStorage.removeItem('cartItems');
+      }
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(items));
+    // Store cart items but exclude file objects
+    const itemsToStore = items.map(item => ({
+      ...item,
+      uploadedPhoto: undefined // Don't store file objects
+    }));
+    localStorage.setItem('cartItems', JSON.stringify(itemsToStore));
   }, [items]);
 
   const addToCart = (product: any, quantity: number = 1) => {
@@ -52,10 +75,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     setItems(prevItems => {
-      const existingItem = prevItems.find(item => item.name === newItem.name);
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.name === newItem.name
+      const existingItemIndex = prevItems.findIndex(item => item.name === newItem.name);
+      if (existingItemIndex >= 0) {
+        // Update existing item quantity
+        return prevItems.map((item, index) =>
+          index === existingItemIndex
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
@@ -71,6 +95,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const removeFromCart = (itemId: number) => {
     setItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    toast({
+      title: "Item removed",
+      description: "Item has been removed from your cart.",
+    });
   };
 
   const updateQuantity = (itemId: number, newQuantity: number) => {
@@ -100,7 +128,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
               ? { 
                   ...item, 
                   uploadedPhoto: file, 
-                  uploadedPhotoUrl: photoUrl 
+                  uploadedPhotoUrl: photoUrl,
+                  willUploadLater: false
                 }
               : item
           )
@@ -133,6 +162,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const clearCart = () => {
     setItems([]);
+    localStorage.removeItem('cartItems');
   };
 
   const getCartTotal = () => {

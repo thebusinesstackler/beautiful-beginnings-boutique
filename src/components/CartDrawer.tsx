@@ -12,7 +12,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-import { ShoppingCart, X, Eye } from 'lucide-react';
+import { ShoppingCart, X, Eye, ImageIcon } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import PhotoUpload from '@/components/PhotoUpload';
 import { toast } from '@/hooks/use-toast';
@@ -102,15 +102,50 @@ const CartDrawer = ({ children }: CartDrawerProps) => {
                     <h4 className="text-sm font-medium mb-2 text-foreground">
                       Upload Your Photo
                     </h4>
-                    <PhotoUpload
-                      onUpload={(file) => handlePhotoUpload(item.id, file)}
-                      maxSizeMB={10}
-                      className="text-xs"
-                    />
-                    {item.uploadedPhoto && (
-                      <p className="text-xs text-green-600 mt-2">
-                        ✓ Photo uploaded: {item.uploadedPhoto.name}
-                      </p>
+                    
+                    {/* Show uploaded photo if it exists */}
+                    {item.uploadedPhotoUrl ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                          <ImageIcon className="h-4 w-4 text-green-600" />
+                          <span className="text-sm text-green-700 font-medium">
+                            ✓ Photo uploaded successfully
+                          </span>
+                        </div>
+                        <div className="relative">
+                          <img
+                            src={item.uploadedPhotoUrl}
+                            alt="Uploaded photo"
+                            className="w-20 h-20 object-cover rounded-md border"
+                          />
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            // Allow user to replace photo
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = 'image/*';
+                            input.onchange = (e) => {
+                              const file = (e.target as HTMLInputElement).files?.[0];
+                              if (file) {
+                                handlePhotoUpload(item.id, file);
+                              }
+                            };
+                            input.click();
+                          }}
+                          className="text-xs"
+                        >
+                          Replace Photo
+                        </Button>
+                      </div>
+                    ) : (
+                      <PhotoUpload
+                        onUpload={(file) => handlePhotoUpload(item.id, file)}
+                        maxSizeMB={10}
+                        className="text-xs"
+                      />
                     )}
                   </div>
                 </div>
