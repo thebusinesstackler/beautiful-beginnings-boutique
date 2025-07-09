@@ -145,7 +145,7 @@ const AdminSettings = () => {
           <CardTitle className="flex items-center text-charcoal">
             <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
             Square Payment Settings
-            <AlertCircle className="h-4 w-4 ml-2 text-orange-500" title="Configure these settings to enable Square payments" />
+            <AlertCircle className="h-4 w-4 ml-2 text-orange-500" />
           </CardTitle>
           <CardDescription>
             Configure Square payment integration for your checkout system.
