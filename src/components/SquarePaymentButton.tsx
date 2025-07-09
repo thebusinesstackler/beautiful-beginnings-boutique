@@ -36,12 +36,7 @@ const SquarePaymentButton = ({
       <Button
         onClick={onPayment}
         disabled={isDisabled}
-        className="w-full h-12 text-base font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
-        style={{
-          backgroundColor: isDisabled ? '#9ca3af' : '#ff9900',
-          color: 'white',
-          border: 'none'
-        }}
+        className="w-full h-12 text-base font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md bg-sage hover:bg-forest text-white border-none disabled:bg-gray-400 disabled:text-gray-600"
       >
         <div className="flex items-center justify-center space-x-3">
           {isLoading && (

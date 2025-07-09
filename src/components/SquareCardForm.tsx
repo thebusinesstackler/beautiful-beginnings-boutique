@@ -18,11 +18,8 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
             <h3 className="text-lg font-medium text-gray-900">Payment Information</h3>
             <p className="text-sm text-gray-500 mt-1">All transactions are secure and encrypted</p>
           </div>
-          <div className="flex items-center space-x-2">
-            <img src="https://logos-world.net/wp-content/uploads/2020/09/Visa-Logo.png" alt="Visa" className="h-6" />
-            <img src="https://logoeps.com/wp-content/uploads/2013/03/mastercard-vector-logo.png" alt="Mastercard" className="h-6" />
-            <img src="https://logos-world.net/wp-content/uploads/2020/09/American-Express-Logo.png" alt="Amex" className="h-6" />
-            <img src="https://logos-world.net/wp-content/uploads/2020/09/Discover-Logo.png" alt="Discover" className="h-6" />
+          <div className="flex items-center space-x-2 text-xs text-sage/60">
+            <span>We accept all major cards</span>
           </div>
         </div>
       </div>
@@ -32,7 +29,7 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
         {sdkStatus === 'loading' && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
               <p className="text-gray-600 font-medium">Setting up secure payment...</p>
               <p className="text-gray-500 text-sm mt-1">Please wait a moment</p>
             </div>
@@ -64,6 +61,37 @@ const SquareCardForm = ({ cardRef, sdkStatus, isSecureConnection }: SquareCardFo
                 data-square-container="true"
                 className="w-full border border-gray-300 rounded-md p-3 bg-white min-h-[60px]"
               />
+            </div>
+
+            {/* Test Card Numbers Section */}
+            <div className="bg-sage/5 border border-sage/20 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-sage mb-3 flex items-center">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                Test Card Numbers (Sandbox Mode)
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-charcoal">
+                <div className="flex justify-between">
+                  <span className="font-mono">4111 1111 1111 1111</span>
+                  <span className="text-green-600">Success</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono">4000 0000 0000 0002</span>
+                  <span className="text-red-600">Declined</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono">4000 0000 0000 9995</span>
+                  <span className="text-orange-600">Insufficient Funds</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono">4000 0000 0000 0069</span>
+                  <span className="text-gray-600">Expired</span>
+                </div>
+              </div>
+              <p className="text-xs text-charcoal/60 mt-2">
+                Use any future expiration date and any 3-digit CVV
+              </p>
             </div>
 
             {/* Security Message */}
