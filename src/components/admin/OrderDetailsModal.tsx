@@ -52,6 +52,8 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
     window.open(imageUrl, '_blank');
   };
 
+  console.log('Order uploaded_images:', order.uploaded_images);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
@@ -117,34 +119,51 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
             </div>
           </div>
 
-          {/* Customer Uploaded Images */}
+          {/* Customer Uploaded Images - Moved to prominent position */}
           {order.uploaded_images && order.uploaded_images.length > 0 && (
-            <div className="bg-amber-50 rounded-lg p-4">
+            <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
               <div className="flex items-center space-x-2 mb-4">
-                <Eye className="h-5 w-5 text-sage" />
-                <span className="font-medium text-charcoal">Customer Uploaded Images ({order.uploaded_images.length})</span>
+                <Eye className="h-6 w-6 text-blue-600" />
+                <span className="font-bold text-lg text-charcoal">Customer Uploaded Images ({order.uploaded_images.length})</span>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {order.uploaded_images.map((imageUrl, index) => (
-                  <div key={index} className="relative group">
-                    <div className="w-full h-32 bg-gray-100 rounded-lg border overflow-hidden">
+                  <div key={index} className="relative group bg-white rounded-lg p-2 shadow-md">
+                    <div className="w-full h-48 bg-gray-100 rounded-lg border-2 border-gray-200 overflow-hidden">
                       <img
                         src={imageUrl}
                         alt={`Customer upload ${index + 1}`}
-                        className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        className="w-full h-full object-contain cursor-pointer hover:scale-105 transition-transform"
                         onClick={() => handleImageClick(imageUrl)}
                         onError={handleImageError}
                         onLoad={() => console.log('Image loaded successfully:', imageUrl)}
+                        crossOrigin="anonymous"
                       />
                     </div>
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-opacity flex items-center justify-center pointer-events-none">
-                      <Eye className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-2 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-opacity flex items-center justify-center pointer-events-none">
+                      <Eye className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <p className="text-xs text-gray-600 mt-1 break-all">{imageUrl}</p>
+                    <div className="mt-2 p-2">
+                      <p className="text-xs text-gray-600 break-all font-mono bg-gray-100 p-1 rounded">
+                        {imageUrl}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-amber-800 mt-2">Click on any image to view full size</p>
+              <p className="text-sm text-blue-700 mt-4 font-medium">
+                📸 Click on any image to view full size in a new tab
+              </p>
+            </div>
+          )}
+
+          {/* Show message if no images */}
+          {(!order.uploaded_images || order.uploaded_images.length === 0) && (
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="flex items-center space-x-2">
+                <Eye className="h-5 w-5 text-gray-400" />
+                <span className="text-gray-600">No images uploaded by customer</span>
+              </div>
             </div>
           )}
 
