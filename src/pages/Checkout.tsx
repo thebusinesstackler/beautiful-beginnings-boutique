@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Upload, CheckCircle, Clock } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
@@ -48,14 +48,21 @@ const Checkout = () => {
   const tax = subtotal * 0.08;
   const total = subtotal + shippingCost + tax;
 
-  const handlePhotoChange = (itemId: number, file: File) => {
-    updatePhoto(itemId, file);
-    // Remove "will upload later" flag when photo is uploaded
-    updateItemProperty(itemId, 'willUploadLater', false);
-    toast({
-      title: "Photo updated!",
-      description: "Your custom photo has been updated.",
-    });
+  const handlePhotoChange = async (itemId: number, file: File) => {
+    try {
+      await updatePhoto(itemId, file);
+      toast({
+        title: "Photo uploaded!",
+        description: "Your custom photo has been saved successfully.",
+      });
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload photo. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleUploadLaterToggle = (itemId: number, checked: boolean) => {
@@ -333,28 +340,52 @@ const Checkout = () => {
                       <div className="mt-4 p-4 bg-stone-50 rounded-lg">
                         <h4 className="font-medium text-charcoal mb-3">Custom Photo Required</h4>
                         
-                        {item.uploadedPhoto ? (
-                          <div className="mb-4 p-3 bg-sage/10 rounded-lg">
-                            <p className="text-sm text-sage font-medium mb-2">
-                              ✓ Photo uploaded: {item.uploadedPhoto.name}
-                            </p>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const input = document.createElement('input');
-                                input.type = 'file';
-                                input.accept = 'image/*';
-                                input.onchange = (e) => {
-                                  const file = (e.target as HTMLInputElement).files?.[0];
-                                  if (file) handlePhotoChange(item.id, file);
-                                };
-                                input.click();
-                              }}
-                              className="text-xs"
-                            >
-                              Change Photo
-                            </Button>
+                        {item.uploadedPhotoUrl ? (
+                          <div className="mb-4 p-4 bg-sage/10 rounded-lg border-2 border-sage/20">
+                            <div className="flex items-center space-x-3 mb-3">
+                              <CheckCircle className="h-5 w-5 text-sage" />
+                              <p className="text-sm text-sage font-medium">
+                                Photo uploaded and saved successfully!
+                              </p>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                              <img
+                                src={item.uploadedPhotoUrl}
+                                alt="Uploaded preview"
+                                className="w-16 h-16 object-cover rounded border"
+                              />
+                              <div className="flex-1">
+                                <p className="text-xs text-charcoal/60 mb-2">
+                                  {item.uploadedPhoto?.name || 'Custom photo'}
+                                </p>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    const input = document.createElement('input');
+                                    input.type = 'file';
+                                    input.accept = 'image/*';
+                                    input.onchange = (e) => {
+                                      const file = (e.target as HTMLInputElement).files?.[0];
+                                      if (file) handlePhotoChange(item.id, file);
+                                    };
+                                    input.click();
+                                  }}
+                                  className="text-xs"
+                                >
+                                  Change Photo
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : item.willUploadLater ? (
+                          <div className="mb-4 p-4 bg-amber-50 rounded-lg border-2 border-amber-200">
+                            <div className="flex items-center space-x-3">
+                              <Clock className="h-5 w-5 text-amber-600" />
+                              <p className="text-sm text-amber-700 font-medium">
+                                You've chosen to upload your photo later
+                              </p>
+                            </div>
                           </div>
                         ) : (
                           <div className="mb-4">
@@ -371,9 +402,10 @@ const Checkout = () => {
                                 };
                                 input.click();
                               }}
-                              className="text-xs mb-3"
+                              className="text-xs mb-3 flex items-center space-x-2"
                             >
-                              Upload Photo Now
+                              <Upload className="h-4 w-4" />
+                              <span>Upload Photo Now</span>
                             </Button>
                           </div>
                         )}
@@ -386,16 +418,17 @@ const Checkout = () => {
                             checked={item.willUploadLater || false}
                             onChange={(e) => handleUploadLaterToggle(item.id, e.target.checked)}
                             className="w-4 h-4 text-sage bg-white border-stone-300 rounded focus:ring-sage focus:ring-2"
+                            disabled={!!item.uploadedPhotoUrl}
                           />
                           <label 
                             htmlFor={`upload-later-${item.id}`}
-                            className="text-sm text-charcoal cursor-pointer"
+                            className={`text-sm cursor-pointer ${item.uploadedPhotoUrl ? 'text-charcoal/40' : 'text-charcoal'}`}
                           >
                             I'll upload my photo later (after placing the order)
                           </label>
                         </div>
                         
-                        {(!item.uploadedPhoto && !item.willUploadLater) && (
+                        {(!item.uploadedPhotoUrl && !item.willUploadLater) && (
                           <p className="text-sm text-amber-700 mt-2 bg-amber-50 p-2 rounded">
                             ⚠️ Please upload a photo or select "Upload Later" to continue
                           </p>

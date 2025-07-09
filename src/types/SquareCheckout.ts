@@ -1,3 +1,4 @@
+
 export interface CustomerInfo {
   firstName: string;
   lastName: string;
@@ -11,6 +12,39 @@ export interface Address {
   state: string;
   zipCode: string;
   country: string;
+}
+
+export interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  image: string;
+  uploadedPhoto?: File;
+  uploadedPhotoUrl?: string;
+  willUploadLater?: boolean;
+}
+
+export interface PaymentRequest {
+  token: string;
+  customerInfo: CustomerInfo;
+  shippingAddress: Address;
+  billingAddress: Address;
+  items: CartItem[];
+  amount: number;
+  breakdown: {
+    subtotal: number;
+    shipping: number;
+    tax: number;
+    total: number;
+  };
+  squareCredentials: {
+    appId: string;
+    accessToken: string;
+    environment: string;
+    locationId: string;
+  };
+  uploadedImages?: string[];
 }
 
 export interface EmbeddedSquareCheckoutProps {
@@ -27,29 +61,3 @@ export interface EmbeddedSquareCheckoutProps {
 }
 
 export type PaymentStatus = 'idle' | 'processing' | 'success' | 'error';
-export type SDKStatus = 'loading' | 'ready' | 'error';
-
-export interface PaymentBreakdown {
-  subtotal: number;
-  shipping: number;
-  tax: number;
-  total: number;
-}
-
-export interface SquareCredentials {
-  appId: string;
-  accessToken: string;
-  environment: string;
-  locationId: string;
-}
-
-export interface PaymentRequest {
-  token: string;
-  customerInfo: CustomerInfo;
-  shippingAddress: Address;
-  billingAddress: Address;
-  items: any[];
-  amount: number;
-  breakdown: PaymentBreakdown;
-  squareCredentials: SquareCredentials;
-}

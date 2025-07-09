@@ -1,5 +1,7 @@
 
 import React, { createContext, useContext, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 interface CartItem {
   id: number;
@@ -8,6 +10,7 @@ interface CartItem {
   quantity: number;
   image: string;
   uploadedPhoto?: File;
+  uploadedPhotoUrl?: string;
   willUploadLater?: boolean;
 }
 
@@ -19,7 +22,7 @@ interface CartContextType {
   clearCart: () => void;
   getCartTotal: () => number;
   getCartCount: () => number;
-  updatePhoto: (id: number, file: File) => void;
+  updatePhoto: (id: number, file: File) => Promise<void>;
   updateItemProperty: (id: number, property: keyof CartItem, value: any) => void;
 }
 
@@ -73,12 +76,58 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     return items.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const updatePhoto = (id: number, file: File) => {
-    setItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, uploadedPhoto: file } : item
-      )
-    );
+  const updatePhoto = async (id: number, file: File) => {
+    try {
+      // Generate a unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `customer-uploads/${fileName}`;
+
+      console.log('Uploading file to Supabase storage:', filePath);
+
+      // Upload file to Supabase storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Error uploading file:', uploadError);
+        throw uploadError;
+      }
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+
+      console.log('File uploaded successfully, public URL:', publicUrl);
+
+      // Update the cart item with both the file and the URL
+      setItems(prevItems =>
+        prevItems.map(item =>
+          item.id === id ? { 
+            ...item, 
+            uploadedPhoto: file,
+            uploadedPhotoUrl: publicUrl,
+            willUploadLater: false
+          } : item
+        )
+      );
+
+      toast({
+        title: "Photo uploaded successfully!",
+        description: "Your custom photo has been saved.",
+      });
+
+    } catch (error) {
+      console.error('Error in updatePhoto:', error);
+      toast({
+        title: "Upload Error",
+        description: "Failed to upload photo. Please try again.",
+        variant: "destructive",
+      });
+      throw error;
+    }
   };
 
   const updateItemProperty = (id: number, property: keyof CartItem, value: any) => {

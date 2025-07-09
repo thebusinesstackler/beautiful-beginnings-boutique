@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,13 +35,22 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
       if (tokenResult.status === 'OK') {
         const paymentToken = tokenResult.token;
         
-        // Send payment token to backend
+        // Collect uploaded image URLs from cart items
+        const uploadedImages = paymentRequest.items
+          .filter(item => item.uploadedPhotoUrl)
+          .map(item => item.uploadedPhotoUrl)
+          .filter(Boolean);
+
+        console.log('Collected uploaded images:', uploadedImages);
+
+        // Send payment token to backend with image URLs
         const requestPayload = {
           ...paymentRequest,
-          token: paymentToken
+          token: paymentToken,
+          uploadedImages: uploadedImages
         };
 
-        console.log('Processing payment with token:', requestPayload);
+        console.log('Processing payment with token and images:', requestPayload);
 
         const { data, error } = await supabase.functions.invoke('square-checkout', {
           body: requestPayload
