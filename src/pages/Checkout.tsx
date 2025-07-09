@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Camera, X, Upload } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
@@ -15,7 +15,9 @@ import { useShippingSettings } from '@/hooks/useShippingSettings';
 const Checkout = () => {
   const {
     items,
-    getCartTotal
+    getCartTotal,
+    updatePhoto,
+    updateItemProperty
   } = useCart();
   const {
     calculateShipping
@@ -64,6 +66,29 @@ const Checkout = () => {
       description: "There was an issue processing your payment. Please try again.",
       variant: "destructive"
     });
+  };
+
+  const handlePhotoUpload = async (itemId: number, file: File) => {
+    try {
+      await updatePhoto(itemId, file);
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+    }
+  };
+
+  const handleRemovePhoto = (itemId: number) => {
+    updateItemProperty(itemId, 'uploadedPhotoUrl', null);
+    updateItemProperty(itemId, 'uploadedPhoto', undefined);
+    updateItemProperty(itemId, 'willUploadLater', false);
+  };
+
+  const handleWillUploadLater = (itemId: number, willUpload: boolean) => {
+    updateItemProperty(itemId, 'willUploadLater', willUpload);
+    if (willUpload) {
+      // Clear any existing photo when selecting "will upload later"
+      updateItemProperty(itemId, 'uploadedPhotoUrl', null);
+      updateItemProperty(itemId, 'uploadedPhoto', undefined);
+    }
   };
   return <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
       <Navigation />
@@ -244,45 +269,151 @@ const Checkout = () => {
                 </h2>
                 <div className="space-y-4">
                   {items.map((item) => (
-                    <div key={item.id} className="flex items-start gap-4 p-4 border border-stone/20 rounded-lg bg-white/50">
-                      {/* Product Image */}
-                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-stone/10 flex-shrink-0">
-                        <img 
-                          src={item.image} 
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
+                    <div key={item.id} className="border border-stone/20 rounded-lg bg-white/50 overflow-hidden">
+                      {/* Main Item Info */}
+                      <div className="flex items-start gap-4 p-4">
+                        {/* Product Image */}
+                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-stone/10 flex-shrink-0">
+                          <img 
+                            src={item.image} 
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        
+                        {/* Product Details */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-charcoal text-sm truncate">{item.name}</h3>
+                          <p className="text-charcoal/60 text-sm">Quantity: {item.quantity}</p>
+                          <p className="font-semibold text-sage text-sm">${(item.price * item.quantity).toFixed(2)}</p>
+                        </div>
                       </div>
-                      
-                      {/* Product Details */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-charcoal text-sm truncate">{item.name}</h3>
-                        <p className="text-charcoal/60 text-sm">Quantity: {item.quantity}</p>
-                        <p className="font-semibold text-sage text-sm">${(item.price * item.quantity).toFixed(2)}</p>
-                        
-                        {/* Uploaded Photo Display */}
-                        {item.uploadedPhotoUrl && (
-                          <div className="mt-2">
-                            <p className="text-xs text-charcoal/60 mb-1">Custom Photo:</p>
-                            <div className="w-12 h-12 rounded border border-sage/30 overflow-hidden bg-white">
-                              <img 
-                                src={item.uploadedPhotoUrl} 
-                                alt="Custom uploaded photo"
-                                className="w-full h-full object-cover"
-                              />
+
+                      {/* Photo Section */}
+                      <div className="px-4 pb-4">
+                        <div className="border-t border-stone/20 pt-4">
+                          <h4 className="text-xs font-medium text-charcoal/80 mb-3">Custom Photo</h4>
+                          
+                          {/* Current Photo Display */}
+                          {item.uploadedPhotoUrl ? (
+                            <div className="space-y-3">
+                              <div className="relative inline-block">
+                                <img 
+                                  src={item.uploadedPhotoUrl} 
+                                  alt="Custom uploaded photo"
+                                  className="w-20 h-20 object-cover rounded-lg border border-sage/30"
+                                />
+                                <button
+                                  onClick={() => handleRemovePhoto(item.id)}
+                                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                              <div className="flex gap-2">
+                                <label className="flex-1">
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) handlePhotoUpload(item.id, file);
+                                    }}
+                                    className="hidden"
+                                  />
+                                  <Button 
+                                    type="button"
+                                    variant="outline" 
+                                    size="sm"
+                                    className="w-full text-xs"
+                                    onClick={() => (document.querySelector(`input[type="file"]:last-of-type`) as HTMLInputElement)?.click()}
+                                  >
+                                    <Camera className="w-3 h-3 mr-1" />
+                                    Change Photo
+                                  </Button>
+                                </label>
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        
-                        {/* Will Upload Later indicator */}
-                        {item.willUploadLater && !item.uploadedPhotoUrl && (
-                          <div className="mt-2">
-                            <div className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 border border-amber-200 rounded text-xs text-amber-700">
-                              <span>📷</span>
-                              <span>Photo will be uploaded later</span>
+                          ) : item.willUploadLater ? (
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                                <span className="text-amber-600">📷</span>
+                                <span className="text-xs text-amber-700">Will upload photo later</span>
+                              </div>
+                              <div className="flex gap-2">
+                                <label className="flex-1">
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        handleWillUploadLater(item.id, false);
+                                        handlePhotoUpload(item.id, file);
+                                      }
+                                    }}
+                                    className="hidden"
+                                  />
+                                  <Button 
+                                    type="button"
+                                    variant="outline" 
+                                    size="sm"
+                                    className="w-full text-xs"
+                                  >
+                                    <Upload className="w-3 h-3 mr-1" />
+                                    Upload Now
+                                  </Button>
+                                </label>
+                                <Button 
+                                  type="button"
+                                  variant="ghost" 
+                                  size="sm"
+                                  className="text-xs"
+                                  onClick={() => handleWillUploadLater(item.id, false)}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="space-y-3">
+                              <div className="w-20 h-20 border-2 border-dashed border-stone/30 rounded-lg flex items-center justify-center bg-stone/10">
+                                <Camera className="w-6 h-6 text-stone/40" />
+                              </div>
+                              <div className="flex gap-2">
+                                <label className="flex-1">
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) handlePhotoUpload(item.id, file);
+                                    }}
+                                    className="hidden"
+                                  />
+                                  <Button 
+                                    type="button"
+                                    variant="outline" 
+                                    size="sm"
+                                    className="w-full text-xs"
+                                  >
+                                    <Upload className="w-3 h-3 mr-1" />
+                                    Upload Photo
+                                  </Button>
+                                </label>
+                                <Button 
+                                  type="button"
+                                  variant="ghost" 
+                                  size="sm"
+                                  className="text-xs"
+                                  onClick={() => handleWillUploadLater(item.id, true)}
+                                >
+                                  Later
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
