@@ -1,10 +1,10 @@
-
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Upload, X, Image as ImageIcon, AlertTriangle } from 'lucide-react';
+import { Upload, X, Image as ImageIcon } from 'lucide-react';
 import { useSecurePhotoUpload } from '@/hooks/useSecurePhotoUpload';
+import { SecureFileUpload } from '@/components/SecureFileUpload';
 
 interface SecurePhotoUploadProps {
   onPhotosChange: (photos: string[]) => void;
@@ -20,32 +20,18 @@ const SecurePhotoUpload: React.FC<SecurePhotoUploadProps> = ({
   className = ''
 }) => {
   const [photos, setPhotos] = useState<string[]>(existingPhotos);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { uploadPhoto, deletePhoto, uploading, validateFile } = useSecurePhotoUpload();
+  const { uploadPhoto, deletePhoto, uploading } = useSecurePhotoUpload();
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    
-    for (const file of files) {
-      if (photos.length >= maxPhotos) {
-        break;
-      }
-
-      if (!validateFile(file)) {
-        continue;
-      }
-
-      const photoUrl = await uploadPhoto(file);
-      if (photoUrl) {
-        const newPhotos = [...photos, photoUrl];
-        setPhotos(newPhotos);
-        onPhotosChange(newPhotos);
-      }
+  const handleFileSelect = async (file: File) => {
+    if (photos.length >= maxPhotos) {
+      return;
     }
 
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    const photoUrl = await uploadPhoto(file);
+    if (photoUrl) {
+      const newPhotos = [...photos, photoUrl];
+      setPhotos(newPhotos);
+      onPhotosChange(newPhotos);
     }
   };
 
@@ -74,42 +60,23 @@ const SecurePhotoUpload: React.FC<SecurePhotoUploadProps> = ({
         </div>
         
         {canAddMore && (
-          <Button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            variant="outline"
-            size="sm"
-            className="border-sage text-sage hover:bg-sage/10"
+          <SecureFileUpload
+            onFileSelect={handleFileSelect}
+            accept="image/jpeg,image/jpg,image/png,image/webp"
+            maxSize={10 * 1024 * 1024} // 10MB
           >
-            <Upload className="h-4 w-4 mr-2" />
-            {uploading ? 'Uploading...' : 'Add Photos'}
-          </Button>
+            <Button
+              disabled={uploading}
+              variant="outline"
+              size="sm"
+              className="border-sage text-sage hover:bg-sage/10 w-full"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading ? 'Uploading...' : 'Add Photos'}
+            </Button>
+          </SecureFileUpload>
         )}
       </div>
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/jpeg,image/jpg,image/png,image/webp"
-        multiple
-        onChange={handleFileSelect}
-        className="hidden"
-      />
-
-      {/* Security Notice */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardContent className="p-3">
-          <div className="flex items-start space-x-2">
-            <AlertTriangle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-blue-800">
-              <p className="font-medium">Secure Upload</p>
-              <p className="text-xs mt-1">
-                Files are securely stored with 10MB limit. Only JPEG, PNG, and WebP formats accepted.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Photo Grid */}
       {photos.length > 0 && (

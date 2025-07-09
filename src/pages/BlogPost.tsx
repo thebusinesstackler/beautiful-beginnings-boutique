@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -8,9 +7,14 @@ import Footer from '@/components/Footer';
 import { Calendar, User, Clock, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { calculateReadingTime } from '@/utils/blogUtils';
+import { sanitizeHtml } from '@/utils/sanitization';
+import { useSecurityHeaders } from '@/hooks/useSecurityHeaders';
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
+  
+  // Apply security headers
+  useSecurityHeaders();
 
   const { data: blogPost, isLoading, error } = useQuery({
     queryKey: ['blog-post', slug],
@@ -126,7 +130,7 @@ const BlogPost = () => {
               {/* Excerpt */}
               {blogPost.excerpt && (
                 <p className="text-xl text-stone leading-relaxed mb-8 font-medium">
-                  {blogPost.excerpt}
+                  {sanitizeHtml(blogPost.excerpt)}
                 </p>
               )}
               
@@ -134,7 +138,7 @@ const BlogPost = () => {
               {blogPost.content && (
                 <div 
                   className="prose prose-lg max-w-none prose-headings:font-playfair prose-headings:text-charcoal prose-p:text-stone prose-p:leading-relaxed prose-a:text-sage hover:prose-a:text-forest prose-strong:text-charcoal prose-em:text-stone"
-                  dangerouslySetInnerHTML={{ __html: blogPost.content }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(blogPost.content) }}
                 />
               )}
             </div>

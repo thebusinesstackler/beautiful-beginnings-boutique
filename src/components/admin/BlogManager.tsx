@@ -11,6 +11,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, Eye, Clock } from 'lucide-react';
 import { generateSlug, generateExcerpt, calculateReadingTime } from '@/utils/blogUtils';
+import { useInputValidation } from '@/hooks/useInputValidation';
+import { sanitizeInput, validateSlug } from '@/utils/sanitization';
+import { useRateLimiter } from '@/hooks/useRateLimiter';
 
 interface BlogPost {
   id: string;
@@ -31,6 +34,12 @@ const BlogManager = () => {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { validateField, errors, clearErrors } = useInputValidation();
+  const { checkRateLimit } = useRateLimiter({
+    maxAttempts: 5,
+    windowMs: 60000, // 1 minute
+    blockDurationMs: 300000 // 5 minutes
+  });
 
   const [formData, setFormData] = useState({
     title: '',
@@ -85,13 +94,46 @@ const BlogManager = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Rate limiting check
+    if (!checkRateLimit()) {
+      return;
+    }
+
+    // Validate inputs
+    const titleValid = validateField('Title', formData.title, {
+      required: true,
+      minLength: 3,
+      maxLength: 200
+    });
+
+    const slugValid = validateField('Slug', formData.slug, {
+      required: true,
+      maxLength: 100,
+      custom: validateSlug
+    });
+
+    const contentValid = validateField('Content', formData.content, {
+      required: true,
+      minLength: 10
+    });
+
+    if (!titleValid || !slugValid || !contentValid) {
+      toast({
+        title: "Validation Error",
+        description: "Please fix the errors above",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const postData = {
-        title: formData.title,
-        slug: formData.slug || generateSlug(formData.title),
-        content: formData.content,
-        excerpt: formData.excerpt || generateExcerpt(formData.content),
-        featured_image: formData.featured_image,
+        title: sanitizeInput(formData.title, 200),
+        slug: sanitizeInput(formData.slug, 100),
+        content: formData.content, // Content is sanitized on display, not storage
+        excerpt: sanitizeInput(formData.excerpt || generateExcerpt(formData.content), 500),
+        featured_image: formData.featured_image ? sanitizeInput(formData.featured_image, 500) : null,
         status: formData.status,
         publish_date: formData.publish_date ? new Date(formData.publish_date).toISOString() : null
       };
@@ -116,6 +158,7 @@ const BlogManager = () => {
       setShowForm(false);
       setEditingPost(null);
       resetForm();
+      clearErrors();
       fetchPosts();
     } catch (error) {
       console.error('Error saving blog post:', error);
@@ -229,24 +272,38 @@ const BlogManager = () => {
                   <Input
                     id="title"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, title: e.target.value });
+                      clearErrors('Title');
+                    }}
                     required
                     placeholder="Enter an engaging blog post title..."
+                    className={errors.Title ? 'border-red-500' : ''}
                   />
+                  {errors.Title && (
+                    <p className="text-red-500 text-xs mt-1">{errors.Title[0]}</p>
+                  )}
                   <p className="text-xs text-stone mt-1">
-                    {formData.title.length}/80 characters
+                    {formData.title.length}/200 characters
                   </p>
                 </div>
                 <div>
-                  <Label htmlFor="slug" className="text-charcoal">URL Slug</Label>
+                  <Label htmlFor="slug" className="text-charcoal">URL Slug *</Label>
                   <Input
                     id="slug"
                     value={formData.slug}
-                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, slug: e.target.value });
+                      clearErrors('Slug');
+                    }}
                     placeholder="Auto-generated from title"
+                    className={errors.Slug ? 'border-red-500' : ''}
                   />
+                  {errors.Slug && (
+                    <p className="text-red-500 text-xs mt-1">{errors.Slug[0]}</p>
+                  )}
                   <p className="text-xs text-stone mt-1">
-                    Preview: /blog/{formData.slug || 'your-slug-here'}
+                    {formData.slug.length}/100 characters • Preview: /blog/{formData.slug || 'your-slug-here'}
                   </p>
                 </div>
                 <div>
@@ -288,7 +345,10 @@ const BlogManager = () => {
                 <div className="mt-2">
                   <ReactQuill
                     value={formData.content}
-                    onChange={(content) => setFormData({ ...formData, content })}
+                    onChange={(content) => {
+                      setFormData({ ...formData, content });
+                      clearErrors('Content');
+                    }}
                     modules={quillModules}
                     formats={quillFormats}
                     placeholder="Write your blog post content here. Use the toolbar to format text, add links, and more..."
@@ -299,6 +359,9 @@ const BlogManager = () => {
                     }}
                   />
                 </div>
+                {errors.Content && (
+                  <p className="text-red-500 text-xs mt-1">{errors.Content[0]}</p>
+                )}
                 {formData.content && (
                   <div className="flex items-center gap-4 mt-2 text-sm text-stone">
                     <span className="flex items-center gap-1">
