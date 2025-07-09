@@ -81,10 +81,10 @@ const EmbeddedSquareCheckout = ({
         total: Math.round(total * 100)
       },
       squareCredentials: {
-        appId: settings.square_app_id,
-        accessToken: settings.square_access_token,
+        appId: settings.square_app_id || '',
+        accessToken: '', // Will be handled by Edge Function
         environment: settings.square_environment || 'sandbox',
-        locationId: settings.square_location_id
+        locationId: settings.square_location_id || ''
       }
     };
 
@@ -95,8 +95,10 @@ const EmbeddedSquareCheckout = ({
     return null;
   }
 
-  // Show configuration message if Square is not set up
-  if (!settings.square_app_id || !settings.square_location_id || !settings.square_access_token) {
+  // Check if Square is configured (only need public settings)
+  const isSquareConfigured = settings.square_app_id && settings.square_location_id;
+
+  if (!isSquareConfigured) {
     return (
       <div className="w-full p-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl">
         <div className="text-center">
@@ -107,8 +109,11 @@ const EmbeddedSquareCheckout = ({
             </svg>
           </div>
           <h3 className="text-xl font-bold text-blue-900 mb-2">Square Payment Setup Required</h3>
-          <p className="text-blue-700 max-w-md mx-auto">
+          <p className="text-blue-700 max-w-md mx-auto mb-4">
             Square checkout needs to be configured in the admin panel to enable secure payment processing.
+          </p>
+          <p className="text-sm text-blue-600">
+            Missing: {!settings.square_app_id && 'App ID'} {!settings.square_location_id && 'Location ID'}
           </p>
         </div>
       </div>

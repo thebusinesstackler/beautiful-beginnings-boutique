@@ -9,10 +9,6 @@ interface SiteSettings {
   store_phone: string;
   store_website: string;
   store_address: string;
-  square_app_id?: string;
-  square_location_id?: string;
-  square_access_token?: string;
-  square_environment?: string;
   domestic_shipping?: string;
   international_shipping?: string;
   free_shipping_threshold?: string;
@@ -25,6 +21,10 @@ interface SiteSettings {
   show_location?: string;
   booth_number?: string;
   show_notes?: string;
+  // Square public settings (safe to store in database)
+  square_app_id?: string;
+  square_location_id?: string;
+  square_environment?: string;
 }
 
 export const useSettings = () => {
@@ -47,7 +47,8 @@ export const useSettings = () => {
       console.log('Fetching settings from database...');
       const { data, error } = await supabase
         .from('settings')
-        .select('key, value');
+        .select('key, value')
+        .not('key', 'in', '(square_access_token)'); // Only exclude the sensitive access token
 
       if (error) {
         console.error('Error fetching settings:', error);
