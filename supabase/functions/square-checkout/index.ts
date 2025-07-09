@@ -201,7 +201,7 @@ serve(async (req) => {
       ? 'https://connect.squareup.com' 
       : 'https://connect.squareupsandbox.com';
 
-    // Process payment with Square
+    // Process payment with Square - Updated API structure
     const paymentData = {
       source_id: token,
       idempotency_key: crypto.randomUUID(),
@@ -224,34 +224,43 @@ serve(async (req) => {
         administrative_district_level_1: sanitizedShippingAddress.state,
         postal_code: sanitizedShippingAddress.zipCode,
         country: 'US'
-      }
+      },
+      note: `Order for ${sanitizedCustomerInfo.firstName} ${sanitizedCustomerInfo.lastName}`
     };
 
     console.log('Processing payment with Square...');
+    console.log('Square API URL:', squareApiUrl);
+    console.log('Payment data amount:', sanitizedAmount);
 
     const squareResponse = await fetch(`${squareApiUrl}/v2/payments`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${settings.square_access_token}`,
         'Content-Type': 'application/json',
-        'Square-Version': '2023-10-18'
+        'Square-Version': '2023-10-18',
+        'Accept': 'application/json'
       },
       body: JSON.stringify(paymentData)
     });
 
     const responseText = await squareResponse.text();
     console.log('Square API Response Status:', squareResponse.status);
-    console.log('Square API Response:', responseText);
+    console.log('Square API Response Headers:', Object.fromEntries(squareResponse.headers.entries()));
+    console.log('Square API Response Body:', responseText);
 
     if (!squareResponse.ok) {
       let errorMessage = 'Payment processing failed';
       try {
         const errorData = JSON.parse(responseText);
+        console.error('Square API Error Details:', errorData);
         if (errorData.errors && errorData.errors.length > 0) {
-          errorMessage = errorData.errors[0].detail || errorMessage;
+          const firstError = errorData.errors[0];
+          errorMessage = firstError.detail || firstError.code || errorMessage;
+          console.error('First Square error:', firstError);
         }
       } catch (e) {
         console.error('Error parsing Square error response:', e);
+        errorMessage = `Square API returned ${squareResponse.status}: ${responseText.slice(0, 200)}`;
       }
       throw new Error(errorMessage);
     }
@@ -259,6 +268,7 @@ serve(async (req) => {
     const paymentResult = JSON.parse(responseText);
     
     if (!paymentResult.payment) {
+      console.error('Invalid payment result:', paymentResult);
       throw new Error('Invalid payment response from Square');
     }
 
