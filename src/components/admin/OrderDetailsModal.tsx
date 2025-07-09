@@ -52,28 +52,95 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
     window.open(imageUrl, '_blank');
   };
 
-  // Parse personalization data to extract product information
+  // Extract product information from Square checkout data
   const getProductDetails = () => {
-    if (!order.personalization_data) return [];
+    console.log('Full order personalization_data:', order.personalization_data);
     
-    // If personalization_data is an array of products
+    if (!order.personalization_data) {
+      console.log('No personalization_data found');
+      return [];
+    }
+    
+    // Check for Square embedded payment items
+    if (order.personalization_data.square_embedded_payment && order.personalization_data.items) {
+      console.log('Found Square embedded payment items:', order.personalization_data.items);
+      return order.personalization_data.items.map((item: any, index: number) => ({
+        id: index,
+        name: item.name || 'Product',
+        price: item.price || 0,
+        quantity: item.quantity || 1,
+        uploadedPhotoUrl: item.uploadedPhotoUrl || null,
+        hasPhoto: item.hasPhoto || false
+      }));
+    }
+    
+    // Check for cart items data
     if (Array.isArray(order.personalization_data)) {
+      console.log('Found array of personalization data:', order.personalization_data);
       return order.personalization_data;
     }
     
-    // If it's an object with product info, convert to array
+    // Check for single product object
     if (typeof order.personalization_data === 'object') {
+      console.log('Found single personalization object:', order.personalization_data);
       return [order.personalization_data];
     }
     
+    console.log('No valid product data structure found');
     return [];
   };
 
+  // Get all uploaded images from various sources
+  const getAllUploadedImages = () => {
+    const images = [];
+    
+    // Add images from order.uploaded_images
+    if (order.uploaded_images && Array.isArray(order.uploaded_images)) {
+      order.uploaded_images.forEach((imageUrl, index) => {
+        images.push({
+          url: imageUrl,
+          source: 'order',
+          index,
+          description: `Order image ${index + 1}`
+        });
+      });
+    }
+    
+    // Add images from personalization_data
+    const products = getProductDetails();
+    products.forEach((product: any, productIndex) => {
+      if (product.uploadedPhotoUrl) {
+        images.push({
+          url: product.uploadedPhotoUrl,
+          source: 'product',
+          index: productIndex,
+          description: `Product: ${product.name || 'Unknown'}`
+        });
+      }
+    });
+    
+    // Also check for uploadedImages in personalization_data (from checkout)
+    if (order.personalization_data && order.personalization_data.uploadedImages) {
+      order.personalization_data.uploadedImages.forEach((imageUrl: string, index: number) => {
+        images.push({
+          url: imageUrl,
+          source: 'checkout',
+          index,
+          description: `Checkout image ${index + 1}`
+        });
+      });
+    }
+    
+    console.log('All collected images:', images);
+    return images;
+  };
+
   const productDetails = getProductDetails();
+  const allImages = getAllUploadedImages();
 
   console.log('Order data:', order);
-  console.log('Order uploaded_images:', order.uploaded_images);
-  console.log('Product details:', productDetails);
+  console.log('Product details extracted:', productDetails);
+  console.log('All images found:', allImages);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -137,12 +204,12 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
                             <span className="font-medium text-stone">Product Name:</span>
-                            <p className="text-charcoal">{product.name || 'Not specified'}</p>
+                            <p className="text-charcoal">{product.name || 'Product from order'}</p>
                           </div>
                           <div>
                             <span className="font-medium text-stone">Price:</span>
                             <p className="text-charcoal font-semibold">
-                              {product.price ? `$${(product.price / 100).toFixed(2)}` : 'Not specified'}
+                              {product.price ? (typeof product.price === 'number' ? `$${product.price.toFixed(2)}` : `$${(product.price / 100).toFixed(2)}`) : `$${(order.total_amount / (productDetails.length || 1)).toFixed(2)}`}
                             </p>
                           </div>
                           <div>
@@ -160,12 +227,12 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                     </div>
                     
                     {/* Product customization details */}
-                    {Object.keys(product).filter(k => !['name', 'price', 'quantity', 'id', 'image', 'uploadedPhoto', 'uploadedPhotoUrl', 'willUploadLater'].includes(k)).length > 0 && (
+                    {Object.keys(product).filter(k => !['name', 'price', 'quantity', 'id', 'image', 'uploadedPhoto', 'uploadedPhotoUrl', 'willUploadLater', 'hasPhoto'].includes(k)).length > 0 && (
                       <div className="mt-3 p-3 bg-gray-50 rounded border">
                         <h5 className="text-sm font-medium text-charcoal mb-2">Customization Details:</h5>
                         <div className="space-y-1 text-xs">
                           {Object.entries(product)
-                            .filter(([k]) => !['name', 'price', 'quantity', 'id', 'image', 'uploadedPhoto', 'uploadedPhotoUrl', 'willUploadLater'].includes(k))
+                            .filter(([k]) => !['name', 'price', 'quantity', 'id', 'image', 'uploadedPhoto', 'uploadedPhotoUrl', 'willUploadLater', 'hasPhoto'].includes(k))
                             .map(([k, v]: [string, any]) => (
                               <div key={k} className="flex justify-between">
                                 <span className="font-medium text-stone capitalize">{k.replace(/([A-Z])/g, ' $1')}:</span>
@@ -180,35 +247,33 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
               </div>
             ) : (
               <div className="bg-white rounded-lg p-4 border border-green-300">
-                <p className="text-gray-600">No product details available for this order.</p>
+                <p className="text-gray-600">Product details not available in standard format.</p>
                 <p className="text-sm text-gray-500 mt-1">Order total: ${order.total_amount?.toFixed(2)}</p>
+                <p className="text-xs text-gray-400 mt-2">Raw data available in order notes section below</p>
               </div>
             )}
           </div>
 
-          {/* Customer Uploaded Images - Check both locations */}
-          {((order.uploaded_images && order.uploaded_images.length > 0) || 
-            (productDetails.some((p: any) => p.uploadedPhotoUrl))) && (
+          {/* Customer Uploaded Images - Enhanced display */}
+          {allImages && allImages.length > 0 ? (
             <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
               <div className="flex items-center space-x-2 mb-4">
                 <Eye className="h-6 w-6 text-blue-600" />
                 <span className="font-bold text-lg text-charcoal">
-                  Customer Uploaded Images 
-                  ({(order.uploaded_images?.length || 0) + productDetails.filter((p: any) => p.uploadedPhotoUrl).length})
+                  Customer Uploaded Images ({allImages.length})
                 </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Images from order.uploaded_images */}
-                {order.uploaded_images?.map((imageUrl, index) => (
-                  <div key={`order-${index}`} className="relative group bg-white rounded-lg p-2 shadow-md">
+                {allImages.map((imageData, index) => (
+                  <div key={`${imageData.source}-${imageData.index}`} className="relative group bg-white rounded-lg p-2 shadow-md">
                     <div className="w-full h-48 bg-gray-100 rounded-lg border-2 border-gray-200 overflow-hidden">
                       <img
-                        src={imageUrl}
-                        alt={`Customer upload ${index + 1}`}
+                        src={imageData.url}
+                        alt={imageData.description}
                         className="w-full h-full object-contain cursor-pointer hover:scale-105 transition-transform"
-                        onClick={() => handleImageClick(imageUrl)}
+                        onClick={() => handleImageClick(imageData.url)}
                         onError={handleImageError}
-                        onLoad={() => console.log('Image loaded successfully:', imageUrl)}
+                        onLoad={() => console.log('Image loaded successfully:', imageData.url)}
                         crossOrigin="anonymous"
                       />
                     </div>
@@ -216,55 +281,28 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                       <Eye className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="mt-2 p-2">
-                      <p className="text-xs text-gray-600 break-all font-mono bg-gray-100 p-1 rounded">
-                        From order: {imageUrl}
+                      <p className="text-xs text-blue-600 font-medium">{imageData.description}</p>
+                      <p className="text-xs text-gray-500 capitalize">Source: {imageData.source}</p>
+                      <p className="text-xs text-gray-600 break-all font-mono bg-gray-100 p-1 rounded mt-1">
+                        {imageData.url}
                       </p>
                     </div>
                   </div>
                 ))}
-                
-                {/* Images from product data */}
-                {productDetails.map((product: any, productIndex) => 
-                  product.uploadedPhotoUrl && (
-                    <div key={`product-${productIndex}`} className="relative group bg-white rounded-lg p-2 shadow-md">
-                      <div className="w-full h-48 bg-gray-100 rounded-lg border-2 border-gray-200 overflow-hidden">
-                        <img
-                          src={product.uploadedPhotoUrl}
-                          alt={`Product ${productIndex + 1} upload`}
-                          className="w-full h-full object-contain cursor-pointer hover:scale-105 transition-transform"
-                          onClick={() => handleImageClick(product.uploadedPhotoUrl)}
-                          onError={handleImageError}
-                          onLoad={() => console.log('Product image loaded successfully:', product.uploadedPhotoUrl)}
-                          crossOrigin="anonymous"
-                        />
-                      </div>
-                      <div className="absolute inset-2 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-opacity flex items-center justify-center pointer-events-none">
-                        <Eye className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                      <div className="mt-2 p-2">
-                        <p className="text-xs text-green-600 font-medium">For: {product.name || 'Product'}</p>
-                        <p className="text-xs text-gray-600 break-all font-mono bg-gray-100 p-1 rounded mt-1">
-                          {product.uploadedPhotoUrl}
-                        </p>
-                      </div>
-                    </div>
-                  )
-                )}
               </div>
               <p className="text-sm text-blue-700 mt-4 font-medium">
                 📸 Click on any image to view full size in a new tab
               </p>
             </div>
-          )}
-
-          {/* Show message if no images */}
-          {(!order.uploaded_images || order.uploaded_images.length === 0) && 
-           !productDetails.some((p: any) => p.uploadedPhotoUrl) && (
+          ) : (
             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
               <div className="flex items-center space-x-2">
                 <Eye className="h-5 w-5 text-gray-400" />
                 <span className="text-gray-600">No images uploaded by customer</span>
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Checked: order.uploaded_images, personalization_data.uploadedImages, and product.uploadedPhotoUrl
+              </p>
             </div>
           )}
 
@@ -353,16 +391,25 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
             </div>
           )}
 
-          {/* Notes */}
-          {order.notes && (
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-4">
-                <Calendar className="h-5 w-5 text-sage" />
-                <span className="font-medium text-charcoal">Order Notes</span>
-              </div>
-              <p className="text-charcoal text-sm">{order.notes}</p>
+          {/* Notes & Raw Data for Debugging */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <Calendar className="h-5 w-5 text-sage" />
+              <span className="font-medium text-charcoal">Order Data & Notes</span>
             </div>
-          )}
+            {order.notes && (
+              <div className="mb-4">
+                <h5 className="text-sm font-medium text-charcoal mb-2">Order Notes:</h5>
+                <p className="text-charcoal text-sm">{order.notes}</p>
+              </div>
+            )}
+            <div className="mt-4">
+              <h5 className="text-sm font-medium text-charcoal mb-2">Raw Personalization Data (for debugging):</h5>
+              <pre className="text-xs bg-white p-3 rounded border overflow-x-auto max-h-40 text-gray-700">
+                {JSON.stringify(order.personalization_data, null, 2)}
+              </pre>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
