@@ -42,6 +42,16 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
     return `${address.address}, ${address.city}, ${address.state} ${address.zipCode}, ${address.country || 'United States'}`;
   };
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    console.error('Failed to load image:', e.currentTarget.src);
+    e.currentTarget.style.display = 'none';
+  };
+
+  const handleImageClick = (imageUrl: string) => {
+    console.log('Opening image:', imageUrl);
+    window.open(imageUrl, '_blank');
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
@@ -107,6 +117,37 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
             </div>
           </div>
 
+          {/* Customer Uploaded Images */}
+          {order.uploaded_images && order.uploaded_images.length > 0 && (
+            <div className="bg-amber-50 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-4">
+                <Eye className="h-5 w-5 text-sage" />
+                <span className="font-medium text-charcoal">Customer Uploaded Images ({order.uploaded_images.length})</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {order.uploaded_images.map((imageUrl, index) => (
+                  <div key={index} className="relative group">
+                    <div className="w-full h-32 bg-gray-100 rounded-lg border overflow-hidden">
+                      <img
+                        src={imageUrl}
+                        alt={`Customer upload ${index + 1}`}
+                        className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => handleImageClick(imageUrl)}
+                        onError={handleImageError}
+                        onLoad={() => console.log('Image loaded successfully:', imageUrl)}
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-opacity flex items-center justify-center pointer-events-none">
+                      <Eye className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1 break-all">{imageUrl}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-amber-800 mt-2">Click on any image to view full size</p>
+            </div>
+          )}
+
           {/* Shipping Address */}
           {order.shipping_address && (
             <div className="bg-sage/10 rounded-lg p-4">
@@ -150,32 +191,6 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
               )}
             </div>
           </div>
-
-          {/* Customer Uploaded Images */}
-          {order.uploaded_images && order.uploaded_images.length > 0 && (
-            <div className="bg-amber-50 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-4">
-                <Eye className="h-5 w-5 text-sage" />
-                <span className="font-medium text-charcoal">Customer Uploaded Images ({order.uploaded_images.length})</span>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {order.uploaded_images.map((imageUrl, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={imageUrl}
-                      alt={`Customer upload ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={() => window.open(imageUrl, '_blank')}
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-opacity flex items-center justify-center">
-                      <Eye className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-amber-800 mt-2">Click on any image to view full size</p>
-            </div>
-          )}
 
           {/* Personalization Data */}
           {order.personalization_data && (
