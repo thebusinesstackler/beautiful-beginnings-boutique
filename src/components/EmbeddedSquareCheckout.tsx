@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
@@ -59,8 +60,8 @@ const EmbeddedSquareCheckout = ({
     // Comprehensive form validation
     if (!validateForm()) {
       toast({
-        title: "Please Fix Form Errors",
-        description: `${validationErrors.length} error(s) found: ${validationErrors.slice(0, 2).join(', ')}${validationErrors.length > 2 ? '...' : ''}`,
+        title: "Please Complete Required Fields",
+        description: `${validationErrors.length} error(s) found. Please review the form above.`,
         variant: "destructive",
       });
       return;
@@ -97,27 +98,36 @@ const EmbeddedSquareCheckout = ({
   // Show configuration message if Square is not set up
   if (!settings.square_app_id || !settings.square_location_id || !settings.square_access_token) {
     return (
-      <div className="w-full p-4 bg-amber-50 border border-amber-200 rounded-lg">
-        <p className="text-sm text-amber-800 text-center">
-          Square checkout is not configured. Please configure Square settings in the admin panel.
-        </p>
+      <div className="w-full p-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-blue-900 mb-2">Square Payment Setup Required</h3>
+          <p className="text-blue-700 max-w-md mx-auto">
+            Square checkout needs to be configured in the admin panel to enable secure payment processing.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-8">
       {/* Validation Errors Display */}
       <SquareValidationErrors errors={validationErrors} />
 
-      {/* Card Input Container */}
+      {/* Professional Square Card Form */}
       <SquareCardForm 
         cardRef={cardRef}
         sdkStatus={sdkStatus}
         isSecureConnection={isSecureConnection}
       />
 
-      {/* Payment Button */}
+      {/* Enhanced Payment Button */}
       <SquarePaymentButton
         onPayment={handlePayment}
         isLoading={isLoading}
@@ -126,18 +136,6 @@ const EmbeddedSquareCheckout = ({
         isSecureConnection={isSecureConnection}
         total={total}
       />
-
-      <div className="text-center space-y-3">
-        <div className="flex items-center justify-center gap-2 text-charcoal/60">
-          <svg className="w-5 h-5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          <span className="font-medium">Secure payment powered by Square</span>
-        </div>
-        <p className="text-xs text-charcoal/50 max-w-md mx-auto leading-relaxed">
-          Your payment information is protected with industry-standard encryption and never stored on our servers
-        </p>
-      </div>
     </div>
   );
 };
