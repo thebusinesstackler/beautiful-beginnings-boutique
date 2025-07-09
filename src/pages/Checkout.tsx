@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ShoppingCart, Camera, X, Upload } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Camera, X, Upload, Plus } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
@@ -22,7 +22,10 @@ const Checkout = () => {
   const {
     calculateShipping
   } = useShippingSettings();
-
+  
+  // Photo upload states for each item
+  const [uploadingStates, setUploadingStates] = useState<{[key: number]: boolean}>({});
+  const [showUploadInterface, setShowUploadInterface] = useState<{[key: number]: boolean}>({});
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
@@ -69,10 +72,23 @@ const Checkout = () => {
   };
 
   const handlePhotoUpload = async (itemId: number, file: File) => {
+    setUploadingStates(prev => ({ ...prev, [itemId]: true }));
     try {
       await updatePhoto(itemId, file);
+      setShowUploadInterface(prev => ({ ...prev, [itemId]: false }));
+      toast({
+        title: "Photo uploaded!",
+        description: "Your custom photo has been added successfully.",
+      });
     } catch (error) {
       console.error('Error uploading photo:', error);
+      toast({
+        title: "Upload failed",
+        description: "Please try uploading your photo again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingStates(prev => ({ ...prev, [itemId]: false }));
     }
   };
 
@@ -80,15 +96,21 @@ const Checkout = () => {
     updateItemProperty(itemId, 'uploadedPhotoUrl', null);
     updateItemProperty(itemId, 'uploadedPhoto', undefined);
     updateItemProperty(itemId, 'willUploadLater', false);
+    setShowUploadInterface(prev => ({ ...prev, [itemId]: false }));
   };
 
   const handleWillUploadLater = (itemId: number, willUpload: boolean) => {
     updateItemProperty(itemId, 'willUploadLater', willUpload);
+    setShowUploadInterface(prev => ({ ...prev, [itemId]: false }));
     if (willUpload) {
       // Clear any existing photo when selecting "will upload later"
       updateItemProperty(itemId, 'uploadedPhotoUrl', null);
       updateItemProperty(itemId, 'uploadedPhoto', undefined);
     }
+  };
+
+  const toggleUploadInterface = (itemId: number) => {
+    setShowUploadInterface(prev => ({ ...prev, [itemId]: !prev[itemId] }));
   };
   return <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
       <Navigation />
@@ -294,7 +316,7 @@ const Checkout = () => {
                         <div className="border-t border-stone/20 pt-4">
                           <h4 className="text-xs font-medium text-charcoal/80 mb-3">Custom Photo</h4>
                           
-                          {/* Current Photo Display */}
+                          {/* Has Photo - Show current photo with options */}
                           {item.uploadedPhotoUrl ? (
                             <div className="space-y-3">
                               <div className="relative inline-block">
@@ -310,107 +332,197 @@ const Checkout = () => {
                                   <X className="w-3 h-3" />
                                 </button>
                               </div>
-                              <div className="flex gap-2">
-                                <label className="flex-1">
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) handlePhotoUpload(item.id, file);
-                                    }}
-                                    className="hidden"
-                                  />
-                                  <Button 
-                                    type="button"
-                                    variant="outline" 
-                                    size="sm"
-                                    className="w-full text-xs"
-                                    onClick={() => (document.querySelector(`input[type="file"]:last-of-type`) as HTMLInputElement)?.click()}
-                                  >
-                                    <Camera className="w-3 h-3 mr-1" />
-                                    Change Photo
-                                  </Button>
-                                </label>
-                              </div>
+                              
+                              {/* Upload New Photo Button */}
+                              {!showUploadInterface[item.id] ? (
+                                <Button 
+                                  type="button"
+                                  variant="outline" 
+                                  size="sm"
+                                  className="text-xs"
+                                  onClick={() => toggleUploadInterface(item.id)}
+                                >
+                                  <Camera className="w-3 h-3 mr-1" />
+                                  Upload New Photo
+                                </Button>
+                              ) : (
+                                <div className="space-y-2 p-3 bg-stone/5 rounded-lg border border-stone/20">
+                                  <p className="text-xs text-charcoal/70">Choose a new photo to replace the current one:</p>
+                                  <div className="flex gap-2">
+                                    <label className="flex-1">
+                                      <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0];
+                                          if (file) handlePhotoUpload(item.id, file);
+                                        }}
+                                        className="hidden"
+                                        id={`photo-upload-${item.id}`}
+                                      />
+                                      <Button 
+                                        type="button"
+                                        size="sm"
+                                        className="w-full text-xs"
+                                        disabled={uploadingStates[item.id]}
+                                        onClick={() => document.getElementById(`photo-upload-${item.id}`)?.click()}
+                                      >
+                                        <Upload className="w-3 h-3 mr-1" />
+                                        {uploadingStates[item.id] ? 'Uploading...' : 'Choose File'}
+                                      </Button>
+                                    </label>
+                                    <Button 
+                                      type="button"
+                                      variant="ghost" 
+                                      size="sm"
+                                      className="text-xs"
+                                      onClick={() => toggleUploadInterface(item.id)}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           ) : item.willUploadLater ? (
+                            /* Will Upload Later State */
                             <div className="space-y-3">
                               <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
                                 <span className="text-amber-600">📷</span>
                                 <span className="text-xs text-amber-700">Will upload photo later</span>
                               </div>
-                              <div className="flex gap-2">
-                                <label className="flex-1">
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) {
-                                        handleWillUploadLater(item.id, false);
-                                        handlePhotoUpload(item.id, file);
-                                      }
-                                    }}
-                                    className="hidden"
-                                  />
+                              
+                              {!showUploadInterface[item.id] ? (
+                                <div className="flex gap-2">
                                   <Button 
                                     type="button"
                                     variant="outline" 
                                     size="sm"
-                                    className="w-full text-xs"
+                                    className="flex-1 text-xs"
+                                    onClick={() => toggleUploadInterface(item.id)}
                                   >
                                     <Upload className="w-3 h-3 mr-1" />
-                                    Upload Now
+                                    Upload Now Instead
                                   </Button>
-                                </label>
-                                <Button 
-                                  type="button"
-                                  variant="ghost" 
-                                  size="sm"
-                                  className="text-xs"
-                                  onClick={() => handleWillUploadLater(item.id, false)}
-                                >
-                                  Cancel
-                                </Button>
-                              </div>
+                                  <Button 
+                                    type="button"
+                                    variant="ghost" 
+                                    size="sm"
+                                    className="text-xs"
+                                    onClick={() => handleWillUploadLater(item.id, false)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="space-y-2 p-3 bg-stone/5 rounded-lg border border-stone/20">
+                                  <p className="text-xs text-charcoal/70">Upload your photo now:</p>
+                                  <div className="flex gap-2">
+                                    <label className="flex-1">
+                                      <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0];
+                                          if (file) {
+                                            handleWillUploadLater(item.id, false);
+                                            handlePhotoUpload(item.id, file);
+                                          }
+                                        }}
+                                        className="hidden"
+                                        id={`photo-upload-later-${item.id}`}
+                                      />
+                                      <Button 
+                                        type="button"
+                                        size="sm"
+                                        className="w-full text-xs"
+                                        disabled={uploadingStates[item.id]}
+                                        onClick={() => document.getElementById(`photo-upload-later-${item.id}`)?.click()}
+                                      >
+                                        <Upload className="w-3 h-3 mr-1" />
+                                        {uploadingStates[item.id] ? 'Uploading...' : 'Choose File'}
+                                      </Button>
+                                    </label>
+                                    <Button 
+                                      type="button"
+                                      variant="ghost" 
+                                      size="sm"
+                                      className="text-xs"
+                                      onClick={() => toggleUploadInterface(item.id)}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           ) : (
+                            /* No Photo State */
                             <div className="space-y-3">
                               <div className="w-20 h-20 border-2 border-dashed border-stone/30 rounded-lg flex items-center justify-center bg-stone/10">
                                 <Camera className="w-6 h-6 text-stone/40" />
                               </div>
-                              <div className="flex gap-2">
-                                <label className="flex-1">
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) handlePhotoUpload(item.id, file);
-                                    }}
-                                    className="hidden"
-                                  />
+                              
+                              {!showUploadInterface[item.id] ? (
+                                <div className="flex gap-2">
                                   <Button 
                                     type="button"
                                     variant="outline" 
                                     size="sm"
-                                    className="w-full text-xs"
+                                    className="flex-1 text-xs"
+                                    onClick={() => toggleUploadInterface(item.id)}
                                   >
-                                    <Upload className="w-3 h-3 mr-1" />
-                                    Upload Photo
+                                    <Plus className="w-3 h-3 mr-1" />
+                                    Add Photo
                                   </Button>
-                                </label>
-                                <Button 
-                                  type="button"
-                                  variant="ghost" 
-                                  size="sm"
-                                  className="text-xs"
-                                  onClick={() => handleWillUploadLater(item.id, true)}
-                                >
-                                  Later
-                                </Button>
-                              </div>
+                                  <Button 
+                                    type="button"
+                                    variant="ghost" 
+                                    size="sm"
+                                    className="text-xs"
+                                    onClick={() => handleWillUploadLater(item.id, true)}
+                                  >
+                                    Later
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="space-y-2 p-3 bg-stone/5 rounded-lg border border-stone/20">
+                                  <p className="text-xs text-charcoal/70">Upload your custom photo:</p>
+                                  <div className="flex gap-2">
+                                    <label className="flex-1">
+                                      <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0];
+                                          if (file) handlePhotoUpload(item.id, file);
+                                        }}
+                                        className="hidden"
+                                        id={`photo-upload-new-${item.id}`}
+                                      />
+                                      <Button 
+                                        type="button"
+                                        size="sm"
+                                        className="w-full text-xs"
+                                        disabled={uploadingStates[item.id]}
+                                        onClick={() => document.getElementById(`photo-upload-new-${item.id}`)?.click()}
+                                      >
+                                        <Upload className="w-3 h-3 mr-1" />
+                                        {uploadingStates[item.id] ? 'Uploading...' : 'Choose File'}
+                                      </Button>
+                                    </label>
+                                    <Button 
+                                      type="button"
+                                      variant="ghost" 
+                                      size="sm"
+                                      className="text-xs"
+                                      onClick={() => toggleUploadInterface(item.id)}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
