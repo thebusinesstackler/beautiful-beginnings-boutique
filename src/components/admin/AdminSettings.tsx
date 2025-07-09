@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, Store, Truck, Mail, CreditCard } from 'lucide-react';
+import { Settings, Store, Truck, Mail, CreditCard, AlertCircle } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 
 const AdminSettings = () => {
@@ -140,62 +139,113 @@ const AdminSettings = () => {
         </CardContent>
       </Card>
 
-      {/* Square Settings */}
+      {/* Square Settings - Enhanced for better accessibility */}
       <Card className="bg-blue-50 border-blue-200 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center text-charcoal">
             <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
             Square Payment Settings
+            <AlertCircle className="h-4 w-4 ml-2 text-orange-500" title="Configure these settings to enable Square payments" />
           </CardTitle>
           <CardDescription>
-            Configure Square payment integration. Access token is managed securely in server environment.
+            Configure Square payment integration for your checkout system.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="bg-blue-100 border border-blue-300 rounded-lg p-4 mb-4">
-            <p className="text-blue-800 text-sm">
-              <strong>Security Note:</strong> Your Square Access Token is stored securely in the server environment for security reasons. 
-              Only configure the public settings below.
-            </p>
+        <CardContent className="space-y-6">
+          {/* Important Notice */}
+          <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
+            <div className="flex items-start space-x-2">
+              <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="text-blue-800 text-sm">
+                <p className="font-semibold mb-2">Square Configuration Required</p>
+                <ul className="space-y-1 text-xs">
+                  <li>• Get your Square credentials from the <a href="https://developer.squareup.com/apps" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Square Developer Dashboard</a></li>
+                  <li>• Your Access Token is stored securely in server environment variables</li>
+                  <li>• Only public configuration settings are managed here</li>
+                </ul>
+              </div>
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="square_app_id" className="text-charcoal">Square Application ID</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="square_app_id" className="text-charcoal font-medium">
+                Square Application ID *
+              </Label>
               <Input 
                 id="square_app_id" 
                 value={formData.square_app_id || ''}
                 onChange={(e) => handleInputChange('square_app_id', e.target.value)}
-                placeholder="sandbox-sq0idb-..."
+                placeholder="sandbox-sq0idb-... or sq0idb-..."
+                className="font-mono text-sm"
               />
-              <p className="text-xs text-stone mt-1">Found in Square Developer Dashboard</p>
+              <p className="text-xs text-gray-600">
+                Found in your Square Developer Dashboard under "Credentials"
+              </p>
             </div>
-            <div>
-              <Label htmlFor="square_location_id" className="text-charcoal">Square Location ID</Label>
+            
+            <div className="space-y-2">
+              <Label htmlFor="square_location_id" className="text-charcoal font-medium">
+                Square Location ID *
+              </Label>
               <Input 
                 id="square_location_id" 
                 value={formData.square_location_id || ''}
                 onChange={(e) => handleInputChange('square_location_id', e.target.value)}
                 placeholder="L..."
+                className="font-mono text-sm"
               />
-              <p className="text-xs text-stone mt-1">Your business location ID from Square</p>
+              <p className="text-xs text-gray-600">
+                Your business location ID from Square Dashboard
+              </p>
             </div>
-            <div>
-              <Label htmlFor="square_environment" className="text-charcoal">Environment</Label>
+            
+            <div className="space-y-2 md:col-span-1">
+              <Label htmlFor="square_environment" className="text-charcoal font-medium">
+                Environment *
+              </Label>
               <select 
                 id="square_environment"
                 value={formData.square_environment || 'sandbox'}
                 onChange={(e) => handleInputChange('square_environment', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage bg-white"
               >
                 <option value="sandbox">Sandbox (Testing)</option>
                 <option value="production">Production (Live)</option>
               </select>
+              <p className="text-xs text-gray-600">
+                Use Sandbox for testing, Production for live payments
+              </p>
+            </div>
+          </div>
+
+          {/* Configuration Status */}
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 mb-2">Configuration Status</h4>
+            <div className="space-y-1 text-sm">
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${formData.square_app_id ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className={formData.square_app_id ? 'text-green-700' : 'text-red-700'}>
+                  Application ID: {formData.square_app_id ? 'Configured' : 'Missing'}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${formData.square_location_id ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className={formData.square_location_id ? 'text-green-700' : 'text-red-700'}>
+                  Location ID: {formData.square_location_id ? 'Configured' : 'Missing'}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                <span className="text-blue-700">
+                  Environment: {formData.square_environment || 'sandbox'}
+                </span>
+              </div>
             </div>
           </div>
           
           <Button 
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
             onClick={handleSaveSquareSettings}
             disabled={loading}
           >
