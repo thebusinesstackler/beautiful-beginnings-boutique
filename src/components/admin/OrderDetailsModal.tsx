@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, User, MapPin, CreditCard, Package, Eye, ShoppingBag } from 'lucide-react';
+import { Calendar, User, MapPin, CreditCard, Package, Eye, ShoppingBag, DollarSign } from 'lucide-react';
 
 interface Order {
   id: string;
@@ -53,7 +52,28 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
     window.open(imageUrl, '_blank');
   };
 
+  // Parse personalization data to extract product information
+  const getProductDetails = () => {
+    if (!order.personalization_data) return [];
+    
+    // If personalization_data is an array of products
+    if (Array.isArray(order.personalization_data)) {
+      return order.personalization_data;
+    }
+    
+    // If it's an object with product info, convert to array
+    if (typeof order.personalization_data === 'object') {
+      return [order.personalization_data];
+    }
+    
+    return [];
+  };
+
+  const productDetails = getProductDetails();
+
+  console.log('Order data:', order);
   console.log('Order uploaded_images:', order.uploaded_images);
+  console.log('Product details:', productDetails);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -104,32 +124,35 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
               <ShoppingBag className="h-6 w-6 text-green-600" />
               <span className="font-bold text-lg text-charcoal">Products to Fulfill</span>
             </div>
-            {order.personalization_data && (
+            
+            {productDetails.length > 0 ? (
               <div className="grid gap-4">
-                {Object.entries(order.personalization_data).map(([key, value]: [string, any], index) => (
+                {productDetails.map((product: any, index) => (
                   <div key={index} className="bg-white rounded-lg p-4 border border-green-300 shadow-sm">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <h4 className="text-lg font-semibold text-charcoal mb-2">
-                          Product #{index + 1}
+                          {product.name || 'Product'}
                         </h4>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
                             <span className="font-medium text-stone">Product Name:</span>
-                            <p className="text-charcoal">{value.name || 'Custom Product'}</p>
+                            <p className="text-charcoal">{product.name || 'Not specified'}</p>
                           </div>
                           <div>
                             <span className="font-medium text-stone">Price:</span>
-                            <p className="text-charcoal font-semibold">${value.price || 'N/A'}</p>
+                            <p className="text-charcoal font-semibold">
+                              {product.price ? `$${(product.price / 100).toFixed(2)}` : 'Not specified'}
+                            </p>
                           </div>
                           <div>
                             <span className="font-medium text-stone">Quantity:</span>
-                            <p className="text-charcoal">{value.quantity || 1}</p>
+                            <p className="text-charcoal">{product.quantity || 1}</p>
                           </div>
-                          {value.id && (
+                          {product.id && (
                             <div>
                               <span className="font-medium text-stone">Product ID:</span>
-                              <p className="text-charcoal font-mono text-xs">{value.id}</p>
+                              <p className="text-charcoal font-mono text-xs">{product.id}</p>
                             </div>
                           )}
                         </div>
@@ -137,12 +160,12 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                     </div>
                     
                     {/* Product customization details */}
-                    {Object.keys(value).filter(k => !['name', 'price', 'quantity', 'id'].includes(k)).length > 0 && (
+                    {Object.keys(product).filter(k => !['name', 'price', 'quantity', 'id', 'image', 'uploadedPhoto', 'uploadedPhotoUrl', 'willUploadLater'].includes(k)).length > 0 && (
                       <div className="mt-3 p-3 bg-gray-50 rounded border">
                         <h5 className="text-sm font-medium text-charcoal mb-2">Customization Details:</h5>
                         <div className="space-y-1 text-xs">
-                          {Object.entries(value)
-                            .filter(([k]) => !['name', 'price', 'quantity', 'id'].includes(k))
+                          {Object.entries(product)
+                            .filter(([k]) => !['name', 'price', 'quantity', 'id', 'image', 'uploadedPhoto', 'uploadedPhotoUrl', 'willUploadLater'].includes(k))
                             .map(([k, v]: [string, any]) => (
                               <div key={k} className="flex justify-between">
                                 <span className="font-medium text-stone capitalize">{k.replace(/([A-Z])/g, ' $1')}:</span>
@@ -155,14 +178,95 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                   </div>
                 ))}
               </div>
-            )}
-            
-            {!order.personalization_data && (
+            ) : (
               <div className="bg-white rounded-lg p-4 border border-green-300">
                 <p className="text-gray-600">No product details available for this order.</p>
+                <p className="text-sm text-gray-500 mt-1">Order total: ${order.total_amount?.toFixed(2)}</p>
               </div>
             )}
           </div>
+
+          {/* Customer Uploaded Images - Check both locations */}
+          {((order.uploaded_images && order.uploaded_images.length > 0) || 
+            (productDetails.some((p: any) => p.uploadedPhotoUrl))) && (
+            <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
+              <div className="flex items-center space-x-2 mb-4">
+                <Eye className="h-6 w-6 text-blue-600" />
+                <span className="font-bold text-lg text-charcoal">
+                  Customer Uploaded Images 
+                  ({(order.uploaded_images?.length || 0) + productDetails.filter((p: any) => p.uploadedPhotoUrl).length})
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Images from order.uploaded_images */}
+                {order.uploaded_images?.map((imageUrl, index) => (
+                  <div key={`order-${index}`} className="relative group bg-white rounded-lg p-2 shadow-md">
+                    <div className="w-full h-48 bg-gray-100 rounded-lg border-2 border-gray-200 overflow-hidden">
+                      <img
+                        src={imageUrl}
+                        alt={`Customer upload ${index + 1}`}
+                        className="w-full h-full object-contain cursor-pointer hover:scale-105 transition-transform"
+                        onClick={() => handleImageClick(imageUrl)}
+                        onError={handleImageError}
+                        onLoad={() => console.log('Image loaded successfully:', imageUrl)}
+                        crossOrigin="anonymous"
+                      />
+                    </div>
+                    <div className="absolute inset-2 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-opacity flex items-center justify-center pointer-events-none">
+                      <Eye className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <div className="mt-2 p-2">
+                      <p className="text-xs text-gray-600 break-all font-mono bg-gray-100 p-1 rounded">
+                        From order: {imageUrl}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                
+                {/* Images from product data */}
+                {productDetails.map((product: any, productIndex) => 
+                  product.uploadedPhotoUrl && (
+                    <div key={`product-${productIndex}`} className="relative group bg-white rounded-lg p-2 shadow-md">
+                      <div className="w-full h-48 bg-gray-100 rounded-lg border-2 border-gray-200 overflow-hidden">
+                        <img
+                          src={product.uploadedPhotoUrl}
+                          alt={`Product ${productIndex + 1} upload`}
+                          className="w-full h-full object-contain cursor-pointer hover:scale-105 transition-transform"
+                          onClick={() => handleImageClick(product.uploadedPhotoUrl)}
+                          onError={handleImageError}
+                          onLoad={() => console.log('Product image loaded successfully:', product.uploadedPhotoUrl)}
+                          crossOrigin="anonymous"
+                        />
+                      </div>
+                      <div className="absolute inset-2 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-opacity flex items-center justify-center pointer-events-none">
+                        <Eye className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                      <div className="mt-2 p-2">
+                        <p className="text-xs text-green-600 font-medium">For: {product.name || 'Product'}</p>
+                        <p className="text-xs text-gray-600 break-all font-mono bg-gray-100 p-1 rounded mt-1">
+                          {product.uploadedPhotoUrl}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+              <p className="text-sm text-blue-700 mt-4 font-medium">
+                📸 Click on any image to view full size in a new tab
+              </p>
+            </div>
+          )}
+
+          {/* Show message if no images */}
+          {(!order.uploaded_images || order.uploaded_images.length === 0) && 
+           !productDetails.some((p: any) => p.uploadedPhotoUrl) && (
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="flex items-center space-x-2">
+                <Eye className="h-5 w-5 text-gray-400" />
+                <span className="text-gray-600">No images uploaded by customer</span>
+              </div>
+            </div>
+          )}
 
           {/* Customer Information */}
           <div className="bg-blush/20 rounded-lg p-4">
@@ -190,54 +294,6 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
               </div>
             </div>
           </div>
-
-          {/* Customer Uploaded Images - Moved to prominent position */}
-          {order.uploaded_images && order.uploaded_images.length > 0 && (
-            <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
-              <div className="flex items-center space-x-2 mb-4">
-                <Eye className="h-6 w-6 text-blue-600" />
-                <span className="font-bold text-lg text-charcoal">Customer Uploaded Images ({order.uploaded_images.length})</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {order.uploaded_images.map((imageUrl, index) => (
-                  <div key={index} className="relative group bg-white rounded-lg p-2 shadow-md">
-                    <div className="w-full h-48 bg-gray-100 rounded-lg border-2 border-gray-200 overflow-hidden">
-                      <img
-                        src={imageUrl}
-                        alt={`Customer upload ${index + 1}`}
-                        className="w-full h-full object-contain cursor-pointer hover:scale-105 transition-transform"
-                        onClick={() => handleImageClick(imageUrl)}
-                        onError={handleImageError}
-                        onLoad={() => console.log('Image loaded successfully:', imageUrl)}
-                        crossOrigin="anonymous"
-                      />
-                    </div>
-                    <div className="absolute inset-2 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-opacity flex items-center justify-center pointer-events-none">
-                      <Eye className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    <div className="mt-2 p-2">
-                      <p className="text-xs text-gray-600 break-all font-mono bg-gray-100 p-1 rounded">
-                        {imageUrl}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm text-blue-700 mt-4 font-medium">
-                📸 Click on any image to view full size in a new tab
-              </p>
-            </div>
-          )}
-
-          {/* Show message if no images */}
-          {(!order.uploaded_images || order.uploaded_images.length === 0) && (
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="flex items-center space-x-2">
-                <Eye className="h-5 w-5 text-gray-400" />
-                <span className="text-gray-600">No images uploaded by customer</span>
-              </div>
-            </div>
-          )}
 
           {/* Shipping Address */}
           {order.shipping_address && (
