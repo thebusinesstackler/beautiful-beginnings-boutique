@@ -98,38 +98,6 @@ const validateAndSanitizeItems = (items: any[]) => {
   });
 }
 
-const validateSquareCredentials = (credentials: any) => {
-  if (!credentials || typeof credentials !== 'object') {
-    throw new Error('Square credentials are required');
-  }
-
-  const { appId, accessToken, locationId, environment } = credentials;
-
-  if (!appId || typeof appId !== 'string' || appId.length < 10) {
-    throw new Error('Invalid Square App ID');
-  }
-
-  if (!accessToken || typeof accessToken !== 'string' || accessToken.length < 20) {
-    throw new Error('Invalid Square Access Token');
-  }
-
-  if (!locationId || typeof locationId !== 'string' || locationId.length < 10) {
-    throw new Error('Invalid Square Location ID');
-  }
-
-  const validEnvironments = ['sandbox', 'production'];
-  if (!validEnvironments.includes(environment)) {
-    throw new Error('Invalid Square environment');
-  }
-
-  return {
-    appId: sanitizeString(appId, 100),
-    accessToken: sanitizeString(accessToken, 200),
-    locationId: sanitizeString(locationId, 100),
-    environment: environment
-  };
-}
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -137,28 +105,65 @@ serve(async (req) => {
   }
 
   try {
-    // Rate limiting check
-    const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
-    console.log(`Square checkout request from IP: ${clientIP}`);
+    console.log('Square checkout function started');
 
     // Parse and validate request body
     let requestBody;
     try {
       requestBody = await req.json();
+      console.log('Request body parsed successfully');
     } catch {
       throw new Error('Invalid JSON in request body');
     }
 
+    // Get Square credentials from Supabase settings
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    console.log('Fetching Square credentials from settings...');
+    const { data: settingsData, error: settingsError } = await supabase
+      .from('settings')
+      .select('key, value')
+      .in('key', ['square_app_id', 'square_location_id', 'square_access_token', 'square_environment']);
+
+    if (settingsError) {
+      console.error('Settings fetch error:', settingsError);
+      throw new Error('Failed to fetch Square configuration');
+    }
+
+    // Convert settings array to object
+    const settings: Record<string, string> = {};
+    settingsData?.forEach(setting => {
+      settings[setting.key] = setting.value;
+    });
+
+    console.log('Square settings loaded:', {
+      hasAppId: !!settings.square_app_id,
+      hasLocationId: !!settings.square_location_id,
+      hasAccessToken: !!settings.square_access_token,
+      environment: settings.square_environment || 'sandbox'
+    });
+
+    // Validate Square credentials
+    if (!settings.square_app_id || !settings.square_location_id || !settings.square_access_token) {
+      throw new Error('Square credentials not properly configured in settings');
+    }
+
     // Comprehensive input validation and sanitization
     const {
+      token,
       customerInfo,
       shippingAddress,
       billingAddress,
       items,
       amount,
-      breakdown,
-      squareCredentials
+      breakdown
     } = requestBody;
+
+    if (!token || typeof token !== 'string') {
+      throw new Error('Payment token is required');
+    }
 
     // Validate and sanitize all inputs
     const sanitizedCustomerInfo = validateAndSanitizeCustomerInfo(customerInfo);
@@ -166,7 +171,6 @@ serve(async (req) => {
     const sanitizedBillingAddress = validateAndSanitizeAddress(billingAddress);
     const sanitizedItems = validateAndSanitizeItems(items);
     const sanitizedAmount = sanitizeAmount(amount);
-    const sanitizedCredentials = validateSquareCredentials(squareCredentials);
 
     // Validate breakdown amounts
     if (!breakdown || typeof breakdown !== 'object') {
@@ -190,64 +194,77 @@ serve(async (req) => {
       throw new Error('Total amount mismatch');
     }
 
-    // Verify items total matches subtotal
-    const itemsTotal = sanitizedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    if (Math.abs(itemsTotal * 100 - sanitizedBreakdown.subtotal) > 1) {
-      throw new Error('Items total does not match subtotal');
-    }
-
     console.log('All inputs validated and sanitized successfully');
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
     // Create Square API client
-    const squareApiUrl = sanitizedCredentials.environment === 'production' 
+    const squareApiUrl = settings.square_environment === 'production' 
       ? 'https://connect.squareup.com' 
       : 'https://connect.squareupsandbox.com';
 
-    // Create Square checkout
-    const checkoutData = {
+    // Process payment with Square
+    const paymentData = {
+      source_id: token,
       idempotency_key: crypto.randomUUID(),
-      checkout: {
-        redirect_url: `${req.headers.get('origin')}/checkout-success`,
-        order: {
-          location_id: sanitizedCredentials.locationId,
-          line_items: sanitizedItems.map(item => ({
-            name: item.name,
-            quantity: item.quantity.toString(),
-            base_price_money: {
-              amount: Math.round(item.price * 100),
-              currency: 'USD'
-            }
-          }))
-        }
+      amount_money: {
+        amount: sanitizedAmount,
+        currency: 'USD'
+      },
+      location_id: settings.square_location_id,
+      buyer_email_address: sanitizedCustomerInfo.email,
+      billing_address: {
+        address_line_1: sanitizedBillingAddress.address,
+        locality: sanitizedBillingAddress.city,
+        administrative_district_level_1: sanitizedBillingAddress.state,
+        postal_code: sanitizedBillingAddress.zipCode,
+        country: 'US'
+      },
+      shipping_address: {
+        address_line_1: sanitizedShippingAddress.address,
+        locality: sanitizedShippingAddress.city,
+        administrative_district_level_1: sanitizedShippingAddress.state,
+        postal_code: sanitizedShippingAddress.zipCode,
+        country: 'US'
       }
     };
 
-    console.log('Creating Square checkout with sanitized data');
+    console.log('Processing payment with Square...');
 
-    const squareResponse = await fetch(`${squareApiUrl}/v2/online-checkout/payment-links`, {
+    const squareResponse = await fetch(`${squareApiUrl}/v2/payments`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${sanitizedCredentials.accessToken}`,
+        'Authorization': `Bearer ${settings.square_access_token}`,
         'Content-Type': 'application/json',
         'Square-Version': '2023-10-18'
       },
-      body: JSON.stringify(checkoutData)
+      body: JSON.stringify(paymentData)
     });
 
+    const responseText = await squareResponse.text();
+    console.log('Square API Response Status:', squareResponse.status);
+    console.log('Square API Response:', responseText);
+
     if (!squareResponse.ok) {
-      const errorText = await squareResponse.text();
-      console.error('Square API error:', errorText);
-      throw new Error('Failed to create Square checkout');
+      let errorMessage = 'Payment processing failed';
+      try {
+        const errorData = JSON.parse(responseText);
+        if (errorData.errors && errorData.errors.length > 0) {
+          errorMessage = errorData.errors[0].detail || errorMessage;
+        }
+      } catch (e) {
+        console.error('Error parsing Square error response:', e);
+      }
+      throw new Error(errorMessage);
     }
 
-    const checkoutResult = await squareResponse.json();
+    const paymentResult = JSON.parse(responseText);
     
-    // Store order in database with sanitized data
+    if (!paymentResult.payment) {
+      throw new Error('Invalid payment response from Square');
+    }
+
+    console.log('Payment processed successfully:', paymentResult.payment.id);
+    
+    // Store order in database
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .insert({
@@ -257,8 +274,8 @@ serve(async (req) => {
         total_amount: sanitizedAmount / 100,
         shipping_address: sanitizedShippingAddress,
         billing_address: sanitizedBillingAddress,
-        square_checkout_id: checkoutResult.payment_link?.id,
-        status: 'pending'
+        payment_id: paymentResult.payment.id,
+        status: 'paid'
       })
       .select()
       .single();
@@ -268,7 +285,7 @@ serve(async (req) => {
       throw new Error('Failed to create order record');
     }
 
-    // Store order items with sanitized data
+    // Store order items
     const orderItems = sanitizedItems.map(item => ({
       order_id: orderData.id,
       product_name: item.name,
@@ -284,15 +301,15 @@ serve(async (req) => {
 
     if (itemsError) {
       console.error('Order items error:', itemsError);
-      throw new Error('Failed to create order items');
+      // Don't throw here as payment was successful
     }
 
-    console.log('Square checkout created successfully');
+    console.log('Order created successfully:', orderData.id);
 
     return new Response(
       JSON.stringify({
         success: true,
-        checkout_url: checkoutResult.payment_link?.url,
+        payment_id: paymentResult.payment.id,
         order_id: orderData.id
       }),
       {
