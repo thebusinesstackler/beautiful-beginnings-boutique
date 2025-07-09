@@ -39,40 +39,35 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         }
       }
 
-      console.log('🎯 Creating Square card instance with enhanced styling...');
+      console.log('🎯 Creating Square card instance with fixed styling...');
       
-      // Enhanced Square card styling for professional appearance
+      // Fixed Square card styling - using only valid Square Web SDK properties
       const cardInstance = await paymentsInstance.card({
         style: {
           input: {
             fontSize: '16px',
-            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontFamily: 'Inter, system-ui, sans-serif',
             color: '#1f2937',
             lineHeight: '1.5',
             padding: '16px',
             '::placeholder': {
-              color: '#9ca3af',
-              fontWeight: '400'
+              color: '#9ca3af'
             }
           },
           '.input-container': {
             borderRadius: '12px',
             border: '2px solid #e5e7eb',
-            backgroundColor: '#ffffff',
-            transition: 'all 0.2s ease'
+            backgroundColor: '#ffffff'
           },
           '.input-container.is-focus': {
-            border: '2px solid #3b82f6',
-            boxShadow: '0 0 0 4px rgba(59, 130, 246, 0.1)'
+            border: '2px solid #3b82f6'
           },
           '.input-container.is-error': {
-            border: '2px solid #ef4444',
-            boxShadow: '0 0 0 4px rgba(239, 68, 68, 0.1)'
+            border: '2px solid #ef4444'
           },
           '.message-text': {
             color: '#ef4444',
             fontSize: '14px',
-            fontWeight: '500',
             marginTop: '8px'
           }
         }
@@ -84,7 +79,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       if (cardRef.current) {
         cardRef.current.innerHTML = '';
         await cardInstance.attach(cardRef.current);
-        console.log('✅ Square card form attached successfully with professional styling!');
+        console.log('✅ Square card form attached successfully!');
         
         // Add event listeners for better UX
         cardInstance.addEventListener('cardBrandChanged', (event: any) => {
@@ -170,7 +165,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       }
 
       try {
-        console.log('🏗️ Creating Square payments instance with enhanced configuration...');
+        console.log('🏗️ Creating Square payments instance...');
         
         const paymentsInstance = window.Square.payments(
           squareAppId, 
@@ -200,7 +195,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     };
 
     if (squareAppId && squareLocationId) {
-      console.log('🎬 Starting Square initialization with professional configuration...');
+      console.log('🎬 Starting Square initialization...');
       // Small delay to ensure proper DOM state
       initializationTimeout = setTimeout(initializeSquare, 200);
     } else {
