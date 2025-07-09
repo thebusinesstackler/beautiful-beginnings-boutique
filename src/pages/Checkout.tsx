@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,11 +10,15 @@ import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import SquareCheckout from '@/components/SquareCheckout';
 import { useShippingSettings } from '@/hooks/useShippingSettings';
-
 const Checkout = () => {
-  const { items, getCartTotal } = useCart();
-  const { calculateShipping } = useShippingSettings();
-  
+  const {
+    items,
+    getCartTotal
+  } = useCart();
+  const {
+    calculateShipping
+  } = useShippingSettings();
+
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
@@ -41,41 +44,32 @@ const Checkout = () => {
     zipCode: '',
     country: 'United States'
   });
-
   const [sameAsShipping, setSameAsShipping] = useState(true);
-
   const subtotal = getCartTotal();
   const shippingCost = calculateShipping(subtotal);
   const tax = subtotal * 0.08;
   const total = subtotal + shippingCost + tax;
-
   const handleSquareSuccess = () => {
     toast({
       title: "Payment Successful!",
-      description: "Your order has been processed successfully.",
+      description: "Your order has been processed successfully."
     });
   };
-
   const handleSquareError = (error: any) => {
     console.error('Square payment error:', error);
     toast({
       title: "Payment Error",
       description: "There was an issue processing your payment. Please try again.",
-      variant: "destructive",
+      variant: "destructive"
     });
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
+  return <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
       <Navigation />
       
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-12">
-          <Link
-            to="/cart"
-            className="inline-flex items-center text-sm font-medium text-charcoal/60 hover:text-charcoal mb-6 transition-colors"
-          >
+          <Link to="/cart" className="inline-flex items-center text-sm font-medium text-charcoal/60 hover:text-charcoal mb-6 transition-colors">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Cart
           </Link>
@@ -87,8 +81,7 @@ const Checkout = () => {
           </p>
         </div>
 
-        {items.length === 0 ? (
-          <div className="text-center py-20">
+        {items.length === 0 ? <div className="text-center py-20">
             <div className="w-32 h-32 bg-sage/10 rounded-full flex items-center justify-center mx-auto mb-8">
               <ShoppingCart className="h-16 w-16 text-sage/40" />
             </div>
@@ -101,9 +94,7 @@ const Checkout = () => {
                 Start Shopping
               </Button>
             </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
+          </div> : <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
             {/* Checkout Form */}
             <div className="xl:col-span-2 space-y-8">
               {/* Customer Information */}
@@ -116,51 +107,37 @@ const Checkout = () => {
                     <Label htmlFor="firstName" className="text-charcoal font-medium">
                       First Name <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="firstName"
-                      value={customerInfo.firstName}
-                      onChange={(e) => setCustomerInfo({...customerInfo, firstName: e.target.value})}
-                      className="mt-2"
-                      required
-                    />
+                    <Input id="firstName" value={customerInfo.firstName} onChange={e => setCustomerInfo({
+                  ...customerInfo,
+                  firstName: e.target.value
+                })} className="mt-2" required />
                   </div>
                   <div>
                     <Label htmlFor="lastName" className="text-charcoal font-medium">
                       Last Name <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="lastName"
-                      value={customerInfo.lastName}
-                      onChange={(e) => setCustomerInfo({...customerInfo, lastName: e.target.value})}
-                      className="mt-2"
-                      required
-                    />
+                    <Input id="lastName" value={customerInfo.lastName} onChange={e => setCustomerInfo({
+                  ...customerInfo,
+                  lastName: e.target.value
+                })} className="mt-2" required />
                   </div>
                   <div>
                     <Label htmlFor="email" className="text-charcoal font-medium">
                       Email Address <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={customerInfo.email}
-                      onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
-                      className="mt-2"
-                      required
-                    />
+                    <Input id="email" type="email" value={customerInfo.email} onChange={e => setCustomerInfo({
+                  ...customerInfo,
+                  email: e.target.value
+                })} className="mt-2" required />
                   </div>
                   <div>
                     <Label htmlFor="phone" className="text-charcoal font-medium">
                       Phone Number <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={customerInfo.phone}
-                      onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-                      className="mt-2"
-                      required
-                    />
+                    <Input id="phone" type="tel" value={customerInfo.phone} onChange={e => setCustomerInfo({
+                  ...customerInfo,
+                  phone: e.target.value
+                })} className="mt-2" required />
                   </div>
                 </div>
               </div>
@@ -175,50 +152,38 @@ const Checkout = () => {
                     <Label htmlFor="shippingAddress" className="text-charcoal font-medium">
                       Street Address <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="shippingAddress"
-                      value={shippingAddress.address}
-                      onChange={(e) => setShippingAddress({...shippingAddress, address: e.target.value})}
-                      className="mt-2"
-                      required
-                    />
+                    <Input id="shippingAddress" value={shippingAddress.address} onChange={e => setShippingAddress({
+                  ...shippingAddress,
+                  address: e.target.value
+                })} className="mt-2" required />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                       <Label htmlFor="shippingCity" className="text-charcoal font-medium">
                         City <span className="text-red-500">*</span>
                       </Label>
-                      <Input
-                        id="shippingCity"
-                        value={shippingAddress.city}
-                        onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
-                        className="mt-2"
-                        required
-                      />
+                      <Input id="shippingCity" value={shippingAddress.city} onChange={e => setShippingAddress({
+                    ...shippingAddress,
+                    city: e.target.value
+                  })} className="mt-2" required />
                     </div>
                     <div>
                       <Label htmlFor="shippingState" className="text-charcoal font-medium">
                         State <span className="text-red-500">*</span>
                       </Label>
-                      <Input
-                        id="shippingState"
-                        value={shippingAddress.state}
-                        onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
-                        className="mt-2"
-                        required
-                      />
+                      <Input id="shippingState" value={shippingAddress.state} onChange={e => setShippingAddress({
+                    ...shippingAddress,
+                    state: e.target.value
+                  })} className="mt-2" required />
                     </div>
                     <div>
                       <Label htmlFor="shippingZip" className="text-charcoal font-medium">
                         ZIP Code <span className="text-red-500">*</span>
                       </Label>
-                      <Input
-                        id="shippingZip"
-                        value={shippingAddress.zipCode}
-                        onChange={(e) => setShippingAddress({...shippingAddress, zipCode: e.target.value})}
-                        className="mt-2"
-                        required
-                      />
+                      <Input id="shippingZip" value={shippingAddress.zipCode} onChange={e => setShippingAddress({
+                    ...shippingAddress,
+                    zipCode: e.target.value
+                  })} className="mt-2" required />
                     </div>
                   </div>
                 </div>
@@ -231,62 +196,43 @@ const Checkout = () => {
                 </h2>
                 <div className="mb-6">
                   <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={sameAsShipping}
-                      onChange={(e) => setSameAsShipping(e.target.checked)}
-                      className="rounded border-sage/30 text-sage focus:ring-sage"
-                    />
+                    <input type="checkbox" checked={sameAsShipping} onChange={e => setSameAsShipping(e.target.checked)} className="rounded border-sage/30 text-sage focus:ring-sage" />
                     <span className="text-sm text-charcoal">Same as shipping address</span>
                   </label>
                 </div>
                 
-                {!sameAsShipping && (
-                  <div className="space-y-6">
+                {!sameAsShipping && <div className="space-y-6">
                     <div>
                       <Label htmlFor="billingAddress">Street Address</Label>
-                      <Input
-                        id="billingAddress"
-                        value={billingAddress.address}
-                        onChange={(e) => setBillingAddress({...billingAddress, address: e.target.value})}
-                        className="mt-2"
-                        required
-                      />
+                      <Input id="billingAddress" value={billingAddress.address} onChange={e => setBillingAddress({
+                  ...billingAddress,
+                  address: e.target.value
+                })} className="mt-2" required />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div>
                         <Label htmlFor="billingCity">City</Label>
-                        <Input
-                          id="billingCity"
-                          value={billingAddress.city}
-                          onChange={(e) => setBillingAddress({...billingAddress, city: e.target.value})}
-                          className="mt-2"
-                          required
-                        />
+                        <Input id="billingCity" value={billingAddress.city} onChange={e => setBillingAddress({
+                    ...billingAddress,
+                    city: e.target.value
+                  })} className="mt-2" required />
                       </div>
                       <div>
                         <Label htmlFor="billingState">State</Label>
-                        <Input
-                          id="billingState"
-                          value={billingAddress.state}
-                          onChange={(e) => setBillingAddress({...billingAddress, state: e.target.value})}
-                          className="mt-2"
-                          required
-                        />
+                        <Input id="billingState" value={billingAddress.state} onChange={e => setBillingAddress({
+                    ...billingAddress,
+                    state: e.target.value
+                  })} className="mt-2" required />
                       </div>
                       <div>
                         <Label htmlFor="billingZip">ZIP Code</Label>
-                        <Input
-                          id="billingZip"
-                          value={billingAddress.zipCode}
-                          onChange={(e) => setBillingAddress({...billingAddress, zipCode: e.target.value})}
-                          className="mt-2"
-                          required
-                        />
+                        <Input id="billingZip" value={billingAddress.zipCode} onChange={e => setBillingAddress({
+                    ...billingAddress,
+                    zipCode: e.target.value
+                  })} className="mt-2" required />
                       </div>
                     </div>
-                  </div>
-                )}
+                  </div>}
               </div>
 
               {/* Order Summary - Show items with photos if uploaded */}
@@ -295,35 +241,27 @@ const Checkout = () => {
                   Order Review
                 </h2>
                 <div className="space-y-4">
-                  {items.map((item) => (
-                    <div key={item.id} className="flex items-center space-x-4 p-4 border border-stone/20 rounded-lg">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
-                      />
+                  {items.map(item => <div key={item.id} className="flex items-center space-x-4 p-4 border border-stone/20 rounded-lg">
+                      <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg flex-shrink-0" />
                       <div className="flex-1">
                         <h3 className="font-medium text-charcoal">{item.name}</h3>
                         <p className="text-sage font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
                         <p className="text-sm text-charcoal/60">Quantity: {item.quantity}</p>
-                        {item.uploadedPhotoUrl && (
-                          <div className="mt-2 flex items-center space-x-2">
+                        {item.uploadedPhotoUrl && <div className="mt-2 flex items-center space-x-2">
                             <div className="w-8 h-8 bg-sage/10 rounded-full flex items-center justify-center">
                               <span className="text-xs text-sage">📸</span>
                             </div>
                             <span className="text-xs text-sage font-medium">Custom photo uploaded</span>
-                          </div>
-                        )}
+                          </div>}
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </div>
             </div>
 
             {/* Order Summary */}
             <div className="xl:col-span-1">
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8 sticky top-8">
+              <div className="bg-white/90 backdrop-blur-sm shadow-lg border border-sage/10 p-8 sticky top-8 px-0 py-[5px] rounded">
                 <h3 className="text-2xl font-semibold text-charcoal font-playfair mb-8">Order Summary</h3>
                 
                 <div className="space-y-4 mb-8">
@@ -350,18 +288,7 @@ const Checkout = () => {
                 </div>
 
                 {/* Square Checkout */}
-                <SquareCheckout
-                  customerInfo={customerInfo}
-                  shippingAddress={shippingAddress}
-                  billingAddress={billingAddress}
-                  sameAsShipping={sameAsShipping}
-                  total={total}
-                  subtotal={subtotal}
-                  shippingCost={shippingCost}
-                  tax={tax}
-                  onSuccess={handleSquareSuccess}
-                  onError={handleSquareError}
-                />
+                <SquareCheckout customerInfo={customerInfo} shippingAddress={shippingAddress} billingAddress={billingAddress} sameAsShipping={sameAsShipping} total={total} subtotal={subtotal} shippingCost={shippingCost} tax={tax} onSuccess={handleSquareSuccess} onError={handleSquareError} />
 
                 <div className="mt-6 text-center text-xs text-charcoal/60">
                   <p>🔒 Secure checkout powered by Square</p>
@@ -369,13 +296,10 @@ const Checkout = () => {
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          </div>}
       </div>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Checkout;
