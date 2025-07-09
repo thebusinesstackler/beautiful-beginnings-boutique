@@ -1,7 +1,6 @@
-
-import React, { createContext, useContext, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { usePhotoUpload } from '@/hooks/usePhotoUpload';
 
 interface CartItem {
   id: number;
@@ -14,52 +13,120 @@ interface CartItem {
   willUploadLater?: boolean;
 }
 
-interface CartContextType {
+interface CartContextProps {
   items: CartItem[];
-  addToCart: (item: Omit<CartItem, 'quantity'>) => void;
-  removeFromCart: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  addToCart: (product: any, quantity?: number) => void;
+  removeFromCart: (itemId: number) => void;
+  updateQuantity: (itemId: number, newQuantity: number) => void;
+  updatePhoto: (itemId: number, file: File) => Promise<void>;
+  updateItemProperty: (itemId: number, property: string, value: any) => void;
   clearCart: () => void;
   getCartTotal: () => number;
-  getCartCount: () => number;
-  updatePhoto: (id: number, file: File) => Promise<void>;
-  updateItemProperty: (id: number, property: keyof CartItem, value: any) => void;
+  getCartItemCount: () => number;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
-
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
-};
+const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const { uploadPhoto } = usePhotoUpload();
 
-  const addToCart = (item: Omit<CartItem, 'quantity'>) => {
+  useEffect(() => {
+    const storedCart = localStorage.getItem('cartItems');
+    if (storedCart) {
+      setItems(JSON.parse(storedCart));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(items));
+  }, [items]);
+
+  const addToCart = (product: any, quantity: number = 1) => {
+    const newItem: CartItem = {
+      id: Date.now(),
+      name: product.name,
+      price: product.price,
+      quantity,
+      image: product.image_url || product.image,
+    };
+
     setItems(prevItems => {
-      const existingItem = prevItems.find(i => i.id === item.id);
+      const existingItem = prevItems.find(item => item.name === newItem.name);
       if (existingItem) {
-        return prevItems.map(i =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+        return prevItems.map(item =>
+          item.name === newItem.name
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
         );
-      } else {
-        return [...prevItems, { ...item, quantity: 1 }];
       }
+      return [...prevItems, newItem];
+    });
+
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart.`,
     });
   };
 
-  const removeFromCart = (id: number) => {
-    setItems(prevItems => prevItems.filter(item => item.id !== id));
+  const removeFromCart = (itemId: number) => {
+    setItems(prevItems => prevItems.filter(item => item.id !== itemId));
   };
 
-  const updateQuantity = (id: number, quantity: number) => {
+  const updateQuantity = (itemId: number, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      removeFromCart(itemId);
+      return;
+    }
+
     setItems(prevItems =>
       prevItems.map(item =>
-        item.id === id ? { ...item, quantity: quantity } : item
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
+  const updatePhoto = async (itemId: number, file: File) => {
+    console.log('Updating photo for item:', itemId, 'File:', file.name);
+    
+    try {
+      // Upload the photo and get the URL
+      const photoUrl = await uploadPhoto(file);
+      
+      if (photoUrl) {
+        setItems(prevItems =>
+          prevItems.map(item =>
+            item.id === itemId
+              ? { 
+                  ...item, 
+                  uploadedPhoto: file, 
+                  uploadedPhotoUrl: photoUrl 
+                }
+              : item
+          )
+        );
+        
+        console.log('Photo updated successfully for item:', itemId, 'URL:', photoUrl);
+        
+        toast({
+          title: "Photo uploaded!",
+          description: "Your custom photo has been saved successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('Error updating photo:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload photo. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateItemProperty = (itemId: number, property: string, value: any) => {
+    setItems(prevItems =>
+      prevItems.map(item =>
+        item.id === itemId ? { ...item, [property]: value } : item
       )
     );
   };
@@ -69,90 +136,36 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const getCartTotal = () => {
-    return items.reduce((total, item) => total + item.price * item.quantity, 0);
+    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  const getCartCount = () => {
+  const getCartItemCount = () => {
     return items.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const updatePhoto = async (id: number, file: File) => {
-    try {
-      // Generate a unique filename
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `customer-uploads/${fileName}`;
-
-      console.log('Uploading file to Supabase storage:', filePath);
-
-      // Upload file to Supabase storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        console.error('Error uploading file:', uploadError);
-        throw uploadError;
-      }
-
-      // Get the public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(filePath);
-
-      console.log('File uploaded successfully, public URL:', publicUrl);
-
-      // Update the cart item with both the file and the URL
-      setItems(prevItems =>
-        prevItems.map(item =>
-          item.id === id ? { 
-            ...item, 
-            uploadedPhoto: file,
-            uploadedPhotoUrl: publicUrl,
-            willUploadLater: false
-          } : item
-        )
-      );
-
-      toast({
-        title: "Photo uploaded successfully!",
-        description: "Your custom photo has been saved.",
-      });
-
-    } catch (error) {
-      console.error('Error in updatePhoto:', error);
-      toast({
-        title: "Upload Error",
-        description: "Failed to upload photo. Please try again.",
-        variant: "destructive",
-      });
-      throw error;
-    }
-  };
-
-  const updateItemProperty = (id: number, property: keyof CartItem, value: any) => {
-    setItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, [property]: value } : item
-      )
-    );
-  };
-
-  const value = {
-    items,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    getCartTotal,
-    getCartCount,
-    updatePhoto,
-    updateItemProperty
-  };
-
   return (
-    <CartContext.Provider value={value}>
+    <CartContext.Provider
+      value={{
+        items,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        updatePhoto,
+        updateItemProperty,
+        clearCart,
+        getCartTotal,
+        getCartItemCount,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
+};
+
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (context === undefined) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
 };
