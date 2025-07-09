@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,22 +6,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Package, Download, Eye, CheckCircle } from 'lucide-react';
+import OrderDetailsModal from './OrderDetailsModal';
 
 interface Order {
   id: string;
   customer_email: string;
   customer_name: string;
+  customer_phone: string;
   status: string;
   total_amount: number;
   created_at: string;
   uploaded_images: string[];
   personalization_data: any;
+  shipping_address: any;
+  billing_address: any;
+  payment_id: string;
+  square_order_id: string;
+  tracking_number: string;
+  notes: string;
+  fulfilled_at: string;
 }
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -102,6 +112,16 @@ const OrderManagement = () => {
     a.download = 'orders.csv';
     a.click();
     window.URL.revokeObjectURL(url);
+  };
+
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
   };
 
   const filteredOrders = filterStatus === 'all' 
@@ -251,6 +271,15 @@ const OrderManagement = () => {
                   </div>
 
                   <div className="flex space-x-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleViewOrder(order)}
+                      className="border-sage text-sage hover:bg-sage/10"
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      View Details
+                    </Button>
                     {order.status === 'pending' && (
                       <Button
                         size="sm"
@@ -274,20 +303,25 @@ const OrderManagement = () => {
                   </div>
                 </div>
 
-                {/* Customer Images */}
+                {/* Customer Images Preview */}
                 {order.uploaded_images && order.uploaded_images.length > 0 && (
                   <div className="mt-4 pt-4 border-t">
                     <p className="text-sm font-medium mb-2 text-charcoal">Customer Images:</p>
                     <div className="flex space-x-2">
-                      {order.uploaded_images.map((imageUrl, index) => (
+                      {order.uploaded_images.slice(0, 4).map((imageUrl, index) => (
                         <img
                           key={index}
                           src={imageUrl}
                           alt={`Customer upload ${index + 1}`}
                           className="w-16 h-16 object-cover rounded border cursor-pointer"
-                          onClick={() => window.open(imageUrl, '_blank')}
+                          onClick={() => handleViewOrder(order)}
                         />
                       ))}
+                      {order.uploaded_images.length > 4 && (
+                        <div className="w-16 h-16 bg-gray-100 rounded border flex items-center justify-center text-xs text-gray-500">
+                          +{order.uploaded_images.length - 4}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -299,6 +333,13 @@ const OrderManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Order Details Modal */}
+      <OrderDetailsModal
+        order={selectedOrder}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      />
     </div>
   );
 };
