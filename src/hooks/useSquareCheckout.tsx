@@ -9,8 +9,7 @@ export const useSquareCheckout = () => {
     setIsLoading(true);
     
     try {
-      // Note: Square credentials are now securely managed in Edge Function secrets
-      // This hook interfaces with the secure Square Edge Function
+      // The Edge Function will handle Square credentials securely from environment variables
       const response = await fetch('/api/square/create-checkout', {
         method: 'POST',
         headers: {
@@ -20,7 +19,8 @@ export const useSquareCheckout = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create Square checkout');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to create Square checkout');
       }
 
       return await response.json();
@@ -28,7 +28,7 @@ export const useSquareCheckout = () => {
       console.error('Square checkout error:', error);
       toast({
         title: "Checkout Error",
-        description: "Failed to initialize Square checkout. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to initialize Square checkout. Please try again.",
         variant: "destructive",
       });
       throw error;

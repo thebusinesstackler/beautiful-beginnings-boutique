@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
@@ -32,11 +33,11 @@ const EmbeddedSquareCheckout = ({
   const { items, clearCart } = useCart();
   const { settings } = useSettings();
   
-  // Initialize Square SDK
+  // Initialize Square SDK with settings from database
   const { payments, card, sdkStatus, isSecureConnection, cardRef } = useSquareSDK({
     squareAppId: settings.square_app_id,
     squareLocationId: settings.square_location_id,
-    squareEnvironment: settings.square_environment
+    squareEnvironment: settings.square_environment || 'sandbox'
   });
 
   // Form validation
@@ -80,10 +81,10 @@ const EmbeddedSquareCheckout = ({
         total: Math.round(total * 100)
       },
       squareCredentials: {
-        appId: settings.square_app_id,
-        accessToken: settings.square_access_token,
+        appId: settings.square_app_id || '',
+        accessToken: '', // This will be handled by the Edge Function
         environment: settings.square_environment || 'sandbox',
-        locationId: settings.square_location_id
+        locationId: settings.square_location_id || ''
       }
     };
 
@@ -94,13 +95,28 @@ const EmbeddedSquareCheckout = ({
     return null;
   }
 
-  // Show configuration message if Square is not set up
-  if (!settings.square_app_id || !settings.square_location_id || !settings.square_access_token) {
+  // Show configuration message if Square is not properly set up
+  if (!settings.square_app_id || !settings.square_location_id) {
     return (
-      <div className="w-full p-4 bg-amber-50 border border-amber-200 rounded-lg">
-        <p className="text-sm text-amber-800 text-center">
-          Square checkout is not configured. Please configure Square settings in the admin panel.
-        </p>
+      <div className="w-full p-6 bg-amber-50 border border-amber-200 rounded-lg">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-amber-800 mb-2">Square Payment Setup Required</h3>
+            <p className="text-sm text-amber-700 mb-4">
+              Square checkout is not fully configured. Please complete the setup in the admin panel.
+            </p>
+            <div className="text-xs text-amber-600 space-y-1">
+              <p>Missing configuration:</p>
+              {!settings.square_app_id && <p>• Square Application ID</p>}
+              {!settings.square_location_id && <p>• Square Location ID</p>}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

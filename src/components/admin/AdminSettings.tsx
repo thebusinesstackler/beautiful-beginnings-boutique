@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, Store, Truck, Mail, AlertTriangle } from 'lucide-react';
+import { Settings, Store, Truck, Mail, CreditCard } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const AdminSettings = () => {
   const { settings, updateSettings, loading } = useSettings();
@@ -31,6 +30,14 @@ const AdminSettings = () => {
       store_phone: formData.store_phone,
       store_website: formData.store_website,
       store_address: formData.store_address
+    });
+  };
+
+  const handleSaveSquareSettings = () => {
+    updateSettings({
+      square_app_id: formData.square_app_id,
+      square_location_id: formData.square_location_id,
+      square_environment: formData.square_environment
     });
   };
 
@@ -133,33 +140,67 @@ const AdminSettings = () => {
         </CardContent>
       </Card>
 
-      {/* Square Payment Settings - Security Notice */}
-      <Card className="bg-red-50 border-red-200 shadow-sm">
+      {/* Square Settings */}
+      <Card className="bg-blue-50 border-blue-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center text-red-800">
-            <AlertTriangle className="h-5 w-5 mr-2" />
-            Square Payment Configuration
+          <CardTitle className="flex items-center text-charcoal">
+            <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
+            Square Payment Settings
           </CardTitle>
-          <CardDescription className="text-red-700">
-            For security reasons, Square credentials are now managed through server environment variables
+          <CardDescription>
+            Configure Square payment integration. Access token is managed securely in server environment.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Alert className="bg-red-100 border-red-300">
-            <AlertTriangle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-800">
-              <strong>Security Enhancement:</strong> Square API credentials are no longer stored in the database for security reasons. 
-              These sensitive credentials are now managed through secure server environment variables.
-              <br /><br />
-              <strong>For developers:</strong> Square credentials should be configured in the Supabase Edge Function secrets:
-              <ul className="list-disc list-inside mt-2 space-y-1">
-                <li>SQUARE_ACCESS_TOKEN</li>
-                <li>SQUARE_APP_ID</li>
-                <li>SQUARE_LOCATION_ID</li>
-                <li>SQUARE_ENVIRONMENT</li>
-              </ul>
-            </AlertDescription>
-          </Alert>
+        <CardContent className="space-y-4">
+          <div className="bg-blue-100 border border-blue-300 rounded-lg p-4 mb-4">
+            <p className="text-blue-800 text-sm">
+              <strong>Security Note:</strong> Your Square Access Token is stored securely in the server environment for security reasons. 
+              Only configure the public settings below.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="square_app_id" className="text-charcoal">Square Application ID</Label>
+              <Input 
+                id="square_app_id" 
+                value={formData.square_app_id || ''}
+                onChange={(e) => handleInputChange('square_app_id', e.target.value)}
+                placeholder="sandbox-sq0idb-..."
+              />
+              <p className="text-xs text-stone mt-1">Found in Square Developer Dashboard</p>
+            </div>
+            <div>
+              <Label htmlFor="square_location_id" className="text-charcoal">Square Location ID</Label>
+              <Input 
+                id="square_location_id" 
+                value={formData.square_location_id || ''}
+                onChange={(e) => handleInputChange('square_location_id', e.target.value)}
+                placeholder="L..."
+              />
+              <p className="text-xs text-stone mt-1">Your business location ID from Square</p>
+            </div>
+            <div>
+              <Label htmlFor="square_environment" className="text-charcoal">Environment</Label>
+              <select 
+                id="square_environment"
+                value={formData.square_environment || 'sandbox'}
+                onChange={(e) => handleInputChange('square_environment', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage"
+              >
+                <option value="sandbox">Sandbox (Testing)</option>
+                <option value="production">Production (Live)</option>
+              </select>
+            </div>
+          </div>
+          
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={handleSaveSquareSettings}
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save Square Settings'}
+          </Button>
         </CardContent>
       </Card>
 
