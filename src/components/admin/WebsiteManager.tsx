@@ -13,6 +13,7 @@ import HomepagePreview from './HomepagePreview';
 import TestimonialsManager from './TestimonialsManager';
 import CollectionsManager from './CollectionsManager';
 import FeaturedProductsManager from './FeaturedProductsManager';
+import GiftingOccasionsManager from './GiftingOccasionsManager';
 
 interface WebsiteContent {
   id: string;
@@ -206,6 +207,16 @@ const WebsiteManager = () => {
           setUploading={setUploading}
         />
       </div>
+
+      {/* Gifting Occasions Management */}
+      <Card className="bg-accent/5 border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-charcoal">Gifting Occasions Management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <GiftingOccasionsManager />
+        </CardContent>
+      </Card>
 
       {/* Featured Products Section Management */}
       <Card className="bg-blush/10 border-0 shadow-sm">
