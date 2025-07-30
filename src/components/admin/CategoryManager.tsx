@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import CategoryImageUploader from './CategoryImageUploader';
 
 interface Category {
   id: string;
@@ -18,6 +19,7 @@ interface Category {
   description: string;
   is_active: boolean;
   sort_order: number;
+  image_url?: string;
 }
 
 const CategoryManager = () => {
@@ -32,7 +34,8 @@ const CategoryManager = () => {
     slug: '',
     description: '',
     is_active: true,
-    sort_order: 0
+    sort_order: 0,
+    image_url: ''
   });
 
   useEffect(() => {
@@ -72,7 +75,8 @@ const CategoryManager = () => {
         slug: formData.slug || generateSlug(formData.name),
         description: formData.description,
         is_active: formData.is_active,
-        sort_order: formData.sort_order
+        sort_order: formData.sort_order,
+        image_url: formData.image_url || null
       };
 
       if (editingCategory) {
@@ -113,7 +117,8 @@ const CategoryManager = () => {
       slug: category.slug,
       description: category.description || '',
       is_active: category.is_active,
-      sort_order: category.sort_order || 0
+      sort_order: category.sort_order || 0,
+      image_url: category.image_url || ''
     });
     setShowForm(true);
   };
@@ -140,13 +145,18 @@ const CategoryManager = () => {
     }
   };
 
+  const handleImageUpdate = (imageUrl: string | null) => {
+    setFormData({ ...formData, image_url: imageUrl || '' });
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
       slug: '',
       description: '',
       is_active: true,
-      sort_order: 0
+      sort_order: 0,
+      image_url: ''
     });
   };
 
@@ -179,42 +189,52 @@ const CategoryManager = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Category Name *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                  />
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="name">Category Name *</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="slug">URL Slug</Label>
+                    <Input
+                      id="slug"
+                      value={formData.slug}
+                      onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                      placeholder={generateSlug(formData.name)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="sort_order">Sort Order</Label>
+                    <Input
+                      id="sort_order"
+                      type="number"
+                      value={formData.sort_order}
+                      onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="is_active"
+                      checked={formData.is_active}
+                      onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                    />
+                    <Label htmlFor="is_active">Active</Label>
+                  </div>
                 </div>
+
                 <div>
-                  <Label htmlFor="slug">URL Slug</Label>
-                  <Input
-                    id="slug"
-                    value={formData.slug}
-                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    placeholder={generateSlug(formData.name)}
+                  <CategoryImageUploader
+                    currentImageUrl={formData.image_url}
+                    onImageUpdate={handleImageUpdate}
+                    categoryName={formData.name || 'New Category'}
                   />
-                </div>
-                <div>
-                  <Label htmlFor="sort_order">Sort Order</Label>
-                  <Input
-                    id="sort_order"
-                    type="number"
-                    value={formData.sort_order}
-                    onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_active"
-                    checked={formData.is_active}
-                    onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                  />
-                  <Label htmlFor="is_active">Active</Label>
                 </div>
               </div>
 
@@ -259,17 +279,31 @@ const CategoryManager = () => {
           <div className="space-y-4">
             {categories.map((category) => (
               <div key={category.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm">
-                <div>
-                  <h3 className="font-medium">{category.name}</h3>
-                  <p className="text-sm text-gray-500">{category.slug}</p>
-                  {category.description && (
-                    <p className="text-sm text-gray-600 mt-1">{category.description}</p>
+                <div className="flex items-center space-x-4">
+                  {category.image_url && (
+                    <div className="flex-shrink-0">
+                      <img
+                        src={category.image_url}
+                        alt={`${category.name} category`}
+                        className="w-16 h-16 object-cover rounded-lg"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400";
+                        }}
+                      />
+                    </div>
                   )}
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Badge variant={category.is_active ? "default" : "secondary"}>
-                      {category.is_active ? 'Active' : 'Inactive'}
-                    </Badge>
-                    <span className="text-sm text-gray-500">Order: {category.sort_order}</span>
+                  <div>
+                    <h3 className="font-medium">{category.name}</h3>
+                    <p className="text-sm text-gray-500">{category.slug}</p>
+                    {category.description && (
+                      <p className="text-sm text-gray-600 mt-1">{category.description}</p>
+                    )}
+                    <div className="flex items-center space-x-2 mt-2">
+                      <Badge variant={category.is_active ? "default" : "secondary"}>
+                        {category.is_active ? 'Active' : 'Inactive'}
+                      </Badge>
+                      <span className="text-sm text-gray-500">Order: {category.sort_order}</span>
+                    </div>
                   </div>
                 </div>
                 <div className="flex space-x-2">

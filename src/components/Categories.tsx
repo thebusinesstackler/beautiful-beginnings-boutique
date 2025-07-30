@@ -1,40 +1,67 @@
 
 import { Link } from 'react-router-dom';
 import { ArrowRight, Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image_url?: string;
+  sort_order: number;
+}
 
 const Categories = () => {
-  const categories = [
-    {
-      name: "Keepsake Ornaments",
-      description: "Transform memories into beautiful ornaments",
-      href: "/products/ornaments",
-      featured: true
-    },
-    {
-      name: "Memory Jewelry",
-      description: "Wear your loved ones close to your heart",
-      href: "/products/necklaces",
-      featured: false
-    },
-    {
-      name: "Slate Keepsakes",
-      description: "Elegant slate pieces with lasting memories",
-      href: "/products/slate",
-      featured: false
-    },
-    {
-      name: "Snow Globes",
-      description: "Magical snow globes with your special moments",
-      href: "/products/snow-globes",
-      featured: false
-    },
-    {
-      name: "Wood Art",
-      description: "Rustic wood pieces with personalized touches",
-      href: "/products/wood-sublimation",
-      featured: false
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      // Fallback to empty array if error
+      setCategories([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // Map category slugs to their corresponding product pages
+  const getHref = (slug: string) => {
+    const hrefMap: { [key: string]: string } = {
+      'ornaments': '/products/ornaments',
+      'necklaces': '/products/necklaces',
+      'slate': '/products/slate',
+      'snow-globes': '/products/snow-globes',
+      'wood-sublimation': '/products/wood-sublimation'
+    };
+    return hrefMap[slug] || `/products/${slug}`;
+  };
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-white to-rose-50/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-rose-400 border-t-transparent mx-auto"></div>
+          <p className="mt-4 text-slate-600">Loading categories...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-gradient-to-b from-white to-rose-50/30 relative overflow-hidden">
@@ -63,18 +90,19 @@ const Categories = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {categories.map((category, index) => (
             <Link
-              key={index}
-              to={category.href}
-              className={`group block bg-white rounded-2xl shadow-sm hover:shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-2 relative border ${
-                category.featured ? 'border-rose-200' : 'border-rose-100'
-              }`}
+              key={category.id}
+              to={getHref(category.slug)}
+              className="group block bg-white rounded-2xl shadow-sm hover:shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-2 relative border border-rose-100"
             >
-              {/* Updated image */}
+              {/* Category image */}
               <div className="aspect-square overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+                  src={category.image_url || "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"}
                   alt={category.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400";
+                  }}
                 />
               </div>
               
@@ -95,6 +123,13 @@ const Categories = () => {
             </Link>
           ))}
         </div>
+        
+        {categories.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-slate-600 text-lg">No categories available at the moment.</p>
+            <p className="text-slate-500 mt-2">Please check back soon for our handcrafted collections.</p>
+          </div>
+        )}
       </div>
     </section>
   );
