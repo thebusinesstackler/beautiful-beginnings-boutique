@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Package, Plus, Edit, Trash2, Save, X, Star, Award, ArrowUp, ArrowDown } from 'lucide-react';
 import ProductImageManager from './ProductImageManager';
 import HomepagePreview from './HomepagePreview';
+import AIContentGenerator from './AIContentGenerator';
 
 interface Product {
   id: string;
@@ -386,19 +386,39 @@ const ProductManagement = () => {
               </div>
 
               <div>
-                <Label htmlFor="description">Description</Label>
+                <div className="flex items-center justify-between mb-2">
+                  <Label htmlFor="description">Description</Label>
+                  <AIContentGenerator
+                    productName={formData.name}
+                    category={formData.category}
+                    contentType="description"
+                    onContentGenerated={(content) => setFormData({ ...formData, description: content })}
+                    disabled={!formData.name || !formData.category}
+                  />
+                </div>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
+                  placeholder="Enter product description or use AI to generate one"
                 />
               </div>
 
-              {/* SEO Fields */}
+              {/* SEO Fields with AI Generation */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="seo_title">SEO Title</Label>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label htmlFor="seo_title">SEO Title</Label>
+                    <AIContentGenerator
+                      productName={formData.name}
+                      category={formData.category}
+                      contentType="seo_title"
+                      onContentGenerated={(content) => setFormData({ ...formData, seo_title: content })}
+                      disabled={!formData.name || !formData.category}
+                      size="sm"
+                    />
+                  </div>
                   <Input
                     id="seo_title"
                     value={formData.seo_title}
@@ -407,7 +427,17 @@ const ProductManagement = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="seo_description">SEO Description</Label>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label htmlFor="seo_description">SEO Description</Label>
+                    <AIContentGenerator
+                      productName={formData.name}
+                      category={formData.category}
+                      contentType="seo_description"
+                      onContentGenerated={(content) => setFormData({ ...formData, seo_description: content })}
+                      disabled={!formData.name || !formData.category}
+                      size="sm"
+                    />
+                  </div>
                   <Input
                     id="seo_description"
                     value={formData.seo_description}

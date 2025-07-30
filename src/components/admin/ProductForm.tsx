@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import ProductImageManager from './ProductImageManager';
+import AIContentGenerator from './AIContentGenerator';
 
 interface Product {
   id: string;
@@ -44,6 +45,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
     image_url: '',
     gallery_images: [] as string[],
     is_active: true,
+    seo_title: '',
+    seo_description: '',
   });
   const [loading, setLoading] = useState(false);
 
@@ -57,6 +60,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
         image_url: product.image_url || '',
         gallery_images: product.gallery_images || [],
         is_active: product.is_active,
+        seo_title: (product as any).seo_title || '',
+        seo_description: (product as any).seo_description || '',
       });
     }
   }, [product]);
@@ -78,6 +83,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
         image_url: formData.image_url,
         gallery_images: formData.gallery_images,
         is_active: formData.is_active,
+        seo_title: formData.seo_title,
+        seo_description: formData.seo_description,
       };
 
       if (product) {
@@ -161,13 +168,65 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="description">Description</Label>
+          <AIContentGenerator
+            productName={formData.name}
+            category={formData.category}
+            contentType="description"
+            onContentGenerated={(content) => handleInputChange('description', content)}
+            disabled={!formData.name || !formData.category}
+          />
+        </div>
         <Textarea
           id="description"
           value={formData.description}
           onChange={(e) => handleInputChange('description', e.target.value)}
           rows={4}
+          placeholder="Enter product description or use AI to generate one"
         />
+      </div>
+
+      {/* SEO Fields with AI Generation */}
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="seo_title">SEO Title</Label>
+            <AIContentGenerator
+              productName={formData.name}
+              category={formData.category}
+              contentType="seo_title"
+              onContentGenerated={(content) => handleInputChange('seo_title', content)}
+              disabled={!formData.name || !formData.category}
+            />
+          </div>
+          <Input
+            id="seo_title"
+            value={formData.seo_title}
+            onChange={(e) => handleInputChange('seo_title', e.target.value)}
+            placeholder="SEO optimized title (auto-generated or custom)"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="seo_description">SEO Description</Label>
+            <AIContentGenerator
+              productName={formData.name}
+              category={formData.category}
+              contentType="seo_description"
+              onContentGenerated={(content) => handleInputChange('seo_description', content)}
+              disabled={!formData.name || !formData.category}
+            />
+          </div>
+          <Textarea
+            id="seo_description"
+            value={formData.seo_description}
+            onChange={(e) => handleInputChange('seo_description', e.target.value)}
+            rows={2}
+            placeholder="SEO meta description (auto-generated or custom)"
+          />
+        </div>
       </div>
 
       {/* Enhanced Image Management */}
