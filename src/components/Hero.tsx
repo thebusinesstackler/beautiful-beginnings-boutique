@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Star, Heart, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -20,6 +19,27 @@ const Hero = () => {
 
   useEffect(() => {
     fetchWebsiteContent();
+
+    // Listen for real-time updates to website content
+    const channel = supabase
+      .channel('website-content-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'website_content'
+        },
+        () => {
+          console.log('Website content updated, refetching...');
+          fetchWebsiteContent();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchWebsiteContent = async () => {
@@ -196,21 +216,27 @@ const Hero = () => {
                   </div>
                 </div>
                 
-                {/* Smaller images */}
+                {/* Secondary images - dynamically rendered */}
                 {displayContent.hero_secondary_images && displayContent.hero_secondary_images.length > 0 ? (
-                  displayContent.hero_secondary_images.slice(0, 2).map((image, index) => (
-                    <div key={index} className="relative rounded-xl overflow-hidden shadow-lg card-hover">
-                      <img
-                        src={image}
-                        alt={`Handcrafted product ${index + 1}`}
-                        className="w-full h-32 md:h-40 object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400";
-                        }}
-                      />
-                    </div>
-                  ))
-                ) : (
+                  displayContent.hero_secondary_images
+                    .filter(image => image && image.trim() !== '') // Filter out empty strings
+                    .slice(0, 2) // Only show first 2 images
+                    .map((image, index) => (
+                      <div key={`secondary-${index}`} className="relative rounded-xl overflow-hidden shadow-lg card-hover">
+                        <img
+                          src={image}
+                          alt={`Handcrafted product ${index + 1}`}
+                          className="w-full h-32 md:h-40 object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400";
+                          }}
+                        />
+                      </div>
+                    ))
+                ) : null}
+                
+                {/* Fill remaining slots with fallback images if needed */}
+                {(!displayContent.hero_secondary_images || displayContent.hero_secondary_images.filter(img => img && img.trim() !== '').length === 0) && (
                   <>
                     <div className="relative rounded-xl overflow-hidden shadow-lg card-hover">
                       <img
@@ -228,6 +254,18 @@ const Hero = () => {
                       />
                     </div>
                   </>
+                )}
+                
+                {/* Show only one fallback if there's exactly one secondary image */}
+                {displayContent.hero_secondary_images && 
+                 displayContent.hero_secondary_images.filter(img => img && img.trim() !== '').length === 1 && (
+                  <div className="relative rounded-xl overflow-hidden shadow-lg card-hover">
+                    <img
+                      src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400"
+                      alt="Custom slate products"
+                      className="w-full h-32 md:h-40 object-cover"
+                    />
+                  </div>
                 )}
               </div>
             )}
