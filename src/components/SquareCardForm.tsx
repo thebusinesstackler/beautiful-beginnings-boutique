@@ -16,156 +16,88 @@ const SquareCardForm = ({
   squareEnvironment = 'sandbox'
 }: SquareCardFormProps) => {
   return (
-    <div className="bg-gradient-to-br from-cream via-pearl to-cream/50 rounded-2xl border border-sage/20 shadow-lg overflow-hidden backdrop-blur-sm">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
       {/* Header */}
-      <div className="px-8 py-6 bg-gradient-to-r from-sage/5 to-forest/5 border-b border-sage/10">
+      <div className="px-6 py-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-2xl font-semibold text-charcoal font-playfair">Payment Information</h3>
-            <p className="text-stone mt-2 text-base">Your transaction is protected with bank-level security</p>
+            <h3 className="text-lg font-medium text-gray-900">Payment Information</h3>
+            <p className="text-sm text-gray-500 mt-1">All transactions are secure and encrypted</p>
           </div>
-          <div className="flex items-center space-x-4">
-            {/* Card Type Icons */}
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-6 bg-gradient-to-r from-blue-600 to-blue-700 rounded text-white text-xs flex items-center justify-center font-bold">
-                VISA
-              </div>
-              <div className="w-10 h-6 bg-gradient-to-r from-red-600 to-orange-600 rounded text-white text-xs flex items-center justify-center font-bold">
-                MC
-              </div>
-              <div className="w-10 h-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded text-white text-xs flex items-center justify-center font-bold">
-                AMEX
-              </div>
-            </div>
+          <div className="flex items-center space-x-2 text-xs text-sage/60">
+            <span>We accept all major cards</span>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-8">
+      <div className="p-6">
         {sdkStatus === 'loading' && (
-          <div className="flex items-center justify-center py-16">
+          <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="relative w-16 h-16 mx-auto mb-6">
-                <div className="absolute inset-0 border-4 border-sage/20 rounded-full"></div>
-                <div className="absolute inset-0 border-4 border-sage border-t-transparent rounded-full animate-spin"></div>
-              </div>
-              <h4 className="text-xl font-semibold text-charcoal mb-2 font-playfair">Setting up secure payment</h4>
-              <p className="text-stone">Connecting to encrypted payment gateway...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-sage border-t-transparent mx-auto mb-4"></div>
+              <p className="text-gray-600 font-medium">Setting up secure payment...</p>
+              <p className="text-gray-500 text-sm mt-1">Please wait a moment</p>
             </div>
           </div>
         )}
         
         {sdkStatus === 'error' && (
-          <div className="py-12 text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="py-8 text-center">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h4 className="text-xl font-semibold text-red-700 mb-3 font-playfair">Payment system temporarily unavailable</h4>
-            <p className="text-red-600 max-w-md mx-auto leading-relaxed">
-              We're experiencing technical difficulties. Please refresh the page and try again, or contact support if the issue persists.
-            </p>
+            <h4 className="text-red-700 font-medium mb-2">Payment system temporarily unavailable</h4>
+            <p className="text-red-600 text-sm py-[9px] my-0 px-0">Please refresh the page and try again</p>
           </div>
         )}
         
         {sdkStatus === 'ready' && (
-          <div className="space-y-8">
+          <div className="space-y-6 bg-white">
             {/* Card Form Container */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <label className="block text-lg font-medium text-charcoal font-playfair">
-                  Card Information
-                </label>
-                <div className="flex items-center text-sage text-sm">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  256-bit encrypted
-                </div>
-              </div>
-              
-              <div className="relative">
-                <div 
-                  ref={cardRef} 
-                  id="card-container" 
-                  data-square-container="true" 
-                  className="w-full border-2 border-sage/30 rounded-xl p-4 bg-white/80 backdrop-blur-sm min-h-[70px] transition-all duration-300 hover:border-sage/50 focus-within:border-sage focus-within:ring-4 focus-within:ring-sage/10 shadow-sm hover:shadow-md" 
-                />
-                
-                {/* Floating elements for visual interest */}
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-sage/20 to-forest/20 rounded-full blur-sm"></div>
-                <div className="absolute -bottom-2 -left-2 w-8 h-8 bg-gradient-to-br from-cream to-pearl rounded-full blur-md opacity-60"></div>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Card information
+              </label>
+              <div 
+                ref={cardRef} 
+                id="card-container" 
+                data-square-container="true" 
+                className="w-full border border-gray-300 rounded-md p-3 bg-white min-h-[60px]" 
+              />
             </div>
 
-            {/* Enhanced Security Message */}
-            <div className="relative bg-gradient-to-r from-sage/5 via-forest/5 to-sage/5 border border-sage/20 rounded-xl p-6 shadow-sm">
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-gradient-to-br from-sage to-forest rounded-full flex items-center justify-center shadow-lg">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </div>
-                </div>
+            {/* Security Message */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-center space-x-3">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold text-charcoal font-playfair mb-2">Your payment is completely secure</h4>
-                  <p className="text-stone leading-relaxed">
+                  <p className="text-green-800 text-sm font-medium">Your payment is secure</p>
+                  <p className="text-green-700 text-sm">
                     {squareEnvironment === 'production' 
-                      ? 'We protect your financial information with military-grade SSL encryption and maintain PCI DSS Level 1 compliance - the highest security standard in the payments industry.'
-                      : 'Your card information is protected with bank-level SSL encryption and never stored on our servers.'
+                      ? 'We protect your card information with SSL encryption and PCI compliance.'
+                      : 'We protect your card information with SSL encryption.'
                     }
                   </p>
-                  
-                  {squareEnvironment === 'production' && (
-                    <div className="flex items-center mt-3 space-x-4 text-sm text-sage">
-                      <div className="flex items-center">
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        PCI DSS Level 1
-                      </div>
-                      <div className="flex items-center">
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        256-bit SSL
-                      </div>
-                      <div className="flex items-center">
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Fraud Protection
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
-              
-              {/* Decorative background elements */}
-              <div className="absolute top-4 right-4 w-20 h-20 bg-sage/5 rounded-full blur-2xl"></div>
-              <div className="absolute bottom-2 left-8 w-16 h-16 bg-forest/5 rounded-full blur-xl"></div>
             </div>
           </div>
         )}
         
         {!isSecureConnection && (
-          <div className="mt-8 relative bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 shadow-sm">
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                </div>
-              </div>
-              <div className="flex-1">
-                <h4 className="text-lg font-semibold text-amber-800 font-playfair mb-2">Secure connection required</h4>
-                <p className="text-amber-700 leading-relaxed">
-                  An HTTPS connection is required for secure payment processing. Please ensure you're accessing this page through a secure connection.
-                </p>
+          <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <svg className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <div>
+                <p className="text-amber-800 font-medium text-sm">Secure connection required</p>
+                <p className="text-amber-700 text-sm mt-1">HTTPS connection is required for secure payment processing.</p>
               </div>
             </div>
           </div>
