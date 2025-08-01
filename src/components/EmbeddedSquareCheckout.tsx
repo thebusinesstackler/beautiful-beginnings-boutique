@@ -100,7 +100,7 @@ const EmbeddedSquareCheckout = ({
       },
       squareCredentials: {
         appId: settings.square_app_id || '',
-        accessToken: settings.square_access_token || '', // Include access token from settings
+        accessToken: settings.square_access_token || '',
         environment: settings.square_environment || 'sandbox',
         locationId: settings.square_location_id || ''
       }
@@ -150,6 +150,7 @@ const EmbeddedSquareCheckout = ({
         cardRef={cardRef}
         sdkStatus={sdkStatus}
         isSecureConnection={isSecureConnection}
+        squareEnvironment={settings.square_environment}
       />
 
       {/* Payment Button */}
@@ -167,10 +168,16 @@ const EmbeddedSquareCheckout = ({
           <svg className="w-5 h-5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          <span className="font-medium">Secure payment powered by Square</span>
+          <span className="font-medium">
+            {settings.square_environment === 'production' 
+              ? 'Live payment processing powered by Square'
+              : 'Secure payment powered by Square'
+            }
+          </span>
         </div>
         <p className="text-xs text-charcoal/50 max-w-md mx-auto leading-relaxed">
           Your payment information is protected with industry-standard encryption and never stored on our servers
+          {settings.square_environment === 'production' && ' • PCI DSS Level 1 Certified'}
         </p>
       </div>
     </div>

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,9 @@ import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import SquareCheckout from '@/components/SquareCheckout';
 import { useShippingSettings } from '@/hooks/useShippingSettings';
+import { useSettings } from '@/hooks/useSettings';
+import CartTestingPanel from '@/components/CartTestingPanel';
+import PaymentTestingPanel from '@/components/PaymentTestingPanel';
 
 const Checkout = () => {
   const {
@@ -19,6 +21,7 @@ const Checkout = () => {
     updatePhoto,
     updateItemProperty
   } = useCart();
+  const { settings } = useSettings();
   const {
     calculateShipping
   } = useShippingSettings();
@@ -26,6 +29,7 @@ const Checkout = () => {
   // Photo upload states for each item
   const [uploadingStates, setUploadingStates] = useState<{[key: number]: boolean}>({});
   const [showUploadInterface, setShowUploadInterface] = useState<{[key: number]: boolean}>({});
+  
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
@@ -51,17 +55,20 @@ const Checkout = () => {
     zipCode: '',
     country: 'United States'
   });
+  
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const subtotal = getCartTotal();
   const shippingCost = calculateShipping(subtotal);
   const tax = subtotal * 0.08;
   const total = subtotal + shippingCost + tax;
+  
   const handleSquareSuccess = () => {
     toast({
       title: "Payment Successful!",
       description: "Your order has been processed successfully."
     });
   };
+  
   const handleSquareError = (error: any) => {
     console.error('Square payment error:', error);
     toast({
@@ -112,7 +119,12 @@ const Checkout = () => {
   const toggleUploadInterface = (itemId: number) => {
     setShowUploadInterface(prev => ({ ...prev, [itemId]: !prev[itemId] }));
   };
-  return <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
+
+  // Check if we're in sandbox mode to show testing panels
+  const isTestingMode = settings.square_environment === 'sandbox';
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
       <Navigation />
       
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -130,7 +142,8 @@ const Checkout = () => {
           </p>
         </div>
 
-        {items.length === 0 ? <div className="text-center py-20">
+        {items.length === 0 ? (
+          <div className="text-center py-20">
             <div className="w-32 h-32 bg-sage/10 rounded-full flex items-center justify-center mx-auto mb-8">
               <ShoppingCart className="h-16 w-16 text-sage/40" />
             </div>
@@ -143,7 +156,9 @@ const Checkout = () => {
                 Start Shopping
               </Button>
             </Link>
-          </div> : <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
             {/* Checkout Form - Made wider (3/5 instead of 2/3) */}
             <div className="xl:col-span-3 space-y-6">
               {/* Customer Information */}
@@ -156,37 +171,51 @@ const Checkout = () => {
                     <Label htmlFor="firstName" className="text-charcoal font-medium text-sm">
                       First Name <span className="text-red-500">*</span>
                     </Label>
-                    <Input id="firstName" value={customerInfo.firstName} onChange={e => setCustomerInfo({
-                  ...customerInfo,
-                  firstName: e.target.value
-                })} className="mt-1" required />
+                    <Input 
+                      id="firstName" 
+                      value={customerInfo.firstName} 
+                      onChange={e => setCustomerInfo({ ...customerInfo, firstName: e.target.value })} 
+                      className="mt-1" 
+                      required 
+                    />
                   </div>
                   <div>
                     <Label htmlFor="lastName" className="text-charcoal font-medium text-sm">
                       Last Name <span className="text-red-500">*</span>
                     </Label>
-                    <Input id="lastName" value={customerInfo.lastName} onChange={e => setCustomerInfo({
-                  ...customerInfo,
-                  lastName: e.target.value
-                })} className="mt-1" required />
+                    <Input 
+                      id="lastName" 
+                      value={customerInfo.lastName} 
+                      onChange={e => setCustomerInfo({ ...customerInfo, lastName: e.target.value })} 
+                      className="mt-1" 
+                      required 
+                    />
                   </div>
                   <div>
                     <Label htmlFor="email" className="text-charcoal font-medium text-sm">
                       Email Address <span className="text-red-500">*</span>
                     </Label>
-                    <Input id="email" type="email" value={customerInfo.email} onChange={e => setCustomerInfo({
-                  ...customerInfo,
-                  email: e.target.value
-                })} className="mt-1" required />
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      value={customerInfo.email} 
+                      onChange={e => setCustomerInfo({ ...customerInfo, email: e.target.value })} 
+                      className="mt-1" 
+                      required 
+                    />
                   </div>
                   <div>
                     <Label htmlFor="phone" className="text-charcoal font-medium text-sm">
                       Phone Number <span className="text-red-500">*</span>
                     </Label>
-                    <Input id="phone" type="tel" value={customerInfo.phone} onChange={e => setCustomerInfo({
-                  ...customerInfo,
-                  phone: e.target.value
-                })} className="mt-1" required />
+                    <Input 
+                      id="phone" 
+                      type="tel" 
+                      value={customerInfo.phone} 
+                      onChange={e => setCustomerInfo({ ...customerInfo, phone: e.target.value })} 
+                      className="mt-1" 
+                      required 
+                    />
                   </div>
                 </div>
               </div>
@@ -201,38 +230,50 @@ const Checkout = () => {
                     <Label htmlFor="shippingAddress" className="text-charcoal font-medium text-sm">
                       Street Address <span className="text-red-500">*</span>
                     </Label>
-                    <Input id="shippingAddress" value={shippingAddress.address} onChange={e => setShippingAddress({
-                  ...shippingAddress,
-                  address: e.target.value
-                })} className="mt-1" required />
+                    <Input 
+                      id="shippingAddress" 
+                      value={shippingAddress.address} 
+                      onChange={e => setShippingAddress({ ...shippingAddress, address: e.target.value })} 
+                      className="mt-1" 
+                      required 
+                    />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <Label htmlFor="shippingCity" className="text-charcoal font-medium text-sm">
                         City <span className="text-red-500">*</span>
                       </Label>
-                      <Input id="shippingCity" value={shippingAddress.city} onChange={e => setShippingAddress({
-                    ...shippingAddress,
-                    city: e.target.value
-                  })} className="mt-1" required />
+                      <Input 
+                        id="shippingCity" 
+                        value={shippingAddress.city} 
+                        onChange={e => setShippingAddress({ ...shippingAddress, city: e.target.value })} 
+                        className="mt-1" 
+                        required 
+                      />
                     </div>
                     <div>
                       <Label htmlFor="shippingState" className="text-charcoal font-medium text-sm">
                         State <span className="text-red-500">*</span>
                       </Label>
-                      <Input id="shippingState" value={shippingAddress.state} onChange={e => setShippingAddress({
-                    ...shippingAddress,
-                    state: e.target.value
-                  })} className="mt-1" required />
+                      <Input 
+                        id="shippingState" 
+                        value={shippingAddress.state} 
+                        onChange={e => setShippingAddress({ ...shippingAddress, state: e.target.value })} 
+                        className="mt-1" 
+                        required 
+                      />
                     </div>
                     <div>
                       <Label htmlFor="shippingZip" className="text-charcoal font-medium text-sm">
                         ZIP Code <span className="text-red-500">*</span>
                       </Label>
-                      <Input id="shippingZip" value={shippingAddress.zipCode} onChange={e => setShippingAddress({
-                    ...shippingAddress,
-                    zipCode: e.target.value
-                  })} className="mt-1" required />
+                      <Input 
+                        id="shippingZip" 
+                        value={shippingAddress.zipCode} 
+                        onChange={e => setShippingAddress({ ...shippingAddress, zipCode: e.target.value })} 
+                        className="mt-1" 
+                        required 
+                      />
                     </div>
                   </div>
                 </div>
@@ -245,43 +286,62 @@ const Checkout = () => {
                 </h2>
                 <div className="mb-4">
                   <label className="flex items-center space-x-2">
-                    <input type="checkbox" checked={sameAsShipping} onChange={e => setSameAsShipping(e.target.checked)} className="rounded border-sage/30 text-sage focus:ring-sage" />
+                    <input 
+                      type="checkbox" 
+                      checked={sameAsShipping} 
+                      onChange={e => setSameAsShipping(e.target.checked)} 
+                      className="rounded border-sage/30 text-sage focus:ring-sage" 
+                    />
                     <span className="text-sm text-charcoal">Same as shipping address</span>
                   </label>
                 </div>
                 
-                {!sameAsShipping && <div className="space-y-4">
+                {!sameAsShipping && (
+                  <div className="space-y-4">
                     <div>
                       <Label htmlFor="billingAddress" className="text-sm">Street Address</Label>
-                      <Input id="billingAddress" value={billingAddress.address} onChange={e => setBillingAddress({
-                  ...billingAddress,
-                  address: e.target.value
-                })} className="mt-1" required />
+                      <Input 
+                        id="billingAddress" 
+                        value={billingAddress.address} 
+                        onChange={e => setBillingAddress({ ...billingAddress, address: e.target.value })} 
+                        className="mt-1" 
+                        required 
+                      />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <Label htmlFor="billingCity" className="text-sm">City</Label>
-                        <Input id="billingCity" value={billingAddress.city} onChange={e => setBillingAddress({
-                    ...billingAddress,
-                    city: e.target.value
-                  })} className="mt-1" required />
+                        <Input 
+                          id="billingCity" 
+                          value={billingAddress.city} 
+                          onChange={e => setBillingAddress({ ...billingAddress, city: e.target.value })} 
+                          className="mt-1" 
+                          required 
+                        />
                       </div>
                       <div>
                         <Label htmlFor="billingState" className="text-sm">State</Label>
-                        <Input id="billingState" value={billingAddress.state} onChange={e => setBillingAddress({
-                    ...billingAddress,
-                    state: e.target.value
-                  })} className="mt-1" required />
+                        <Input 
+                          id="billingState" 
+                          value={billingAddress.state} 
+                          onChange={e => setBillingAddress({ ...billingAddress, state: e.target.value })} 
+                          className="mt-1" 
+                          required 
+                        />
                       </div>
                       <div>
                         <Label htmlFor="billingZip" className="text-sm">ZIP Code</Label>
-                        <Input id="billingZip" value={billingAddress.zipCode} onChange={e => setBillingAddress({
-                    ...billingAddress,
-                    zipCode: e.target.value
-                  })} className="mt-1" required />
+                        <Input 
+                          id="billingZip" 
+                          value={billingAddress.zipCode} 
+                          onChange={e => setBillingAddress({ ...billingAddress, zipCode: e.target.value })} 
+                          className="mt-1" 
+                          required 
+                        />
                       </div>
                     </div>
-                  </div>}
+                  </div>
+                )}
               </div>
 
               {/* Order Items Review */}
@@ -531,7 +591,6 @@ const Checkout = () => {
                   ))}
                 </div>
               </div>
-              
             </div>
 
             {/* Order Summary - Made narrower (2/5 instead of 1/3) */}
@@ -563,18 +622,45 @@ const Checkout = () => {
                 </div>
 
                 {/* Square Checkout */}
-                <SquareCheckout customerInfo={customerInfo} shippingAddress={shippingAddress} billingAddress={billingAddress} sameAsShipping={sameAsShipping} total={total} subtotal={subtotal} shippingCost={shippingCost} tax={tax} onSuccess={handleSquareSuccess} onError={handleSquareError} />
+                <SquareCheckout 
+                  customerInfo={customerInfo} 
+                  shippingAddress={shippingAddress} 
+                  billingAddress={billingAddress} 
+                  sameAsShipping={sameAsShipping} 
+                  total={total} 
+                  subtotal={subtotal} 
+                  shippingCost={shippingCost} 
+                  tax={tax} 
+                  onSuccess={handleSquareSuccess} 
+                  onError={handleSquareError} 
+                />
 
                 <div className="mt-6 text-center text-xs text-charcoal/60">
-                  <p>🔒 Secure checkout powered by Square</p>
+                  <p>
+                    {settings.square_environment === 'production' 
+                      ? '🔒 Live payment processing by Square'
+                      : '🔒 Secure checkout powered by Square'
+                    }
+                  </p>
                   <p className="mt-1">Your payment information is protected</p>
                 </div>
               </div>
             </div>
-          </div>}
+          </div>
+        )}
       </div>
 
+      {/* Testing panels - only show in sandbox mode */}
+      {isTestingMode && (
+        <>
+          <CartTestingPanel />
+          <PaymentTestingPanel />
+        </>
+      )}
+
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Checkout;
