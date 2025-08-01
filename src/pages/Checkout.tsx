@@ -11,8 +11,6 @@ import { toast } from '@/hooks/use-toast';
 import SquareCheckout from '@/components/SquareCheckout';
 import { useShippingSettings } from '@/hooks/useShippingSettings';
 import { useSettings } from '@/hooks/useSettings';
-import CartTestingPanel from '@/components/CartTestingPanel';
-import PaymentTestingPanel from '@/components/PaymentTestingPanel';
 
 const Checkout = () => {
   const {
@@ -119,9 +117,6 @@ const Checkout = () => {
   const toggleUploadInterface = (itemId: number) => {
     setShowUploadInterface(prev => ({ ...prev, [itemId]: !prev[itemId] }));
   };
-
-  // Check if we're in sandbox mode to show testing panels
-  const isTestingMode = settings.square_environment === 'sandbox';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
@@ -649,14 +644,6 @@ const Checkout = () => {
           </div>
         )}
       </div>
-
-      {/* Testing panels - only show in sandbox mode */}
-      {isTestingMode && (
-        <>
-          <CartTestingPanel />
-          <PaymentTestingPanel />
-        </>
-      )}
 
       <Footer />
     </div>

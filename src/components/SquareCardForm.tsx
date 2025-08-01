@@ -69,39 +69,6 @@ const SquareCardForm = ({
               />
             </div>
 
-            {/* Test Card Numbers Section - Only show in sandbox */}
-            {squareEnvironment === 'sandbox' && (
-              <div className="bg-sage/5 border border-sage/20 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-sage mb-3 flex items-center">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                  Test Card Numbers (Sandbox Mode)
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-charcoal">
-                  <div className="flex justify-between">
-                    <span className="font-mono">4111 1111 1111 1111</span>
-                    <span className="text-green-600">Success</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-mono">4000 0000 0000 0002</span>
-                    <span className="text-red-600">Declined</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-mono">4000 0000 0000 9995</span>
-                    <span className="text-orange-600">Insufficient Funds</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-mono">4000 0000 0000 0069</span>
-                    <span className="text-gray-600">Expired</span>
-                  </div>
-                </div>
-                <p className="text-xs text-charcoal/60 mt-2">
-                  Use any future expiration date and any 3-digit CVV
-                </p>
-              </div>
-            )}
-
             {/* Security Message */}
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <div className="flex items-center space-x-3">
