@@ -16,19 +16,36 @@ const SquareCardForm = ({
   squareEnvironment = 'sandbox'
 }: SquareCardFormProps) => {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white rounded-xl border border-sage/20 shadow-sm">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-100">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-medium text-gray-900">Payment Information</h3>
-            <p className="text-sm text-gray-500 mt-1">Enter your card details below</p>
-          </div>
-        </div>
+      <div className="px-6 py-4 border-b border-sage/10">
+        <h3 className="text-lg font-medium text-gray-900">Payment Information</h3>
+        <p className="text-sm text-gray-600 mt-1">Enter your card details below</p>
       </div>
 
       {/* Content */}
       <div className="p-6">
+        {/* Test Card Info for Sandbox */}
+        {squareEnvironment === 'sandbox' && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h4 className="text-sm font-medium text-blue-900 mb-2">Test Mode - Use These Card Numbers</h4>
+                <div className="space-y-1 text-sm text-blue-800">
+                  <p><strong>Visa:</strong> 4111 1111 1111 1111</p>
+                  <p><strong>Mastercard:</strong> 5555 5555 5555 4444</p>
+                  <p className="text-xs text-blue-700 mt-2">Use any future expiration date and any 3-digit CVV</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {sdkStatus === 'loading' && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
@@ -52,7 +69,6 @@ const SquareCardForm = ({
         
         {sdkStatus === 'ready' && (
           <div className="space-y-4">
-            {/* Card Form Container */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Card Information
@@ -60,7 +76,7 @@ const SquareCardForm = ({
               <div 
                 ref={cardRef} 
                 id="card-container"
-                className="w-full border border-gray-300 rounded-md p-4 bg-white min-h-[80px] focus-within:border-sage focus-within:ring-1 focus-within:ring-sage" 
+                className="w-full border border-gray-300 rounded-lg p-4 bg-white min-h-[80px] focus-within:border-sage focus-within:ring-1 focus-within:ring-sage transition-colors" 
               />
             </div>
           </div>
