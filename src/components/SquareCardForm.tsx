@@ -43,6 +43,36 @@ const SquareCardForm = ({
 
       {/* Content */}
       <div className="p-8">
+        {/* Test Card Numbers Guide for Sandbox */}
+        {squareEnvironment === 'sandbox' && (
+          <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-md">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="flex-1">
+                <h4 className="text-lg font-semibold text-blue-800 font-playfair mb-2">Test Mode - Use These Card Numbers</h4>
+                <p className="text-blue-700 text-sm mb-3">Since this is a test environment, please use one of these valid test card numbers:</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                  <div className="bg-white/70 rounded-lg p-3 border border-blue-100">
+                    <div className="font-mono font-bold text-blue-900">4111 1111 1111 1111</div>
+                    <div className="text-blue-600 text-xs">Visa - Successful Payment</div>
+                  </div>
+                  <div className="bg-white/70 rounded-lg p-3 border border-blue-100">
+                    <div className="font-mono font-bold text-blue-900">5555 5555 5555 4444</div>
+                    <div className="text-blue-600 text-xs">Mastercard - Successful Payment</div>
+                  </div>
+                </div>
+                <p className="text-blue-600 text-xs mt-2">Use any future expiration date and any 3-digit CVV</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {sdkStatus === 'loading' && (
           <div className="flex items-center justify-center py-16">
             <div className="text-center">
