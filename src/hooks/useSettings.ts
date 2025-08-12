@@ -9,6 +9,8 @@ interface SiteSettings {
   store_phone: string;
   store_website: string;
   store_address: string;
+  logo_url?: string;
+  logo_alt_text?: string;
   square_app_id?: string;
   square_location_id?: string;
   square_access_token?: string;

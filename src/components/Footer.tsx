@@ -4,11 +4,13 @@ import { Instagram, Facebook, Mail, Phone, Award, Star, LogIn, LogOut, Shield } 
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
+import { useLogo } from '@/hooks/useLogo';
 import { useEffect } from 'react';
 
 const Footer = () => {
   const { user, isAdmin, signOut } = useAuth();
   const { settings, fetchSettings } = useSettings();
+  const { logoSettings } = useLogo();
 
   const handleSignOut = async () => {
     await signOut();
@@ -40,8 +42,8 @@ const Footer = () => {
               <div className="relative">
                 <div className="absolute inset-0 bg-sage/10 rounded-full blur-sm"></div>
                 <img 
-                  src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
-                  alt="Beautiful Beginnings Logo" 
+                  src={logoSettings.logo_url} 
+                  alt={logoSettings.logo_alt_text} 
                   className="relative h-12 w-12 object-contain rounded-full shadow-md"
                 />
               </div>

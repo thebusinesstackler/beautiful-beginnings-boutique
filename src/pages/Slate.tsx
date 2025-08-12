@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useLogo } from '@/hooks/useLogo';
 
 interface Product {
   id: string;
@@ -19,6 +20,7 @@ interface Product {
 }
 
 const Slate = () => {
+  const { logoSettings } = useLogo();
   const [likedProducts, setLikedProducts] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,9 +117,9 @@ const Slate = () => {
 
           <div className="text-center">
             <div className="mb-8">
-              <img 
-                src="/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png" 
-                alt="Beautiful Beginnings Logo" 
+               <img 
+                src={logoSettings.logo_url} 
+                alt={logoSettings.logo_alt_text} 
                 className="h-48 w-48 object-contain mx-auto"
               />
             </div>

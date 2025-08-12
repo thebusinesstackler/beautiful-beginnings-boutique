@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Settings, Store, Truck, Mail, CreditCard, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
+import LogoManager from '@/components/admin/LogoManager';
 
 const AdminSettings = () => {
   const { settings, updateSettings, loading } = useSettings();
@@ -76,6 +77,9 @@ const AdminSettings = () => {
         <h2 className="text-2xl font-bold text-charcoal mb-2">Admin Settings</h2>
         <p className="text-stone">Configure your store settings and preferences</p>
       </div>
+
+      {/* Logo Management */}
+      <LogoManager />
 
       {/* Store Information */}
       <Card className="bg-cream/30 border-0 shadow-sm">
