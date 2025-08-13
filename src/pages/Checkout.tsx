@@ -19,6 +19,8 @@ const Checkout = () => {
     getDiscountedTotal,
     couponCode,
     couponDiscount,
+    applyCoupon,
+    removeCoupon,
     updatePhoto,
     updateItemProperty
   } = useCart();
@@ -30,6 +32,10 @@ const Checkout = () => {
   // Photo upload states for each item
   const [uploadingStates, setUploadingStates] = useState<{[key: number]: boolean}>({});
   const [showUploadInterface, setShowUploadInterface] = useState<{[key: number]: boolean}>({});
+  
+  // Coupon state
+  const [couponInput, setCouponInput] = useState('');
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState({
@@ -637,8 +643,72 @@ const Checkout = () => {
                   </div>
                 </div>
 
+                {/* Coupon Code Section */}
+                <div className="border-t border-stone/20 pt-6 mb-8">
+                  <h4 className="text-lg font-semibold text-charcoal mb-4">Have a Coupon?</h4>
+                  
+                  {couponCode ? (
+                    <div className="bg-sage/5 border border-sage/20 rounded-xl p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-sm font-medium text-sage">Applied: {couponCode}</span>
+                          <p className="text-xs text-charcoal/60 mt-1">
+                            Save ${(subtotal * couponDiscount).toFixed(2)} ({(couponDiscount * 100).toFixed(0)}% off)
+                          </p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            removeCoupon();
+                            setCouponInput('');
+                          }}
+                          className="text-charcoal/70 hover:text-charcoal"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex gap-3">
+                        <Input
+                          placeholder="Enter coupon code"
+                          value={couponInput}
+                          onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                          className="flex-1"
+                        />
+                        <Button
+                          onClick={async () => {
+                            if (!couponInput.trim()) {
+                              toast({
+                                title: "Error",
+                                description: "Please enter a coupon code",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
+                            setIsApplyingCoupon(true);
+                            const success = await applyCoupon(couponInput.trim());
+                            setIsApplyingCoupon(false);
+                            
+                            if (success) {
+                              setCouponInput('');
+                            }
+                          }}
+                          disabled={isApplyingCoupon}
+                          className="bg-sage text-white hover:bg-sage/90"
+                        >
+                          {isApplyingCoupon ? 'Applying...' : 'Apply'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Square Checkout */}
-                <SquareCheckout 
+                <SquareCheckout
                   customerInfo={customerInfo} 
                   shippingAddress={shippingAddress} 
                   billingAddress={billingAddress} 
