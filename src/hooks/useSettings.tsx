@@ -9,6 +9,8 @@ interface SiteSettings {
   store_phone: string;
   store_website: string;
   store_address: string;
+  logo_url?: string;
+  logo_alt_text?: string;
   domestic_shipping?: string;
   international_shipping?: string;
   free_shipping_threshold?: string;
