@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useOrderCreation } from './useOrderCreation';
+// import { useOrderCreation } from './useOrderCreation'; // Skipping for Option A
 import type { PaymentStatus, PaymentRequest } from '@/types/SquareCheckout';
 
 interface UseSquarePaymentProps {
@@ -14,7 +14,7 @@ interface UseSquarePaymentProps {
 export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePaymentProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('idle');
-  const { createOrder } = useOrderCreation();
+  // const { createOrder } = useOrderCreation(); // Skipping for Option A
 
   const processPayment = async (card: any, paymentRequest: PaymentRequest) => {
     if (!card) {
@@ -40,72 +40,26 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
       if (tokenResult.status === 'OK') {
         const paymentToken = tokenResult.token;
         
-        // Collect uploaded image URLs from cart items
-        const uploadedImages = [];
+        // Option A: Skip order creation and process payment directly
+        // Calculate final amount in cents (amount is already in cents from frontend)
+        const finalAmountInCents = Math.round(paymentRequest.amount);
         
-        // Check each item for uploaded photos
-        paymentRequest.items.forEach((item: any) => {
-          console.log('Checking item for uploaded photos:', item);
-          
-          // Check for uploadedPhotoUrl
-          if (item.uploadedPhotoUrl) {
-            uploadedImages.push(item.uploadedPhotoUrl);
-            console.log('Found uploadedPhotoUrl:', item.uploadedPhotoUrl);
-          }
-          
-          // Check for uploadedPhoto file that needs to be converted to URL
-          if (item.uploadedPhoto && item.uploadedPhoto instanceof File) {
-            console.log('Found uploaded photo file, will be processed by backend:', item.uploadedPhoto.name);
-          }
+        // Generate UUID for idempotency key
+        const idempotencyKey = crypto.randomUUID();
+        
+        console.log('Processing direct payment - Option A:', {
+          amount: finalAmountInCents,
+          idempotencyKey
         });
-
-        // Also check for any global uploaded images in the payment request
-        if (paymentRequest.uploadedImages && Array.isArray(paymentRequest.uploadedImages)) {
-          uploadedImages.push(...paymentRequest.uploadedImages);
-          console.log('Added global uploaded images:', paymentRequest.uploadedImages);
-        }
-
-        console.log('All collected uploaded images:', uploadedImages);
-
-        // Clean the cart items to avoid circular references
-        const cleanCartItems = paymentRequest.items.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image,
-          uploadedPhotoUrl: item.uploadedPhotoUrl || null,
-          willUploadLater: item.willUploadLater || false
-        }));
-
-        // Send payment token to backend with cleaned data
-        const requestPayload = {
-          ...paymentRequest,
-          token: paymentToken,
-          uploadedImages: uploadedImages,
-          // Include clean cart items without file objects or circular references
-          cartItems: cleanCartItems,
-          items: cleanCartItems // Also update the main items array
-        };
-
-        console.log('Processing payment with clean payload:', {
-          ...requestPayload,
-          token: '[TOKENIZED]'
-        });
-
-        // Create order in database first
-        console.log('Creating order in database...');
-        const orderId = await createOrder(paymentRequest);
-        console.log('Order created with ID:', orderId);
 
         // Use Supabase function for secure payment processing
         const { data, error } = await supabase.functions.invoke('square-payments', {
           body: {
             action: 'process_payment',
-            token: paymentToken,
+            sourceId: paymentToken,
             verificationToken: tokenResult.verificationToken,
-            amount: paymentRequest.amount / 100, // Convert back to dollars
-            orderId: orderId,
+            amount: finalAmountInCents / 100, // Convert back to dollars for backend
+            idempotencyKey: idempotencyKey,
             customerEmail: paymentRequest.customerInfo.email,
             customerName: `${paymentRequest.customerInfo.firstName} ${paymentRequest.customerInfo.lastName}`
           }
@@ -133,7 +87,7 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
           
           toast({
             title: "Payment Successful!",
-            description: `Order #${data.orderId} has been processed successfully.`,
+            description: `Payment processed successfully. Payment ID: ${data.paymentId}`,
           });
 
           onSuccess?.();

@@ -9,9 +9,11 @@ const corsHeaders = {
 interface PaymentRequest {
   action: 'test_connection' | 'process_payment';
   token?: string;
+  sourceId?: string; // Alternative to token for Option A
   verificationToken?: string;
   amount?: number;
-  orderId?: string;
+  orderId?: string; // Optional for Option A
+  idempotencyKey?: string; // For Option A
   customerEmail?: string;
   customerName?: string;
 }
@@ -32,7 +34,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { action, token, verificationToken, amount, orderId, customerEmail, customerName }: PaymentRequest = await req.json();
+    const { action, token, sourceId, verificationToken, amount, orderId, idempotencyKey, customerEmail, customerName }: PaymentRequest = await req.json();
 
     // Get Square credentials from environment
     const squareAppId = Deno.env.get('SQUARE_APP_ID');
@@ -71,11 +73,12 @@ serve(async (req) => {
     }
 
     if (action === 'process_payment') {
-      if (!token || !amount || !orderId) {
+      const paymentToken = token || sourceId;
+      if (!paymentToken || !amount) {
         return new Response(
           JSON.stringify({ 
             success: false, 
-            error: 'Missing required payment parameters' 
+            error: 'Missing required payment parameters (token/sourceId and amount)' 
           }),
           { 
             status: 400, 
@@ -84,7 +87,7 @@ serve(async (req) => {
         );
       }
 
-      console.log(`Processing Square payment for order ${orderId}, amount: $${amount}`);
+      console.log(`Processing Square payment${orderId ? ` for order ${orderId}` : ''}, amount: $${amount}`);
 
       // Determine Square API base URL based on environment
       const baseUrl = squareEnvironment === 'sandbox' 
@@ -93,14 +96,14 @@ serve(async (req) => {
 
       // Create payment request to Square
       const paymentRequest = {
-        source_id: token,
+        source_id: paymentToken,
         verification_token: verificationToken,
         amount_money: {
           amount: Math.round(amount * 100), // Convert to cents
           currency: 'USD'
         },
         location_id: squareLocationId,
-        idempotency_key: `${orderId}-${Date.now()}` // Unique key for this payment
+        idempotency_key: idempotencyKey || `${orderId || 'payment'}-${Date.now()}` // Use provided key or generate one
       };
 
       console.log('Sending payment request to Square:', JSON.stringify(paymentRequest, null, 2));
@@ -123,7 +126,7 @@ serve(async (req) => {
         console.error('Square payment failed:', squareResult);
         const errorMessage = squareResult.errors?.[0]?.detail || 'Payment processing failed';
         
-        // Update order status to failed
+        // Update order status to failed (only if orderId is provided)
         if (orderId) {
           await supabaseClient
             .from('orders')
@@ -150,7 +153,7 @@ serve(async (req) => {
       const payment = squareResult.payment;
       console.log('Payment successful:', payment.id);
 
-      // Update order with payment details
+      // Update order with payment details (only if orderId is provided)
       if (orderId) {
         const { error: updateError } = await supabaseClient
           .from('orders')
