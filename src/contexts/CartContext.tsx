@@ -82,6 +82,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       price: product.price,
       quantity,
       image: product.image_url || product.image,
+      uploadedPhotoUrl: product.uploadedPhotoUrl || null,
+      willUploadLater: false
     };
 
     // If a photo is provided, upload it immediately
