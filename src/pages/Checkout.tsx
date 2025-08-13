@@ -598,14 +598,25 @@ const Checkout = () => {
                 <h3 className="text-2xl font-semibold text-charcoal font-playfair mb-8">Order Summary</h3>
                 
                 <div className="space-y-4 mb-8">
-                  <div className="flex justify-between text-base">
-                    <span className="text-charcoal/70">Subtotal</span>
-                    <span className="font-semibold text-charcoal">${subtotal.toFixed(2)}</span>
-                  </div>
-                  {couponCode && (
+                  {couponCode ? (
+                    <>
+                      <div className="flex justify-between text-base">
+                        <span className="text-charcoal/70">Original Subtotal</span>
+                        <span className="font-semibold text-charcoal line-through">${subtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-base">
+                        <span className="text-charcoal/70">Coupon ({couponCode})</span>
+                        <span className="font-semibold text-sage">-${(subtotal * couponDiscount).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-base">
+                        <span className="text-charcoal/70">Discounted Subtotal</span>
+                        <span className="font-semibold text-sage">${discountedSubtotal.toFixed(2)}</span>
+                      </div>
+                    </>
+                  ) : (
                     <div className="flex justify-between text-base">
-                      <span className="text-charcoal/70">Coupon ({couponCode})</span>
-                      <span className="font-semibold text-sage">-${(subtotal * couponDiscount).toFixed(2)}</span>
+                      <span className="text-charcoal/70">Subtotal</span>
+                      <span className="font-semibold text-charcoal">${subtotal.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-base">
