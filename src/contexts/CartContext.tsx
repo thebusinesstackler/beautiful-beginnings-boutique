@@ -16,7 +16,7 @@ interface CartItem {
 
 interface CartContextProps {
   items: CartItem[];
-  addToCart: (product: any, quantity?: number) => void;
+  addToCart: (product: any, quantity?: number, photo?: File) => void;
   removeFromCart: (itemId: number) => void;
   updateQuantity: (itemId: number, newQuantity: number) => void;
   updatePhoto: (itemId: number, file: File) => Promise<void>;
@@ -73,7 +73,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     console.log('Cart saved to localStorage:', itemsToStore);
   }, [items]);
 
-  const addToCart = (product: any, quantity: number = 1) => {
+  const addToCart = async (product: any, quantity: number = 1, photo?: File) => {
     const newItem: CartItem = {
       id: Date.now(),
       name: product.name,
@@ -81,6 +81,35 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       quantity,
       image: product.image_url || product.image,
     };
+
+    // If a photo is provided, upload it immediately
+    if (photo) {
+      try {
+        console.log('Uploading photo during add to cart:', photo.name, photo.size);
+        const photoUrl = await uploadPhoto(photo);
+        
+        if (photoUrl) {
+          newItem.uploadedPhoto = photo;
+          newItem.uploadedPhotoUrl = photoUrl;
+          newItem.willUploadLater = false;
+          console.log('Photo uploaded successfully during add to cart:', photoUrl);
+        } else {
+          console.error('Failed to upload photo during add to cart');
+          toast({
+            title: "Photo Upload Failed",
+            description: "Failed to upload your photo. The item was added to cart without the photo.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Error uploading photo during add to cart:', error);
+        toast({
+          title: "Photo Upload Failed",
+          description: "Failed to upload your photo. The item was added to cart without the photo.",
+          variant: "destructive",
+        });
+      }
+    }
 
     setItems(prevItems => {
       const existingItemIndex = prevItems.findIndex(item => item.name === newItem.name);

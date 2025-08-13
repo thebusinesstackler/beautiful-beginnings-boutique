@@ -100,7 +100,7 @@ const CustomizeGlassOrnament = () => {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return;
 
     if (!uploadedPhoto) {
@@ -122,16 +122,16 @@ const CustomizeGlassOrnament = () => {
     }
     
     for (let i = 0; i < quantity; i++) {
-      addToCart({
+      await addToCart({
         id: parseInt(product.id),
         name: product.name,
         price: product.price,
         image: product.image_url
-      });
+      }, 1, uploadedPhoto);
     }
     toast({
       title: "Added to cart!",
-      description: `${quantity} ${product.name}${quantity > 1 ? 's' : ''} added to your cart.`,
+      description: `${quantity} ${product.name}${quantity > 1 ? 's' : ''} added to your cart with your custom photo.`,
     });
   };
 
