@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { useSquareValidation } from '@/hooks/useSquareValidation';
-import { useSquarePayment } from '@/hooks/useSquarePayment';
+import { useSquareSDK } from '@/hooks/useSquareSDK';
 import SquareValidationErrors from './SquareValidationErrors';
 import SquareCardForm from './SquareCardForm';
 import SquarePaymentButton from './SquarePaymentButton';
@@ -29,6 +29,14 @@ const EmbeddedSquareCheckout = ({
   onError
 }: EmbeddedSquareCheckoutProps) => {
   const { items, clearCart } = useCart();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Initialize Square SDK with hardcoded values since we're using edge function
+  const { payments, card, sdkStatus, isSecureConnection, cardRef } = useSquareSDK({
+    squareAppId: 'sandbox-sq0idb-lrxmeewb9r0km', // This matches your location ID prefix
+    squareLocationId: 'LRXMEEWB9R0KM',
+    squareEnvironment: 'sandbox'
+  });
 
   // Form validation
   const { validationErrors, validateForm } = useSquareValidation({
@@ -50,14 +58,37 @@ const EmbeddedSquareCheckout = ({
       return;
     }
 
-    // Process payment using edge function directly (no database settings needed)
+    if (!card) {
+      toast({
+        title: "Payment Form Not Ready",
+        description: "Please wait for the payment form to load completely.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+
     try {
+      // First, tokenize the card using Square SDK
+      console.log('Tokenizing card...');
+      const tokenResult = await card.tokenize();
+      
+      if (tokenResult.status !== 'OK') {
+        console.error('Tokenization failed:', tokenResult);
+        throw new Error(tokenResult.errors?.[0]?.message || 'Card tokenization failed');
+      }
+
+      console.log('Card tokenized successfully:', tokenResult.token);
+
+      // Then send the token and order data to our edge function
       const response = await fetch('/functions/v1/square-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          token: tokenResult.token,
           customerInfo,
           shippingAddress,
           billingAddress: sameAsShipping ? shippingAddress : billingAddress,
@@ -94,6 +125,8 @@ const EmbeddedSquareCheckout = ({
         variant: "destructive",
       });
       onError?.(error);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -106,18 +139,23 @@ const EmbeddedSquareCheckout = ({
       {/* Validation Errors Display */}
       <SquareValidationErrors errors={validationErrors} />
 
-      {/* Simple Payment Button - Edge Function handles all Square configuration */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
-        <button
-          onClick={handlePayment}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
-        >
-          Complete Payment - ${total.toFixed(2)}
-        </button>
-        <p className="text-sm text-gray-500 mt-2 text-center">
-          Secure payment processing powered by Square
-        </p>
-      </div>
+      {/* Square Card Form */}
+      <SquareCardForm
+        cardRef={cardRef}
+        sdkStatus={sdkStatus}
+        isSecureConnection={isSecureConnection}
+        squareEnvironment="sandbox"
+      />
+
+      {/* Payment Button */}
+      <SquarePaymentButton
+        onPayment={handlePayment}
+        isLoading={isProcessing}
+        hasCard={!!card}
+        sdkStatus={sdkStatus}
+        isSecureConnection={isSecureConnection}
+        total={total}
+      />
     </div>
   );
 };
