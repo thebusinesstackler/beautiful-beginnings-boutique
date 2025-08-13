@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, ShoppingCart, X, Plus, Minus, Truck, Shield, Clock, ImageIcon, Tag } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, X, Plus, Minus, Truck, Shield, Clock, ImageIcon } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
@@ -13,10 +13,6 @@ import { useShippingSettings } from '@/hooks/useShippingSettings';
 import { toast } from '@/hooks/use-toast';
 
 const Cart = () => {
-  const [couponCode, setCouponCode] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
-  const [couponError, setCouponError] = useState('');
-
   const {
     items,
     removeFromCart,
@@ -34,8 +30,7 @@ const Cart = () => {
   const subtotal = getCartTotal();
   const shippingCost = calculateShipping(subtotal);
   const tax = subtotal * 0.08; // 8% tax rate
-  const discount = appliedCoupon ? subtotal * appliedCoupon.discount : 0;
-  const total = subtotal + shippingCost + tax - discount;
+  const total = subtotal + shippingCost + tax;
   const estimatedDelivery = getEstimatedDelivery();
 
   const handlePhotoUpload = (itemId: number, file: File) => {
@@ -71,35 +66,6 @@ const Cart = () => {
     navigate('/checkout');
   };
 
-  const applyCoupon = () => {
-    setCouponError('');
-    
-    if (!couponCode.trim()) {
-      setCouponError('Please enter a coupon code');
-      return;
-    }
-
-    // Check if coupon is valid
-    if (couponCode.toUpperCase() === '99OFF') {
-      setAppliedCoupon({ code: couponCode.toUpperCase(), discount: 0.99 });
-      toast({
-        title: "Coupon Applied!",
-        description: "You saved 99% on your order!",
-      });
-    } else {
-      setCouponError('Invalid coupon code');
-    }
-  };
-
-  const removeCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponCode('');
-    setCouponError('');
-    toast({
-      title: "Coupon Removed",
-      description: "The coupon has been removed from your order.",
-    });
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
@@ -295,68 +261,12 @@ const Cart = () => {
                     <span className="text-charcoal/70">Tax</span>
                     <span className="font-medium text-charcoal">${tax.toFixed(2)}</span>
                   </div>
-                  {appliedCoupon && (
-                    <div className="flex justify-between text-sm sm:text-base">
-                      <span className="text-charcoal/70">Discount ({appliedCoupon.code})</span>
-                      <span className="font-semibold text-sage">-${discount.toFixed(2)}</span>
-                    </div>
-                  )}
                   <div className="border-t border-stone/20 pt-3 md:pt-4">
                     <div className="flex justify-between items-center">
                       <span className="text-lg sm:text-xl font-bold text-charcoal">Total</span>
                       <span className="text-xl sm:text-2xl font-bold text-sage">${total.toFixed(2)}</span>
                     </div>
                   </div>
-                </div>
-
-                {/* Coupon Code Section */}
-                <div className="mb-6 md:mb-8 p-4 bg-cream/30 rounded-xl border border-sage/10">
-                  <h4 className="text-sm font-medium text-charcoal mb-3 flex items-center">
-                    <Tag className="h-4 w-4 mr-2 text-sage" />
-                    Have a Coupon?
-                  </h4>
-                  
-                  {appliedCoupon ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-sage/10 border border-sage/20 rounded-lg">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm font-medium text-sage">✓ {appliedCoupon.code}</span>
-                          <span className="text-xs text-charcoal/60">({(appliedCoupon.discount * 100).toFixed(0)}% off)</span>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={removeCoupon}
-                          className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 h-7 px-2"
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className="flex space-x-2">
-                        <Input
-                          placeholder="Enter coupon code"
-                          value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value)}
-                          className="flex-1 text-sm"
-                          onKeyPress={(e) => e.key === 'Enter' && applyCoupon()}
-                        />
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={applyCoupon}
-                          className="px-4 text-sm"
-                        >
-                          Apply
-                        </Button>
-                      </div>
-                      {couponError && (
-                        <p className="text-xs text-red-600">{couponError}</p>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 {/* Enhanced Proceed to Checkout Button */}
