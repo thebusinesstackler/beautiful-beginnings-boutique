@@ -26,7 +26,7 @@ const SquarePaymentButton = ({
     <Button
       onClick={onPayment}
       disabled={isDisabled}
-      className="w-full bg-pink-500 hover:bg-pink-600 disabled:bg-pink-200 disabled:hover:bg-pink-200 text-white font-semibold py-4 text-lg rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className="square-payment-button w-full text-white font-semibold py-4 text-lg rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {isLoading ? (
         <div className="flex items-center space-x-2">
