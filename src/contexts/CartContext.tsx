@@ -24,12 +24,19 @@ interface CartContextProps {
   clearCart: () => void;
   getCartTotal: () => number;
   getCartItemCount: () => number;
+  applyCoupon: (code: string) => boolean;
+  removeCoupon: () => void;
+  couponCode: string | null;
+  couponDiscount: number;
+  getDiscountedTotal: () => number;
 }
 
 const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [couponCode, setCouponCode] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
   const { uploadPhoto } = usePhotoUpload();
 
   console.log('CartProvider rendering with items:', items);
@@ -229,6 +236,33 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     return items.reduce((total, item) => total + item.quantity, 0);
   };
 
+  const applyCoupon = (code: string): boolean => {
+    if (code === '99OFF') {
+      setCouponCode(code);
+      setCouponDiscount(0.99);
+      toast({
+        title: "Coupon applied!",
+        description: "99% discount has been applied to your order.",
+      });
+      return true;
+    }
+    return false;
+  };
+
+  const removeCoupon = () => {
+    setCouponCode(null);
+    setCouponDiscount(0);
+    toast({
+      title: "Coupon removed",
+      description: "The coupon has been removed from your order.",
+    });
+  };
+
+  const getDiscountedTotal = () => {
+    const subtotal = getCartTotal();
+    return subtotal * (1 - couponDiscount);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -241,6 +275,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         clearCart,
         getCartTotal,
         getCartItemCount,
+        applyCoupon,
+        removeCoupon,
+        couponCode,
+        couponDiscount,
+        getDiscountedTotal,
       }}
     >
       {children}

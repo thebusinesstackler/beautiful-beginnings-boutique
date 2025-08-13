@@ -16,6 +16,9 @@ const Checkout = () => {
   const {
     items,
     getCartTotal,
+    getDiscountedTotal,
+    couponCode,
+    couponDiscount,
     updatePhoto,
     updateItemProperty
   } = useCart();
@@ -56,9 +59,10 @@ const Checkout = () => {
   
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const subtotal = getCartTotal();
-  const shippingCost = calculateShipping(subtotal);
-  const tax = subtotal * 0.08;
-  const total = subtotal + shippingCost + tax;
+  const discountedSubtotal = getDiscountedTotal();
+  const shippingCost = calculateShipping(discountedSubtotal);
+  const tax = discountedSubtotal * 0.08;
+  const total = discountedSubtotal + shippingCost + tax;
   
   const handleSquareSuccess = () => {
     toast({
@@ -598,6 +602,12 @@ const Checkout = () => {
                     <span className="text-charcoal/70">Subtotal</span>
                     <span className="font-semibold text-charcoal">${subtotal.toFixed(2)}</span>
                   </div>
+                  {couponCode && (
+                    <div className="flex justify-between text-base">
+                      <span className="text-charcoal/70">Coupon ({couponCode})</span>
+                      <span className="font-semibold text-sage">-${(subtotal * couponDiscount).toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-base">
                     <span className="text-charcoal/70">Shipping</span>
                     <span className={`font-semibold ${shippingCost === 0 ? 'text-sage' : 'text-charcoal'}`}>
@@ -623,7 +633,7 @@ const Checkout = () => {
                   billingAddress={billingAddress} 
                   sameAsShipping={sameAsShipping} 
                   total={total} 
-                  subtotal={subtotal} 
+                  subtotal={discountedSubtotal} 
                   shippingCost={shippingCost} 
                   tax={tax} 
                   onSuccess={handleSquareSuccess} 
