@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrderCreation } from './useOrderCreation';
 import type { PaymentStatus, PaymentRequest } from '@/types/SquareCheckout';
 
 interface UseSquarePaymentProps {
@@ -13,6 +14,7 @@ interface UseSquarePaymentProps {
 export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePaymentProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('idle');
+  const { createOrder } = useOrderCreation();
 
   const processPayment = async (card: any, paymentRequest: PaymentRequest) => {
     if (!card) {
@@ -91,6 +93,11 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
           token: '[TOKENIZED]'
         });
 
+        // Create order in database first
+        console.log('Creating order in database...');
+        const orderId = await createOrder(paymentRequest);
+        console.log('Order created with ID:', orderId);
+
         // Use Supabase function for secure payment processing
         const { data, error } = await supabase.functions.invoke('square-payments', {
           body: {
@@ -98,7 +105,7 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
             token: paymentToken,
             verificationToken: tokenResult.verificationToken,
             amount: paymentRequest.amount / 100, // Convert back to dollars
-            orderId: `temp-${Date.now()}`, // Temporary order ID - replace with actual order creation
+            orderId: orderId,
             customerEmail: paymentRequest.customerInfo.email,
             customerName: `${paymentRequest.customerInfo.firstName} ${paymentRequest.customerInfo.lastName}`
           }

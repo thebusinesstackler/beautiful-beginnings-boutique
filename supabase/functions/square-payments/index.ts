@@ -128,8 +128,8 @@ serve(async (req) => {
           await supabaseClient
             .from('orders')
             .update({ 
-              payment_status: 'failed',
-              square_payment_error: errorMessage
+              status: 'failed',
+              notes: `Payment failed: ${errorMessage}`
             })
             .eq('id', orderId);
         }
@@ -155,9 +155,9 @@ serve(async (req) => {
         const { error: updateError } = await supabaseClient
           .from('orders')
           .update({ 
-            payment_status: 'completed',
-            square_payment_id: payment.id,
-            square_payment_receipt_url: payment.receipt_url || null
+            status: 'completed',
+            square_order_id: payment.id,
+            payment_id: payment.id
           })
           .eq('id', orderId);
 
