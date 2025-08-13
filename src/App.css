@@ -3,21 +3,21 @@
 
 /* Square Payment Button - Custom Pink Styling */
 .square-payment-button {
-  background-color: #ec4899 !important; /* pink-500 */
+  background-color: #e8ccc4 !important; /* custom pink */
   transition: all 0.3s ease !important;
 }
 
 .square-payment-button:hover:not(:disabled) {
-  background-color: #db2777 !important; /* pink-600 */
+  background-color: #d4b5ab !important; /* darker shade for hover */
 }
 
 .square-payment-button:disabled {
-  background-color: #fce7f3 !important; /* pink-200 */
-  color: #9ca3af !important; /* gray-400 for better contrast on light background */
+  background-color: #f5f0ee !important; /* very light version for disabled */
+  color: #9ca3af !important; /* gray text for better contrast */
 }
 
 .square-payment-button:disabled:hover {
-  background-color: #fce7f3 !important; /* pink-200 */
+  background-color: #f5f0ee !important; /* very light version for disabled */
 }
 
 /* Quill Editor Styling */
