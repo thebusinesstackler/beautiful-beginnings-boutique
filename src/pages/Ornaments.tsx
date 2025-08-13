@@ -235,7 +235,7 @@ const Ornaments = () => {
                     </div>
                     
                     <div className="space-y-3">
-                      <Link to={`/products/ornaments/customize-glass?product=${product.id}`} className="block">
+                      <Link to={`/products/ornaments/customize-glass?product=${encodeURIComponent(product.id)}`} className="block">
                         <Button 
                           size="sm"
                           variant="outline" 
