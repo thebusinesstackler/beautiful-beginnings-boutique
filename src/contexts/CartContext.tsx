@@ -32,6 +32,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const { uploadPhoto } = usePhotoUpload();
 
+  console.log('CartProvider rendering with items:', items);
+
   useEffect(() => {
     const storedCart = localStorage.getItem('cartItems');
     if (storedCart) {
@@ -245,7 +247,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const useCart = () => {
+  console.log('useCart hook called');
   const context = useContext(CartContext);
+  console.log('Cart context value:', context);
   if (context === undefined) {
     throw new Error('useCart must be used within a CartProvider');
   }
