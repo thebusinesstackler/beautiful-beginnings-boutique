@@ -111,7 +111,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       try {
         console.log('🏗️ Creating Square payments instance...');
         
-        const paymentsInstance = window.Square.payments(squareAppId, squareLocationId, squareEnvironment || 'sandbox');
+        const paymentsInstance = window.Square.payments(squareAppId, squareLocationId, squareEnvironment);
         
         setPayments(paymentsInstance);
         console.log('✅ Square payments instance created');

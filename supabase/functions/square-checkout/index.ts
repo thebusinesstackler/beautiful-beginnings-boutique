@@ -116,39 +116,35 @@ serve(async (req) => {
       throw new Error('Invalid JSON in request body');
     }
 
-    // Get Square credentials from Supabase settings
+    // Get Square credentials from Supabase secrets and database
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    console.log('Fetching Square credentials from settings...');
-    const { data: settingsData, error: settingsError } = await supabase
-      .from('settings')
-      .select('key, value')
-      .in('key', ['square_app_id', 'square_location_id', 'square_access_token', 'square_environment']);
+    // Get credentials from Supabase secrets (secure)
+    const squareAppId = Deno.env.get('SQUARE_APP_ID');
+    const squareLocationId = Deno.env.get('SQUARE_LOCATION_ID');
+    const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN');
+    const squareEnvironment = Deno.env.get('SQUARE_ENVIRONMENT') || 'production';
 
-    if (settingsError) {
-      console.error('Settings fetch error:', settingsError);
-      throw new Error('Failed to fetch Square configuration');
-    }
-
-    // Convert settings array to object
-    const settings: Record<string, string> = {};
-    settingsData?.forEach(setting => {
-      settings[setting.key] = setting.value;
-    });
-
-    console.log('Square settings loaded:', {
-      hasAppId: !!settings.square_app_id,
-      hasLocationId: !!settings.square_location_id,
-      hasAccessToken: !!settings.square_access_token,
-      environment: settings.square_environment || 'sandbox'
+    console.log('Square credentials loaded from secrets:', {
+      hasAppId: !!squareAppId,
+      hasLocationId: !!squareLocationId,
+      hasAccessToken: !!squareAccessToken,
+      environment: squareEnvironment
     });
 
     // Validate Square credentials
-    if (!settings.square_app_id || !settings.square_location_id || !settings.square_access_token) {
-      throw new Error('Square credentials not properly configured in settings');
+    if (!squareAppId || !squareLocationId || !squareAccessToken) {
+      throw new Error('Square credentials not properly configured in Supabase secrets. Please check SQUARE_APP_ID, SQUARE_LOCATION_ID, and SQUARE_ACCESS_TOKEN.');
     }
+
+    const settings = {
+      square_app_id: squareAppId,
+      square_location_id: squareLocationId, 
+      square_access_token: squareAccessToken,
+      square_environment: squareEnvironment
+    };
 
     // Comprehensive input validation and sanitization
     const {
