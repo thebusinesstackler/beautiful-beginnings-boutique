@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import type { SDKStatus } from '@/types/SquareCheckout';
 
 interface SquareCardFormProps {
@@ -9,14 +9,12 @@ interface SquareCardFormProps {
   squareEnvironment?: string;
 }
 
-const SquareCardForm = ({
+const SquareCardForm = memo(({
   cardRef,
   sdkStatus,
   isSecureConnection,
   squareEnvironment
 }: SquareCardFormProps) => {
-  // Debug logging to check environment
-  console.log('SquareCardForm environment:', squareEnvironment);
   
   // Ensure we treat anything other than explicitly 'sandbox' as production
   const isProduction = squareEnvironment !== 'sandbox';
@@ -103,6 +101,6 @@ const SquareCardForm = ({
       </div>
     </div>
   );
-};
+});
 
 export default SquareCardForm;

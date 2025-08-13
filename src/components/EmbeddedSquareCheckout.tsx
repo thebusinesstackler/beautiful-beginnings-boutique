@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { useSquareSDK } from '@/hooks/useSquareSDK';
@@ -17,7 +17,7 @@ declare global {
   }
 }
 
-const EmbeddedSquareCheckout = ({
+const EmbeddedSquareCheckout = memo(({
   customerInfo,
   shippingAddress,
   billingAddress,
@@ -87,8 +87,6 @@ const EmbeddedSquareCheckout = ({
     return null;
   }
 
-  // Square configuration is handled via Supabase secrets - no frontend validation needed
-
   return (
     <div className="w-full space-y-6">
       {/* Validation Errors Display */}
@@ -113,6 +111,6 @@ const EmbeddedSquareCheckout = ({
       />
     </div>
   );
-};
+});
 
 export default EmbeddedSquareCheckout;

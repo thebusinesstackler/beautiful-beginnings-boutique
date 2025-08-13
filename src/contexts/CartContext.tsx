@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { usePhotoUpload } from '@/hooks/usePhotoUpload';
 
@@ -39,8 +39,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
   const { uploadPhoto } = usePhotoUpload();
 
-  console.log('CartProvider rendering with items:', items);
-
   useEffect(() => {
     const storedCart = localStorage.getItem('cartItems');
     if (storedCart) {
@@ -58,7 +56,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           willUploadLater: item.willUploadLater || false
         }));
         setItems(validatedItems);
-        console.log('Cart restored from localStorage:', validatedItems);
       } catch (error) {
         console.error('Error parsing stored cart:', error);
         localStorage.removeItem('cartItems');
@@ -79,10 +76,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       // Don't store uploadedPhoto file objects
     }));
     localStorage.setItem('cartItems', JSON.stringify(itemsToStore));
-    console.log('Cart saved to localStorage:', itemsToStore);
   }, [items]);
 
-  const addToCart = async (product: any, quantity: number = 1, photo?: File) => {
+  const addToCart = useCallback(async (product: any, quantity: number = 1, photo?: File) => {
     const newItem: CartItem = {
       id: Date.now(),
       name: product.name,
@@ -96,16 +92,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     // If a photo is provided, upload it immediately
     if (photo) {
       try {
-        console.log('Uploading photo during add to cart:', photo.name, photo.size);
         const photoUrl = await uploadPhoto(photo);
         
         if (photoUrl) {
           newItem.uploadedPhoto = photo;
           newItem.uploadedPhotoUrl = photoUrl;
           newItem.willUploadLater = false;
-          console.log('Photo uploaded successfully during add to cart:', photoUrl);
         } else {
-          console.error('Failed to upload photo during add to cart');
           toast({
             title: "Photo Upload Failed",
             description: "Failed to upload your photo. The item was added to cart without the photo.",
@@ -126,15 +119,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       const existingItemIndex = prevItems.findIndex(item => item.name === newItem.name);
       if (existingItemIndex >= 0) {
         // Update existing item quantity
-        const updatedItems = prevItems.map((item, index) =>
+        return prevItems.map((item, index) =>
           index === existingItemIndex
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
-        console.log('Updated existing cart item:', updatedItems[existingItemIndex]);
-        return updatedItems;
       }
-      console.log('Added new item to cart:', newItem);
       return [...prevItems, newItem];
     });
 
@@ -142,21 +132,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       title: "Added to cart!",
       description: `${product.name} has been added to your cart.`,
     });
-  };
+  }, [uploadPhoto]);
 
-  const removeFromCart = (itemId: number) => {
-    setItems(prevItems => {
-      const filteredItems = prevItems.filter(item => item.id !== itemId);
-      console.log('Removed item from cart, remaining items:', filteredItems);
-      return filteredItems;
-    });
+  const removeFromCart = useCallback((itemId: number) => {
+    setItems(prevItems => prevItems.filter(item => item.id !== itemId));
     toast({
       title: "Item removed",
       description: "Item has been removed from your cart.",
     });
-  };
+  }, []);
 
-  const updateQuantity = (itemId: number, newQuantity: number) => {
+  const updateQuantity = useCallback((itemId: number, newQuantity: number) => {
     if (newQuantity <= 0) {
       removeFromCart(itemId);
       return;
@@ -167,33 +153,25 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         item.id === itemId ? { ...item, quantity: newQuantity } : item
       )
     );
-  };
+  }, [removeFromCart]);
 
-  const updatePhoto = async (itemId: number, file: File) => {
-    console.log('Updating photo for item:', itemId, 'File:', file.name, 'Size:', file.size);
+  const updatePhoto = useCallback(async (itemId: number, file: File) => {
     
     try {
       // Upload the photo and get the URL
       const photoUrl = await uploadPhoto(file);
       
       if (photoUrl) {
-        setItems(prevItems => {
-          const updatedItems = prevItems.map(item =>
-            item.id === itemId
-              ? { 
-                  ...item, 
-                  uploadedPhoto: file, 
-                  uploadedPhotoUrl: photoUrl,
-                  willUploadLater: false
-                }
-              : item
-          );
-          
-          const updatedItem = updatedItems.find(item => item.id === itemId);
-          console.log('Photo updated successfully for item:', itemId, 'URL:', photoUrl, 'Updated item:', updatedItem);
-          
-          return updatedItems;
-        });
+        setItems(prevItems => prevItems.map(item =>
+          item.id === itemId
+            ? { 
+                ...item, 
+                uploadedPhoto: file, 
+                uploadedPhotoUrl: photoUrl,
+                willUploadLater: false
+              }
+            : item
+        ));
         
         toast({
           title: "Photo uploaded!",
@@ -203,40 +181,34 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         throw new Error('Failed to get photo URL after upload');
       }
     } catch (error) {
-      console.error('Error updating photo:', error);
       toast({
         title: "Upload Failed",
         description: "Failed to upload photo. Please try again.",
         variant: "destructive",
       });
     }
-  };
+  }, [uploadPhoto]);
 
-  const updateItemProperty = (itemId: number, property: string, value: any) => {
-    setItems(prevItems => {
-      const updatedItems = prevItems.map(item =>
-        item.id === itemId ? { ...item, [property]: value } : item
-      );
-      console.log(`Updated item ${itemId} property ${property}:`, value);
-      return updatedItems;
-    });
-  };
+  const updateItemProperty = useCallback((itemId: number, property: string, value: any) => {
+    setItems(prevItems => prevItems.map(item =>
+      item.id === itemId ? { ...item, [property]: value } : item
+    ));
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setItems([]);
     localStorage.removeItem('cartItems');
-    console.log('Cart cleared');
-  };
+  }, []);
 
-  const getCartTotal = () => {
+  const getCartTotal = useCallback(() => {
     return items.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
+  }, [items]);
 
-  const getCartItemCount = () => {
+  const getCartItemCount = useCallback(() => {
     return items.reduce((total, item) => total + item.quantity, 0);
-  };
+  }, [items]);
 
-  const applyCoupon = (code: string): boolean => {
+  const applyCoupon = useCallback((code: string): boolean => {
     if (code === '99OFF') {
       setCouponCode(code);
       setCouponDiscount(0.99);
@@ -247,50 +219,48 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       return true;
     }
     return false;
-  };
+  }, []);
 
-  const removeCoupon = () => {
+  const removeCoupon = useCallback(() => {
     setCouponCode(null);
     setCouponDiscount(0);
     toast({
       title: "Coupon removed",
       description: "The coupon has been removed from your order.",
     });
-  };
+  }, []);
 
-  const getDiscountedTotal = () => {
+  const getDiscountedTotal = useCallback(() => {
     const subtotal = getCartTotal();
     return subtotal * (1 - couponDiscount);
-  };
+  }, [getCartTotal, couponDiscount]);
+
+  const contextValue = useMemo(() => ({
+    items,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    updatePhoto,
+    updateItemProperty,
+    clearCart,
+    getCartTotal,
+    getCartItemCount,
+    applyCoupon,
+    removeCoupon,
+    couponCode,
+    couponDiscount,
+    getDiscountedTotal,
+  }), [items, addToCart, removeFromCart, updateQuantity, updatePhoto, updateItemProperty, clearCart, getCartTotal, getCartItemCount, applyCoupon, removeCoupon, couponCode, couponDiscount, getDiscountedTotal]);
 
   return (
-    <CartContext.Provider
-      value={{
-        items,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        updatePhoto,
-        updateItemProperty,
-        clearCart,
-        getCartTotal,
-        getCartItemCount,
-        applyCoupon,
-        removeCoupon,
-        couponCode,
-        couponDiscount,
-        getDiscountedTotal,
-      }}
-    >
+    <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
   );
 };
 
 export const useCart = () => {
-  console.log('useCart hook called');
   const context = useContext(CartContext);
-  console.log('Cart context value:', context);
   if (context === undefined) {
     throw new Error('useCart must be used within a CartProvider');
   }

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -33,25 +33,25 @@ export const useSettings = () => {
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    fetchSettings();
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchSettings();
+    }
   }, []);
 
   const fetchSettings = async () => {
     try {
-      console.log('Fetching settings from database...');
       const { data, error } = await supabase
         .from('settings')
         .select('key, value')
         .not('key', 'in', '(square_access_token,square_app_id,square_location_id,square_environment)'); // Exclude sensitive Square settings
 
       if (error) {
-        console.error('Error fetching settings:', error);
         throw error;
       }
-
-      console.log('Settings data received:', data);
 
       if (data && data.length > 0) {
         const settingsObject: Partial<SiteSettings> = {};
@@ -62,11 +62,9 @@ export const useSettings = () => {
           }
         });
         
-        console.log('Parsed settings object:', settingsObject);
         setSettings(prev => ({ ...prev, ...settingsObject }));
       }
     } catch (error) {
-      console.error('Error fetching settings:', error);
       toast({
         title: "Error",
         description: "Failed to load settings",
@@ -78,17 +76,13 @@ export const useSettings = () => {
   const updateSettings = async (newSettings: Partial<SiteSettings>) => {
     setLoading(true);
     try {
-      console.log('Updating settings:', newSettings);
       
       // Update each setting in the database (excluding sensitive Square settings)
       for (const [key, value] of Object.entries(newSettings)) {
         // Skip Square credentials - these should only be in Edge Function secrets
         if (key.startsWith('square_')) {
-          console.warn(`Skipping Square credential: ${key} - should be in Edge Function secrets`);
           continue;
         }
-
-        console.log(`Updating setting: ${key} = ${value}`);
         const { error } = await supabase
           .from('settings')
           .upsert(
@@ -97,14 +91,12 @@ export const useSettings = () => {
           );
         
         if (error) {
-          console.error(`Error updating setting ${key}:`, error);
           throw error;
         }
       }
       
       const currentSettings = { ...settings, ...newSettings };
       setSettings(currentSettings);
-      console.log('Settings updated successfully:', currentSettings);
       
       toast({
         title: "Settings Updated",
@@ -115,7 +107,6 @@ export const useSettings = () => {
       window.dispatchEvent(new CustomEvent('settingsUpdated', { detail: currentSettings }));
       
     } catch (error) {
-      console.error('Error updating settings:', error);
       toast({
         title: "Error",
         description: "Failed to update settings. Please try again.",
