@@ -13,8 +13,13 @@ const SquareCardForm = ({
   cardRef,
   sdkStatus,
   isSecureConnection,
-  squareEnvironment = 'sandbox'
+  squareEnvironment
 }: SquareCardFormProps) => {
+  // Debug logging to check environment
+  console.log('SquareCardForm environment:', squareEnvironment);
+  
+  // Ensure we treat anything other than explicitly 'sandbox' as production
+  const isProduction = squareEnvironment !== 'sandbox';
   return (
     <div className="bg-white rounded-xl border border-sage/20 shadow-sm">
       {/* Header */}
