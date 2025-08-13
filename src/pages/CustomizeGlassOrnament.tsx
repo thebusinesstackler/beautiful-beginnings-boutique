@@ -1,13 +1,14 @@
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Camera, CheckCircle, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { Heart, ShoppingCart, ArrowLeft, Star, Plus, Minus, Camera, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import PhotoUpload from '@/components/PhotoUpload';
+import { usePhotoUpload } from '@/hooks/usePhotoUpload';
 
 interface Product {
   id: string;
@@ -20,18 +21,20 @@ interface Product {
 
 const CustomizeGlassOrnament = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const productId = searchParams.get('product');
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [isPhotoConfirmed, setIsPhotoConfirmed] = useState(false);
+  const [uploadedPhotoUrl, setUploadedPhotoUrl] = useState<string | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [relatedLoading, setRelatedLoading] = useState(true);
   const { addToCart } = useCart();
+  const { uploadPhoto } = usePhotoUpload();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -103,19 +106,10 @@ const CustomizeGlassOrnament = () => {
   const handleAddToCart = async () => {
     if (!product) return;
 
-    if (!uploadedPhoto) {
+    if (!uploadedPhoto || !uploadedPhotoUrl) {
       toast({
         title: "Photo Required",
         description: "Please upload a photo before adding to cart.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!isPhotoConfirmed) {
-      toast({
-        title: "Please Confirm Photo",
-        description: "Please confirm your photo selection before adding to cart.",
         variant: "destructive",
       });
       return;
@@ -126,19 +120,23 @@ const CustomizeGlassOrnament = () => {
         id: parseInt(product.id),
         name: product.name,
         price: product.price,
-        image: product.image_url
+        image: product.image_url,
+        uploadedPhotoUrl: uploadedPhotoUrl
       }, 1, uploadedPhoto);
     }
+    
     toast({
       title: "Added to cart!",
       description: `${quantity} ${product.name}${quantity > 1 ? 's' : ''} added to your cart with your custom photo.`,
     });
+    
+    // Navigate to cart after adding item
+    navigate('/cart');
   };
 
-  const handlePhotoUpload = (file: File) => {
+  const handlePhotoUpload = async (file: File) => {
     console.log('Photo uploaded for glass ornament:', file.name);
     setUploadedPhoto(file);
-    setIsPhotoConfirmed(false);
     
     // Create preview
     const reader = new FileReader();
@@ -147,18 +145,15 @@ const CustomizeGlassOrnament = () => {
     };
     reader.readAsDataURL(file);
 
-    toast({
-      title: "Photo uploaded!",
-      description: "Your photo has been uploaded. Please review and confirm it below.",
-    });
-  };
-
-  const handleConfirmPhoto = () => {
-    setIsPhotoConfirmed(true);
-    toast({
-      title: "Photo confirmed!",
-      description: "Your photo selection has been confirmed. You can now add this item to your cart.",
-    });
+    // Upload photo to Supabase storage immediately
+    const photoUrl = await uploadPhoto(file);
+    if (photoUrl) {
+      setUploadedPhotoUrl(photoUrl);
+      toast({
+        title: "Photo ready!",
+        description: "Your photo has been uploaded and is ready to add to cart.",
+      });
+    }
   };
 
   const getShortDescription = (description: string) => {
@@ -282,32 +277,18 @@ const CustomizeGlassOrnament = () => {
             </div>
 
             {/* Upload Status */}
-            {uploadedPhoto && (
-              <div className="bg-white rounded-xl p-4 border-2" style={{ borderColor: isPhotoConfirmed ? '#10b981' : '#F6DADA' }}>
+            {uploadedPhoto && uploadedPhotoUrl && (
+              <div className="bg-white rounded-xl p-4 border-2" style={{ borderColor: '#10b981' }}>
                 <div className="flex items-center space-x-3">
-                  {isPhotoConfirmed ? (
-                    <CheckCircle className="h-6 w-6 text-green-500" />
-                  ) : (
-                    <Camera className="h-6 w-6" style={{ color: '#E28F84' }} />
-                  )}
+                  <Camera className="h-6 w-6 text-green-500" />
                   <div className="flex-1">
                     <p className="font-medium" style={{ color: '#2d3436' }}>
                       {uploadedPhoto.name}
                     </p>
-                    <p className="text-sm" style={{ color: '#6c5548' }}>
-                      {isPhotoConfirmed ? 'Photo confirmed and ready!' : 'Please confirm your photo selection'}
+                    <p className="text-sm text-green-600">
+                      Photo saved and ready to add to cart!
                     </p>
                   </div>
-                  {!isPhotoConfirmed && (
-                    <Button
-                      onClick={handleConfirmPhoto}
-                      size="sm"
-                      className="text-white"
-                      style={{ backgroundColor: '#E28F84' }}
-                    >
-                      Confirm Photo
-                    </Button>
-                  )}
                 </div>
               </div>
             )}
@@ -391,24 +372,21 @@ const CustomizeGlassOrnament = () => {
               <Button 
                 size="lg" 
                 className={`w-full font-semibold text-white transition-all duration-200 shadow-md ${
-                  uploadedPhoto && isPhotoConfirmed 
+                  uploadedPhoto && uploadedPhotoUrl 
                     ? 'hover:opacity-90' 
                     : 'opacity-50 cursor-not-allowed'
                 }`}
                 onClick={handleAddToCart}
-                disabled={!uploadedPhoto || !isPhotoConfirmed}
+                disabled={!uploadedPhoto || !uploadedPhotoUrl}
                 style={{ backgroundColor: '#E28F84' }}
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 Add to Cart - ${(product.price * quantity).toFixed(2)}
               </Button>
 
-              {(!uploadedPhoto || !isPhotoConfirmed) && (
+              {(!uploadedPhoto || !uploadedPhotoUrl) && (
                 <p className="text-sm text-center" style={{ color: '#a48f4b' }}>
-                  {!uploadedPhoto 
-                    ? 'Please upload a photo to continue' 
-                    : 'Please confirm your photo selection to continue'
-                  }
+                  Please upload a photo to continue
                 </p>
               )}
             </div>
