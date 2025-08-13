@@ -28,10 +28,8 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
     setPaymentStatus('processing');
 
     try {
-      // Validate Square credentials before processing
-      if (!paymentRequest.squareCredentials.appId || !paymentRequest.squareCredentials.locationId) {
-        throw new Error('Square credentials are not properly configured. Please contact support.');
-      }
+      // Square credentials are handled by backend via Supabase secrets
+      console.log('Starting payment processing...');
 
       // Tokenize the card with buyer verification
       console.log('Starting card tokenization...');
@@ -90,10 +88,7 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
 
         console.log('Processing payment with clean payload:', {
           ...requestPayload,
-          squareCredentials: {
-            ...requestPayload.squareCredentials,
-            accessToken: requestPayload.squareCredentials.accessToken ? '[PRESENT]' : '[MISSING]'
-          }
+          token: '[TOKENIZED]'
         });
 
         const { data, error } = await supabase.functions.invoke('square-checkout', {

@@ -38,12 +38,6 @@ export interface PaymentRequest {
     tax: number;
     total: number;
   };
-  squareCredentials: {
-    appId: string;
-    accessToken: string;
-    environment: string;
-    locationId: string;
-  };
   uploadedImages?: string[];
 }
 
