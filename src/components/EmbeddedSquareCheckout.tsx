@@ -31,13 +31,9 @@ const EmbeddedSquareCheckout = ({
 }: EmbeddedSquareCheckoutProps) => {
   const { items, clearCart } = useCart();
   
-  // Initialize Square SDK with hardcoded App ID (public info)
-  // Backend uses Supabase secrets for secure payment processing
-  const { payments, card, sdkStatus, isSecureConnection, cardRef } = useSquareSDK({
-    squareAppId: 'sq0idp-Yb0qVxuCDTTFAyPqch1evQ', // Public Square App ID
-    squareLocationId: 'LRXMEEWB9R0KM', // Location ID for tokenization
-    squareEnvironment: 'production'
-  });
+  // Initialize Square SDK by fetching config from edge function
+  // All Square credentials are managed via Supabase secrets
+  const { payments, card, sdkStatus, isSecureConnection, cardRef, squareEnvironment } = useSquareSDK({});
 
   // Form validation
   const { validationErrors, validateForm } = useSquareValidation({
@@ -103,7 +99,7 @@ const EmbeddedSquareCheckout = ({
         cardRef={cardRef}
         sdkStatus={sdkStatus}
         isSecureConnection={isSecureConnection}
-        squareEnvironment="production"
+        squareEnvironment={squareEnvironment}
       />
 
       {/* Payment Button */}

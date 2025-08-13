@@ -91,8 +91,17 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
           token: '[TOKENIZED]'
         });
 
-        const { data, error } = await supabase.functions.invoke('square-checkout', {
-          body: requestPayload
+        // Use Supabase function for secure payment processing
+        const { data, error } = await supabase.functions.invoke('square-payments', {
+          body: {
+            action: 'process_payment',
+            token: paymentToken,
+            verificationToken: tokenResult.verificationToken,
+            amount: paymentRequest.amount / 100, // Convert back to dollars
+            orderId: `temp-${Date.now()}`, // Temporary order ID - replace with actual order creation
+            customerEmail: paymentRequest.customerInfo.email,
+            customerName: `${paymentRequest.customerInfo.firstName} ${paymentRequest.customerInfo.lastName}`
+          }
         });
 
         if (error) {

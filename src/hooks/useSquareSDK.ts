@@ -14,6 +14,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
   const [card, setCard] = useState<any>(null);
   const [sdkStatus, setSdkStatus] = useState<SDKStatus>('loading');
   const [isSecureConnection, setIsSecureConnection] = useState<boolean>(false);
+  const [squareConfig, setSquareConfig] = useState<{ appId: string; locationId: string; environment: string } | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Check HTTPS connection
@@ -74,6 +75,41 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     }
   };
 
+  // Fetch Square configuration from edge function
+  const fetchSquareConfig = async () => {
+    try {
+      console.log('🔄 Fetching Square configuration from edge function...');
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { data, error } = await supabase.functions.invoke('square-payments', {
+        body: { action: 'test_connection' }
+      });
+
+      if (error) {
+        throw new Error('Failed to fetch Square configuration');
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Square configuration error');
+      }
+
+      console.log('✅ Square config fetched:', { 
+        appId: data.applicationId, 
+        locationId: data.locationId,
+        environment: data.environment 
+      });
+
+      return {
+        appId: data.applicationId,
+        locationId: data.locationId,
+        environment: data.environment || 'production'
+      };
+    } catch (error: any) {
+      console.error('❌ Error fetching Square config:', error);
+      throw error;
+    }
+  };
+
   // Initialize Square Web Payments SDK
   useEffect(() => {
     let retryCount = 0;
@@ -88,30 +124,29 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         setSdkStatus('error');
         return;
       }
-      
-      if (!window.Square) {
-        console.log('⏳ Square SDK not loaded, waiting...');
-        if (retryCount < maxRetries) {
-          retryCount++;
-          setTimeout(initializeSquare, 1000);
-          return;
-        } else {
-          console.error('💥 Square SDK failed to load after retries');
-          setSdkStatus('error');
-          return;
-        }
-      }
-
-      if (!squareAppId || !squareLocationId) {
-        console.error('⚠️ Square credentials missing:', { squareAppId: !!squareAppId, squareLocationId: !!squareLocationId });
-        setSdkStatus('error');
-        return;
-      }
 
       try {
-        console.log('🏗️ Creating Square payments instance...');
+        // First fetch Square configuration
+        const config = await fetchSquareConfig();
+        setSquareConfig(config);
         
-        const paymentsInstance = window.Square.payments(squareAppId, squareLocationId, squareEnvironment);
+        // Check if Square SDK is loaded
+        if (!window.Square) {
+          console.log('⏳ Square SDK not loaded, waiting...');
+          if (retryCount < maxRetries) {
+            retryCount++;
+            setTimeout(initializeSquare, 1000);
+            return;
+          } else {
+            console.error('💥 Square SDK failed to load after retries');
+            setSdkStatus('error');
+            return;
+          }
+        }
+
+        console.log('🏗️ Creating Square payments instance with config:', config);
+        
+        const paymentsInstance = window.Square.payments(config.appId, config.locationId, config.environment);
         
         setPayments(paymentsInstance);
         console.log('✅ Square payments instance created');
@@ -134,12 +169,8 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       }
     };
 
-    if (squareAppId && squareLocationId) {
-      console.log('🎬 Starting Square initialization...');
-      setTimeout(initializeSquare, 100);
-    } else {
-      console.log('⚠️ Square credentials not provided, skipping initialization');
-    }
+    console.log('🎬 Starting Square initialization...');
+    setTimeout(initializeSquare, 100);
 
     return () => {
       if (card) {
@@ -151,13 +182,14 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         }
       }
     };
-  }, [squareAppId, squareLocationId, squareEnvironment]);
+  }, []);
 
   return {
     payments,
     card,
     sdkStatus,
     isSecureConnection,
-    cardRef
+    cardRef,
+    squareEnvironment: squareConfig?.environment || 'production'
   };
 };
