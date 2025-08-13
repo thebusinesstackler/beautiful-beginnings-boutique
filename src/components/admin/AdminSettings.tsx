@@ -35,6 +35,14 @@ const AdminSettings = () => {
     });
   };
 
+  const handleSaveSquareSettings = () => {
+    updateSettings({
+      square_app_id: formData.square_app_id,
+      square_location_id: formData.square_location_id,
+      square_access_token: formData.square_access_token,
+      square_environment: formData.square_environment
+    });
+  };
 
   const handleSaveShippingSettings = () => {
     updateSettings({
@@ -138,28 +146,154 @@ const AdminSettings = () => {
         </CardContent>
       </Card>
 
-      {/* Square Payment Info */}
+      {/* Square Settings - Enhanced for better accessibility */}
       <Card className="bg-blue-50 border-blue-200 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center text-charcoal">
             <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
-            Square Payment Integration
+            Square Payment Settings
+            <AlertCircle className="h-4 w-4 ml-2 text-orange-500" />
           </CardTitle>
           <CardDescription>
-            Square payments are configured via Supabase Edge Function secrets for security.
+            Configure Square payment integration for your checkout system.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+          {/* Important Notice */}
           <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
             <div className="flex items-start space-x-2">
               <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
               <div className="text-blue-800 text-sm">
-                <p className="font-semibold mb-2">Secure Configuration</p>
-                <p className="mb-2">Square credentials are securely stored in Supabase secrets and used by the edge function.</p>
-                <p className="text-xs">Your Square location ID: LRXMEEWB9R0KM is configured in the edge function.</p>
+                <p className="font-semibold mb-2">Square Configuration Required</p>
+                <ul className="space-y-1 text-xs">
+                  <li>• Get your Square credentials from the <a href="https://developer.squareup.com/apps" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Square Developer Dashboard</a></li>
+                  <li>• Access Token is used for API authentication</li>
+                  <li>• Use sandbox tokens for testing, production tokens for live payments</li>
+                </ul>
               </div>
             </div>
           </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="square_app_id" className="text-charcoal font-medium">
+                Square Application ID *
+              </Label>
+              <Input 
+                id="square_app_id" 
+                value={formData.square_app_id || ''}
+                onChange={(e) => handleInputChange('square_app_id', e.target.value)}
+                placeholder="sandbox-sq0idb-... or sq0idb-..."
+                className="font-mono text-sm"
+              />
+              <p className="text-xs text-gray-600">
+                Found in your Square Developer Dashboard under "Credentials"
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="square_location_id" className="text-charcoal font-medium">
+                Square Location ID *
+              </Label>
+              <Input 
+                id="square_location_id" 
+                value={formData.square_location_id || ''}
+                onChange={(e) => handleInputChange('square_location_id', e.target.value)}
+                placeholder="L..."
+                className="font-mono text-sm"
+              />
+              <p className="text-xs text-gray-600">
+                Your business location ID from Square Dashboard
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="square_environment" className="text-charcoal font-medium">
+                Environment *
+              </Label>
+              <select 
+                id="square_environment"
+                value={formData.square_environment || 'sandbox'}
+                onChange={(e) => handleInputChange('square_environment', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage bg-white"
+              >
+                <option value="sandbox">Sandbox (Testing)</option>
+                <option value="production">Production (Live)</option>
+              </select>
+              <p className="text-xs text-gray-600">
+                Use Sandbox for testing, Production for live payments
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="square_access_token" className="text-charcoal font-medium">
+                Access Token *
+              </Label>
+              <div className="relative">
+                <Input 
+                  id="square_access_token" 
+                  type={showAccessToken ? "text" : "password"}
+                  value={formData.square_access_token || ''}
+                  onChange={(e) => handleInputChange('square_access_token', e.target.value)}
+                  placeholder="EAAAl... (Sandbox) or sq0atp-... (Production)"
+                  className="font-mono text-sm pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowAccessToken(!showAccessToken)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
+                >
+                  {showAccessToken ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-gray-600">
+                Sandbox tokens start with "EAAAl", Production with "sq0atp-"
+              </p>
+            </div>
+          </div>
+
+          {/* Configuration Status */}
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 mb-2">Configuration Status</h4>
+            <div className="space-y-1 text-sm">
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${formData.square_app_id ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className={formData.square_app_id ? 'text-green-700' : 'text-red-700'}>
+                  Application ID: {formData.square_app_id ? 'Configured' : 'Missing'}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${formData.square_location_id ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className={formData.square_location_id ? 'text-green-700' : 'text-red-700'}>
+                  Location ID: {formData.square_location_id ? 'Configured' : 'Missing'}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${formData.square_access_token ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className={formData.square_access_token ? 'text-green-700' : 'text-red-700'}>
+                  Access Token: {formData.square_access_token ? 'Configured' : 'Missing'}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                <span className="text-blue-700">
+                  Environment: {formData.square_environment || 'sandbox'}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+            onClick={handleSaveSquareSettings}
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save Square Settings'}
+          </Button>
         </CardContent>
       </Card>
 

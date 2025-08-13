@@ -2,6 +2,8 @@
 import React from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
+import { useSettings } from '@/hooks/useSettings';
+import { useSquareSDK } from '@/hooks/useSquareSDK';
 import { useSquareValidation } from '@/hooks/useSquareValidation';
 import { useSquarePayment } from '@/hooks/useSquarePayment';
 import SquareValidationErrors from './SquareValidationErrors';
@@ -29,6 +31,14 @@ const EmbeddedSquareCheckout = ({
   onError
 }: EmbeddedSquareCheckoutProps) => {
   const { items, clearCart } = useCart();
+  const { settings } = useSettings();
+  
+  // Initialize Square SDK with settings from database
+  const { payments, card, sdkStatus, isSecureConnection, cardRef } = useSquareSDK({
+    squareAppId: settings.square_app_id,
+    squareLocationId: settings.square_location_id,
+    squareEnvironment: settings.square_environment || 'sandbox'
+  });
 
   // Form validation
   const { validationErrors, validateForm } = useSquareValidation({
@@ -37,6 +47,13 @@ const EmbeddedSquareCheckout = ({
     billingAddress,
     sameAsShipping,
     items
+  });
+
+  // Payment processing
+  const { isLoading, processPayment } = useSquarePayment({
+    onSuccess,
+    onError,
+    clearCart
   });
 
   const handlePayment = async () => {
@@ -50,55 +67,77 @@ const EmbeddedSquareCheckout = ({
       return;
     }
 
-    // Process payment using edge function directly (no database settings needed)
-    try {
-      const response = await fetch('/functions/v1/square-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          customerInfo,
-          shippingAddress,
-          billingAddress: sameAsShipping ? shippingAddress : billingAddress,
-          items,
-          amount: Math.round(total * 100), // Convert total to cents
-          breakdown: {
-            subtotal: Math.round(subtotal * 100),
-            shipping: Math.round(shippingCost * 100),
-            tax: Math.round(tax * 100),
-            total: Math.round(total * 100)
-          }
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Payment processing failed');
-      }
-
-      const result = await response.json();
-      
+    // Check Square configuration before processing
+    if (!settings.square_app_id || !settings.square_location_id) {
       toast({
-        title: "Payment Successful!",
-        description: `Order #${result.order_id} has been placed successfully.`,
-      });
-
-      clearCart();
-      onSuccess?.();
-    } catch (error) {
-      console.error('Payment error:', error);
-      toast({
-        title: "Payment Failed",
-        description: error instanceof Error ? error.message : "Payment processing failed. Please try again.",
+        title: "Payment Configuration Error",
+        description: "Square payment system is not properly configured. Please contact support.",
         variant: "destructive",
       });
-      onError?.(error);
+      return;
     }
+
+    // Log current Square configuration (without sensitive data)
+    console.log('Square Configuration Check:', {
+      hasAppId: !!settings.square_app_id,
+      hasLocationId: !!settings.square_location_id,
+      hasAccessToken: !!settings.square_access_token,
+      environment: settings.square_environment || 'sandbox'
+    });
+
+    const paymentRequest: PaymentRequest = {
+      token: '', // Will be set by processPayment
+      customerInfo,
+      shippingAddress,
+      billingAddress: sameAsShipping ? shippingAddress : billingAddress,
+      items,
+      amount: Math.round(total * 100), // Convert total to cents
+      breakdown: {
+        subtotal: Math.round(subtotal * 100),
+        shipping: Math.round(shippingCost * 100),
+        tax: Math.round(tax * 100),
+        total: Math.round(total * 100)
+      },
+      squareCredentials: {
+        appId: settings.square_app_id || '',
+        accessToken: settings.square_access_token || '',
+        environment: settings.square_environment || 'sandbox',
+        locationId: settings.square_location_id || ''
+      }
+    };
+
+    await processPayment(card, paymentRequest);
   };
 
   if (items.length === 0) {
     return null;
+  }
+
+  // Show configuration message if Square is not properly set up
+  if (!settings.square_app_id || !settings.square_location_id) {
+    return (
+      <div className="w-full p-6 bg-amber-50 border border-amber-200 rounded-lg">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-amber-800 mb-2">Square Payment Setup Required</h3>
+            <p className="text-sm text-amber-700 mb-4">
+              Square checkout is not fully configured. Please complete the setup in the admin panel.
+            </p>
+            <div className="text-xs text-amber-600 space-y-1">
+              <p>Missing configuration:</p>
+              {!settings.square_app_id && <p>• Square Application ID</p>}
+              {!settings.square_location_id && <p>• Square Location ID</p>}
+              {!settings.square_access_token && <p>• Square Access Token</p>}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -106,18 +145,23 @@ const EmbeddedSquareCheckout = ({
       {/* Validation Errors Display */}
       <SquareValidationErrors errors={validationErrors} />
 
-      {/* Simple Payment Button - Edge Function handles all Square configuration */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
-        <button
-          onClick={handlePayment}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
-        >
-          Complete Payment - ${total.toFixed(2)}
-        </button>
-        <p className="text-sm text-gray-500 mt-2 text-center">
-          Secure payment processing powered by Square
-        </p>
-      </div>
+      {/* Card Input Container */}
+      <SquareCardForm 
+        cardRef={cardRef}
+        sdkStatus={sdkStatus}
+        isSecureConnection={isSecureConnection}
+        squareEnvironment={settings.square_environment}
+      />
+
+      {/* Payment Button */}
+      <SquarePaymentButton
+        onPayment={handlePayment}
+        isLoading={isLoading}
+        hasCard={!!card}
+        sdkStatus={sdkStatus}
+        isSecureConnection={isSecureConnection}
+        total={total}
+      />
     </div>
   );
 };

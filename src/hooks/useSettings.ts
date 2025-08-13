@@ -9,6 +9,12 @@ interface SiteSettings {
   store_phone: string;
   store_website: string;
   store_address: string;
+  logo_url?: string;
+  logo_alt_text?: string;
+  square_app_id?: string;
+  square_location_id?: string;
+  square_access_token?: string;
+  square_environment?: string;
   domestic_shipping?: string;
   international_shipping?: string;
   free_shipping_threshold?: string;
@@ -40,11 +46,10 @@ export const useSettings = () => {
 
   const fetchSettings = async () => {
     try {
-      console.log('Fetching settings from database...');
+      console.log('Fetching ALL settings from database (including Square credentials)...');
       const { data, error } = await supabase
         .from('settings')
-        .select('key, value')
-        .not('key', 'in', '(square_access_token,square_app_id,square_location_id,square_environment)'); // Exclude sensitive Square settings
+        .select('key, value');
 
       if (error) {
         console.error('Error fetching settings:', error);
@@ -62,7 +67,7 @@ export const useSettings = () => {
           }
         });
         
-        console.log('Parsed settings object:', settingsObject);
+        console.log('Parsed settings object with Square credentials:', settingsObject);
         setSettings(prev => ({ ...prev, ...settingsObject }));
       }
     } catch (error) {
@@ -80,15 +85,9 @@ export const useSettings = () => {
     try {
       console.log('Updating settings:', newSettings);
       
-      // Update each setting in the database (excluding sensitive Square settings)
+      // Update each setting in the database
       for (const [key, value] of Object.entries(newSettings)) {
-        // Skip Square credentials - these should only be in Edge Function secrets
-        if (key.startsWith('square_')) {
-          console.warn(`Skipping Square credential: ${key} - should be in Edge Function secrets`);
-          continue;
-        }
-
-        console.log(`Updating setting: ${key} = ${value}`);
+        console.log(`Updating setting: ${key} = ${value ? '[SET]' : '[EMPTY]'}`);
         const { error } = await supabase
           .from('settings')
           .upsert(
