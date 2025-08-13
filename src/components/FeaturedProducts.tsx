@@ -65,7 +65,9 @@ const FeaturedProducts = () => {
   };
 
   const getProductImage = (product: Product) => {
-    return product.image_url || (product.gallery_images && product.gallery_images[0]) || "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400";
+    const imageUrl = product.image_url || (product.gallery_images && product.gallery_images[0]);
+    // Add error handling for broken images
+    return imageUrl || "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400";
   };
 
   const getProductHref = (category: string) => {
@@ -141,6 +143,11 @@ const FeaturedProducts = () => {
                       src={getProductImage(product)}
                       alt={product.name}
                       className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400";
+                      }}
+                      loading="lazy"
                     />
                   </Link>
                   
@@ -217,25 +224,27 @@ const FeaturedProducts = () => {
 
         {/* View All Button */}
         <div className="text-center mt-16">
-          <Button 
-            className="px-10 py-4 text-lg group font-semibold rounded-lg border-2 transition-all duration-200"
-            style={{ 
-              borderColor: '#a48f4b', 
-              color: '#a48f4b',
-              backgroundColor: 'transparent'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#F6DADA';
-              e.currentTarget.style.borderColor = '#a48f4b';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.borderColor = '#a48f4b';
-            }}
-          >
-            View All Products
-            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <Link to="/shop">
+            <Button 
+              className="px-10 py-4 text-lg group font-semibold rounded-lg border-2 transition-all duration-200"
+              style={{ 
+                borderColor: '#a48f4b', 
+                color: '#a48f4b',
+                backgroundColor: 'transparent'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F6DADA';
+                e.currentTarget.style.borderColor = '#a48f4b';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = '#a48f4b';
+              }}
+            >
+              View All Products
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
