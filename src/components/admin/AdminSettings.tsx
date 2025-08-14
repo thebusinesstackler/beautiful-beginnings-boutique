@@ -168,7 +168,7 @@ const AdminSettings = () => {
                 <ul className="space-y-1 text-xs">
                   <li>• Get your Square credentials from the <a href="https://developer.squareup.com/apps" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Square Developer Dashboard</a></li>
                   <li>• Access Token is used for API authentication</li>
-                  <li>• Use sandbox tokens for testing, production tokens for live payments</li>
+                  <li>• Production tokens only - no testing mode</li>
                 </ul>
               </div>
             </div>
@@ -183,7 +183,7 @@ const AdminSettings = () => {
                 id="square_app_id" 
                 value={formData.square_app_id || ''}
                 onChange={(e) => handleInputChange('square_app_id', e.target.value)}
-                placeholder="sandbox-sq0idb-... or sq0idb-..."
+                placeholder="sq0idb-..."
                 className="font-mono text-sm"
               />
               <p className="text-xs text-gray-600">
@@ -211,17 +211,11 @@ const AdminSettings = () => {
               <Label htmlFor="square_environment" className="text-charcoal font-medium">
                 Environment *
               </Label>
-              <select 
-                id="square_environment"
-                value={formData.square_environment || 'sandbox'}
-                onChange={(e) => handleInputChange('square_environment', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage bg-white"
-              >
-                <option value="sandbox">Sandbox (Testing)</option>
-                <option value="production">Production (Live)</option>
-              </select>
+              <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700">
+                Production (Live Payments Only)
+              </div>
               <p className="text-xs text-gray-600">
-                Use Sandbox for testing, Production for live payments
+                System configured for production payments only
               </p>
             </div>
 
@@ -235,7 +229,7 @@ const AdminSettings = () => {
                   type={showAccessToken ? "text" : "password"}
                   value={formData.square_access_token || ''}
                   onChange={(e) => handleInputChange('square_access_token', e.target.value)}
-                  placeholder="EAAAl... (Sandbox) or sq0atp-... (Production)"
+                  placeholder="sq0atp-... (Production)"
                   className="font-mono text-sm pr-10"
                 />
                 <button
@@ -251,7 +245,7 @@ const AdminSettings = () => {
                 </button>
               </div>
               <p className="text-xs text-gray-600">
-                Sandbox tokens start with "EAAAl", Production with "sq0atp-"
+                Production tokens start with "sq0atp-"
               </p>
             </div>
           </div>
@@ -281,7 +275,7 @@ const AdminSettings = () => {
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                 <span className="text-blue-700">
-                  Environment: {formData.square_environment || 'sandbox'}
+                  Environment: production
                 </span>
               </div>
             </div>

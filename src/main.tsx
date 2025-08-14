@@ -18,7 +18,7 @@ const setSecurityHeaders = () => {
   // Content Security Policy
   setMetaTag('Content-Security-Policy', 
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' https://sandbox.web.squarecdn.com https://web.squarecdn.com https://js.squareup.com; " +
+    "script-src 'self' 'unsafe-inline' https://web.squarecdn.com https://js.squareup.com; " +
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
     "font-src 'self' https://fonts.gstatic.com; " +
     "img-src 'self' data: https: blob:; " +

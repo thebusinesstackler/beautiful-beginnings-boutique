@@ -16,14 +16,11 @@ const PaymentTestingPanel = () => {
     timestamp: Date;
   }>>([]);
 
-  // Test card numbers for Square sandbox
-  const testCards = {
-    success: '4111 1111 1111 1111', // Visa - Success
-    declined: '4000 0000 0000 0002', // Visa - Declined
-    insufficientFunds: '4000 0000 0000 9995', // Visa - Insufficient funds
-    expiredCard: '4000 0000 0000 0069', // Visa - Expired card
-    cvvFailure: '4000 0000 0000 0127', // Visa - CVV failure
-    processingError: '4000 0000 0000 0119', // Visa - Processing error
+  // Production environment - no test cards available
+  const productionInfo = {
+    note: 'Production environment uses real payment processing',
+    warning: 'All transactions will be charged to actual payment methods',
+    security: 'PCI compliance handled by Square production servers'
   };
 
   const addTestResult = (test: string, status: 'passed' | 'failed' | 'pending', message: string) => {
@@ -221,11 +218,10 @@ const PaymentTestingPanel = () => {
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-charcoal flex items-center">
             <TestTube className="h-4 w-4 mr-2 text-sage" />
-            Payment Testing Panel
+            Payment System Testing Panel
           </h3>
-          <Badge variant="outline" className="text-xs">
-            {getCartItemCount()} items | ${getCartTotal().toFixed(2)}
-          </Badge>
+          <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-200">
+            PRODUCTION</Badge>
         </div>
       </div>
 
@@ -268,17 +264,17 @@ const PaymentTestingPanel = () => {
           </Button>
         </div>
 
-        {/* Test Card Numbers */}
-        <div className="bg-sage/10 rounded-lg p-3">
-          <h4 className="text-xs font-medium text-charcoal mb-2 flex items-center">
+        {/* Production Environment Notice */}
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+          <h4 className="text-xs font-medium text-red-800 mb-2 flex items-center">
             <CreditCard className="h-3 w-3 mr-1" />
-            Square Test Cards
+            Production Environment - Live Payments
           </h4>
-          <div className="space-y-1 text-xs text-charcoal/70">
-            <div><span className="font-mono">{testCards.success}</span> - Success</div>
-            <div><span className="font-mono">{testCards.declined}</span> - Declined</div>
-            <div><span className="font-mono">{testCards.insufficientFunds}</span> - Insufficient Funds</div>
-            <div><span className="font-mono">{testCards.expiredCard}</span> - Expired</div>
+          <div className="space-y-1 text-xs text-red-700">
+            <div>⚠️ <strong>Live payment processing active</strong></div>
+            <div>💳 Real cards will be charged</div>
+            <div>🔒 Production-grade security enabled</div>
+            <div>📋 All transactions are recorded</div>
           </div>
         </div>
 
@@ -305,11 +301,11 @@ const PaymentTestingPanel = () => {
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
           <h4 className="text-xs font-medium text-amber-800 mb-1 flex items-center">
             <AlertTriangle className="h-3 w-3 mr-1" />
-            Security Notes
+            Production Environment Notes
           </h4>
           <ul className="text-xs text-amber-700 space-y-1">
-            <li>• Using Square sandbox environment</li>
-            <li>• Payment tokens are single-use only</li>
+            <li>• Using Square production environment</li>
+            <li>• All payments are processed live</li>
             <li>• PCI compliance handled by Square</li>
             <li>• All card data is tokenized client-side</li>
           </ul>

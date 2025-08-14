@@ -17,7 +17,7 @@ export const useSecurityHeaders = () => {
     // Stricter Content Security Policy
     setMetaTag('Content-Security-Policy', 
       "default-src 'self'; " +
-      "script-src 'self' 'nonce-square-sdk' https://sandbox.web.squarecdn.com https://web.squarecdn.com https://js.squareup.com; " +
+      "script-src 'self' 'nonce-square-sdk' https://web.squarecdn.com https://js.squareup.com; " +
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
       "font-src 'self' https://fonts.gstatic.com; " +
       "img-src 'self' data: https: blob:; " +
