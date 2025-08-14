@@ -11,7 +11,6 @@ import { toast } from '@/hooks/use-toast';
 import SquareCheckout from '@/components/SquareCheckout';
 import { useShippingSettings } from '@/hooks/useShippingSettings';
 import { useSettings } from '@/hooks/useSettings';
-
 const Checkout = () => {
   const {
     items,
@@ -24,19 +23,25 @@ const Checkout = () => {
     updatePhoto,
     updateItemProperty
   } = useCart();
-  const { settings } = useSettings();
+  const {
+    settings
+  } = useSettings();
   const {
     calculateShipping
   } = useShippingSettings();
-  
+
   // Photo upload states for each item
-  const [uploadingStates, setUploadingStates] = useState<{[key: number]: boolean}>({});
-  const [showUploadInterface, setShowUploadInterface] = useState<{[key: number]: boolean}>({});
-  
+  const [uploadingStates, setUploadingStates] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const [showUploadInterface, setShowUploadInterface] = useState<{
+    [key: number]: boolean;
+  }>({});
+
   // Coupon state
   const [couponInput, setCouponInput] = useState('');
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
-  
+
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
@@ -62,21 +67,18 @@ const Checkout = () => {
     zipCode: '',
     country: 'United States'
   });
-  
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const subtotal = getCartTotal();
   const discountedSubtotal = getDiscountedTotal();
   const shippingCost = calculateShipping(discountedSubtotal);
   const tax = discountedSubtotal * 0.08;
   const total = discountedSubtotal + shippingCost + tax;
-  
   const handleSquareSuccess = () => {
     toast({
       title: "Payment Successful!",
       description: "Your order has been processed successfully."
     });
   };
-  
   const handleSquareError = (error: any) => {
     console.error('Square payment error:', error);
     toast({
@@ -85,51 +87,63 @@ const Checkout = () => {
       variant: "destructive"
     });
   };
-
   const handlePhotoUpload = async (itemId: number, file: File) => {
-    setUploadingStates(prev => ({ ...prev, [itemId]: true }));
+    setUploadingStates(prev => ({
+      ...prev,
+      [itemId]: true
+    }));
     try {
       await updatePhoto(itemId, file);
-      setShowUploadInterface(prev => ({ ...prev, [itemId]: false }));
+      setShowUploadInterface(prev => ({
+        ...prev,
+        [itemId]: false
+      }));
       toast({
         title: "Photo uploaded!",
-        description: "Your custom photo has been added successfully.",
+        description: "Your custom photo has been added successfully."
       });
     } catch (error) {
       console.error('Error uploading photo:', error);
       toast({
         title: "Upload failed",
         description: "Please try uploading your photo again.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
-      setUploadingStates(prev => ({ ...prev, [itemId]: false }));
+      setUploadingStates(prev => ({
+        ...prev,
+        [itemId]: false
+      }));
     }
   };
-
   const handleRemovePhoto = (itemId: number) => {
     updateItemProperty(itemId, 'uploadedPhotoUrl', null);
     updateItemProperty(itemId, 'uploadedPhoto', undefined);
     updateItemProperty(itemId, 'willUploadLater', false);
-    setShowUploadInterface(prev => ({ ...prev, [itemId]: false }));
+    setShowUploadInterface(prev => ({
+      ...prev,
+      [itemId]: false
+    }));
   };
-
   const handleWillUploadLater = (itemId: number, willUpload: boolean) => {
     updateItemProperty(itemId, 'willUploadLater', willUpload);
-    setShowUploadInterface(prev => ({ ...prev, [itemId]: false }));
+    setShowUploadInterface(prev => ({
+      ...prev,
+      [itemId]: false
+    }));
     if (willUpload) {
       // Clear any existing photo when selecting "will upload later"
       updateItemProperty(itemId, 'uploadedPhotoUrl', null);
       updateItemProperty(itemId, 'uploadedPhoto', undefined);
     }
   };
-
   const toggleUploadInterface = (itemId: number) => {
-    setShowUploadInterface(prev => ({ ...prev, [itemId]: !prev[itemId] }));
+    setShowUploadInterface(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId]
+    }));
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
+  return <div className="min-h-screen bg-gradient-to-br from-cream via-pearl to-blush/20">
       <Navigation />
       
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -147,8 +161,7 @@ const Checkout = () => {
           </p>
         </div>
 
-        {items.length === 0 ? (
-          <div className="text-center py-20">
+        {items.length === 0 ? <div className="text-center py-20">
             <div className="w-32 h-32 bg-sage/10 rounded-full flex items-center justify-center mx-auto mb-8">
               <ShoppingCart className="h-16 w-16 text-sage/40" />
             </div>
@@ -161,9 +174,7 @@ const Checkout = () => {
                 Start Shopping
               </Button>
             </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
+          </div> : <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
             {/* Checkout Form - Made wider (3/5 instead of 2/3) */}
             <div className="xl:col-span-3 space-y-6">
               {/* Customer Information */}
@@ -176,51 +187,37 @@ const Checkout = () => {
                     <Label htmlFor="firstName" className="text-charcoal font-medium text-sm">
                       First Name <span className="text-red-500">*</span>
                     </Label>
-                    <Input 
-                      id="firstName" 
-                      value={customerInfo.firstName} 
-                      onChange={e => setCustomerInfo({ ...customerInfo, firstName: e.target.value })} 
-                      className="mt-1" 
-                      required 
-                    />
+                    <Input id="firstName" value={customerInfo.firstName} onChange={e => setCustomerInfo({
+                  ...customerInfo,
+                  firstName: e.target.value
+                })} className="mt-1" required />
                   </div>
                   <div>
                     <Label htmlFor="lastName" className="text-charcoal font-medium text-sm">
                       Last Name <span className="text-red-500">*</span>
                     </Label>
-                    <Input 
-                      id="lastName" 
-                      value={customerInfo.lastName} 
-                      onChange={e => setCustomerInfo({ ...customerInfo, lastName: e.target.value })} 
-                      className="mt-1" 
-                      required 
-                    />
+                    <Input id="lastName" value={customerInfo.lastName} onChange={e => setCustomerInfo({
+                  ...customerInfo,
+                  lastName: e.target.value
+                })} className="mt-1" required />
                   </div>
                   <div>
                     <Label htmlFor="email" className="text-charcoal font-medium text-sm">
                       Email Address <span className="text-red-500">*</span>
                     </Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
-                      value={customerInfo.email} 
-                      onChange={e => setCustomerInfo({ ...customerInfo, email: e.target.value })} 
-                      className="mt-1" 
-                      required 
-                    />
+                    <Input id="email" type="email" value={customerInfo.email} onChange={e => setCustomerInfo({
+                  ...customerInfo,
+                  email: e.target.value
+                })} className="mt-1" required />
                   </div>
                   <div>
                     <Label htmlFor="phone" className="text-charcoal font-medium text-sm">
                       Phone Number <span className="text-red-500">*</span>
                     </Label>
-                    <Input 
-                      id="phone" 
-                      type="tel" 
-                      value={customerInfo.phone} 
-                      onChange={e => setCustomerInfo({ ...customerInfo, phone: e.target.value })} 
-                      className="mt-1" 
-                      required 
-                    />
+                    <Input id="phone" type="tel" value={customerInfo.phone} onChange={e => setCustomerInfo({
+                  ...customerInfo,
+                  phone: e.target.value
+                })} className="mt-1" required />
                   </div>
                 </div>
               </div>
@@ -235,50 +232,38 @@ const Checkout = () => {
                     <Label htmlFor="shippingAddress" className="text-charcoal font-medium text-sm">
                       Street Address <span className="text-red-500">*</span>
                     </Label>
-                    <Input 
-                      id="shippingAddress" 
-                      value={shippingAddress.address} 
-                      onChange={e => setShippingAddress({ ...shippingAddress, address: e.target.value })} 
-                      className="mt-1" 
-                      required 
-                    />
+                    <Input id="shippingAddress" value={shippingAddress.address} onChange={e => setShippingAddress({
+                  ...shippingAddress,
+                  address: e.target.value
+                })} className="mt-1" required />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <Label htmlFor="shippingCity" className="text-charcoal font-medium text-sm">
                         City <span className="text-red-500">*</span>
                       </Label>
-                      <Input 
-                        id="shippingCity" 
-                        value={shippingAddress.city} 
-                        onChange={e => setShippingAddress({ ...shippingAddress, city: e.target.value })} 
-                        className="mt-1" 
-                        required 
-                      />
+                      <Input id="shippingCity" value={shippingAddress.city} onChange={e => setShippingAddress({
+                    ...shippingAddress,
+                    city: e.target.value
+                  })} className="mt-1" required />
                     </div>
                     <div>
                       <Label htmlFor="shippingState" className="text-charcoal font-medium text-sm">
                         State <span className="text-red-500">*</span>
                       </Label>
-                      <Input 
-                        id="shippingState" 
-                        value={shippingAddress.state} 
-                        onChange={e => setShippingAddress({ ...shippingAddress, state: e.target.value })} 
-                        className="mt-1" 
-                        required 
-                      />
+                      <Input id="shippingState" value={shippingAddress.state} onChange={e => setShippingAddress({
+                    ...shippingAddress,
+                    state: e.target.value
+                  })} className="mt-1" required />
                     </div>
                     <div>
                       <Label htmlFor="shippingZip" className="text-charcoal font-medium text-sm">
                         ZIP Code <span className="text-red-500">*</span>
                       </Label>
-                      <Input 
-                        id="shippingZip" 
-                        value={shippingAddress.zipCode} 
-                        onChange={e => setShippingAddress({ ...shippingAddress, zipCode: e.target.value })} 
-                        className="mt-1" 
-                        required 
-                      />
+                      <Input id="shippingZip" value={shippingAddress.zipCode} onChange={e => setShippingAddress({
+                    ...shippingAddress,
+                    zipCode: e.target.value
+                  })} className="mt-1" required />
                     </div>
                   </div>
                 </div>
@@ -286,67 +271,46 @@ const Checkout = () => {
 
               {/* Billing Address */}
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-6">
-                <h2 className="text-xl font-semibold text-charcoal font-playfair mb-4">
-                  Billing Address
-                </h2>
+                <h2 className="text-xl font-semibold text-charcoal font-playfair mb-4">Billing Address Here</h2>
                 <div className="mb-4">
                   <label className="flex items-center space-x-2">
-                    <input 
-                      type="checkbox" 
-                      checked={sameAsShipping} 
-                      onChange={e => setSameAsShipping(e.target.checked)} 
-                      className="rounded border-sage/30 text-sage focus:ring-sage" 
-                    />
+                    <input type="checkbox" checked={sameAsShipping} onChange={e => setSameAsShipping(e.target.checked)} className="rounded border-sage/30 text-sage focus:ring-sage" />
                     <span className="text-sm text-charcoal">Same as shipping address</span>
                   </label>
                 </div>
                 
-                {!sameAsShipping && (
-                  <div className="space-y-4">
+                {!sameAsShipping && <div className="space-y-4">
                     <div>
                       <Label htmlFor="billingAddress" className="text-sm">Street Address</Label>
-                      <Input 
-                        id="billingAddress" 
-                        value={billingAddress.address} 
-                        onChange={e => setBillingAddress({ ...billingAddress, address: e.target.value })} 
-                        className="mt-1" 
-                        required 
-                      />
+                      <Input id="billingAddress" value={billingAddress.address} onChange={e => setBillingAddress({
+                  ...billingAddress,
+                  address: e.target.value
+                })} className="mt-1" required />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <Label htmlFor="billingCity" className="text-sm">City</Label>
-                        <Input 
-                          id="billingCity" 
-                          value={billingAddress.city} 
-                          onChange={e => setBillingAddress({ ...billingAddress, city: e.target.value })} 
-                          className="mt-1" 
-                          required 
-                        />
+                        <Input id="billingCity" value={billingAddress.city} onChange={e => setBillingAddress({
+                    ...billingAddress,
+                    city: e.target.value
+                  })} className="mt-1" required />
                       </div>
                       <div>
                         <Label htmlFor="billingState" className="text-sm">State</Label>
-                        <Input 
-                          id="billingState" 
-                          value={billingAddress.state} 
-                          onChange={e => setBillingAddress({ ...billingAddress, state: e.target.value })} 
-                          className="mt-1" 
-                          required 
-                        />
+                        <Input id="billingState" value={billingAddress.state} onChange={e => setBillingAddress({
+                    ...billingAddress,
+                    state: e.target.value
+                  })} className="mt-1" required />
                       </div>
                       <div>
                         <Label htmlFor="billingZip" className="text-sm">ZIP Code</Label>
-                        <Input 
-                          id="billingZip" 
-                          value={billingAddress.zipCode} 
-                          onChange={e => setBillingAddress({ ...billingAddress, zipCode: e.target.value })} 
-                          className="mt-1" 
-                          required 
-                        />
+                        <Input id="billingZip" value={billingAddress.zipCode} onChange={e => setBillingAddress({
+                    ...billingAddress,
+                    zipCode: e.target.value
+                  })} className="mt-1" required />
                       </div>
                     </div>
-                  </div>
-                )}
+                  </div>}
               </div>
 
               {/* Order Items Review */}
@@ -355,17 +319,12 @@ const Checkout = () => {
                   Order Items
                 </h2>
                 <div className="space-y-4">
-                  {items.map((item) => (
-                    <div key={item.id} className="border border-stone/20 rounded-lg bg-white/50 overflow-hidden">
+                  {items.map(item => <div key={item.id} className="border border-stone/20 rounded-lg bg-white/50 overflow-hidden">
                       {/* Main Item Info */}
                       <div className="flex items-start gap-4 p-4">
                         {/* Product Image */}
                         <div className="w-16 h-16 rounded-lg overflow-hidden bg-stone/10 flex-shrink-0">
-                          <img 
-                            src={item.image} 
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                          />
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                         </div>
                         
                         {/* Product Details */}
@@ -382,218 +341,108 @@ const Checkout = () => {
                           <h4 className="text-xs font-medium text-charcoal/80 mb-3">Custom Photo</h4>
                           
                           {/* Has Photo - Show current photo with options */}
-                          {item.uploadedPhotoUrl ? (
-                            <div className="space-y-3">
+                          {item.uploadedPhotoUrl ? <div className="space-y-3">
                               <div className="relative inline-block">
-                                <img 
-                                  src={item.uploadedPhotoUrl} 
-                                  alt="Custom uploaded photo"
-                                  className="w-20 h-20 object-cover rounded-lg border border-sage/30"
-                                />
-                                <button
-                                  onClick={() => handleRemovePhoto(item.id)}
-                                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                                >
+                                <img src={item.uploadedPhotoUrl} alt="Custom uploaded photo" className="w-20 h-20 object-cover rounded-lg border border-sage/30" />
+                                <button onClick={() => handleRemovePhoto(item.id)} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors">
                                   <X className="w-3 h-3" />
                                 </button>
                               </div>
                               
                               {/* Upload New Photo Button */}
-                              {!showUploadInterface[item.id] ? (
-                                <Button 
-                                  type="button"
-                                  variant="outline" 
-                                  size="sm"
-                                  className="text-xs"
-                                  onClick={() => toggleUploadInterface(item.id)}
-                                >
+                              {!showUploadInterface[item.id] ? <Button type="button" variant="outline" size="sm" className="text-xs" onClick={() => toggleUploadInterface(item.id)}>
                                   <Camera className="w-3 h-3 mr-1" />
                                   Upload New Photo
-                                </Button>
-                              ) : (
-                                <div className="space-y-2 p-3 bg-stone/5 rounded-lg border border-stone/20">
+                                </Button> : <div className="space-y-2 p-3 bg-stone/5 rounded-lg border border-stone/20">
                                   <p className="text-xs text-charcoal/70">Choose a new photo to replace the current one:</p>
                                   <div className="flex gap-2">
                                     <label className="flex-1">
-                                      <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) handlePhotoUpload(item.id, file);
-                                        }}
-                                        className="hidden"
-                                        id={`photo-upload-${item.id}`}
-                                      />
-                                      <Button 
-                                        type="button"
-                                        size="sm"
-                                        className="w-full text-xs"
-                                        disabled={uploadingStates[item.id]}
-                                        onClick={() => document.getElementById(`photo-upload-${item.id}`)?.click()}
-                                      >
+                                      <input type="file" accept="image/*" onChange={e => {
+                              const file = e.target.files?.[0];
+                              if (file) handlePhotoUpload(item.id, file);
+                            }} className="hidden" id={`photo-upload-${item.id}`} />
+                                      <Button type="button" size="sm" className="w-full text-xs" disabled={uploadingStates[item.id]} onClick={() => document.getElementById(`photo-upload-${item.id}`)?.click()}>
                                         <Upload className="w-3 h-3 mr-1" />
                                         {uploadingStates[item.id] ? 'Uploading...' : 'Choose File'}
                                       </Button>
                                     </label>
-                                    <Button 
-                                      type="button"
-                                      variant="ghost" 
-                                      size="sm"
-                                      className="text-xs"
-                                      onClick={() => toggleUploadInterface(item.id)}
-                                    >
+                                    <Button type="button" variant="ghost" size="sm" className="text-xs" onClick={() => toggleUploadInterface(item.id)}>
                                       Cancel
                                     </Button>
                                   </div>
-                                </div>
-                              )}
-                            </div>
-                          ) : item.willUploadLater ? (
-                            /* Will Upload Later State */
-                            <div className="space-y-3">
+                                </div>}
+                            </div> : item.willUploadLater ? (/* Will Upload Later State */
+                    <div className="space-y-3">
                               <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
                                 <span className="text-amber-600">📷</span>
                                 <span className="text-xs text-amber-700">Will upload photo later</span>
                               </div>
                               
-                              {!showUploadInterface[item.id] ? (
-                                <div className="flex gap-2">
-                                  <Button 
-                                    type="button"
-                                    variant="outline" 
-                                    size="sm"
-                                    className="flex-1 text-xs"
-                                    onClick={() => toggleUploadInterface(item.id)}
-                                  >
+                              {!showUploadInterface[item.id] ? <div className="flex gap-2">
+                                  <Button type="button" variant="outline" size="sm" className="flex-1 text-xs" onClick={() => toggleUploadInterface(item.id)}>
                                     <Upload className="w-3 h-3 mr-1" />
                                     Upload Now Instead
                                   </Button>
-                                  <Button 
-                                    type="button"
-                                    variant="ghost" 
-                                    size="sm"
-                                    className="text-xs"
-                                    onClick={() => handleWillUploadLater(item.id, false)}
-                                  >
+                                  <Button type="button" variant="ghost" size="sm" className="text-xs" onClick={() => handleWillUploadLater(item.id, false)}>
                                     Cancel
                                   </Button>
-                                </div>
-                              ) : (
-                                <div className="space-y-2 p-3 bg-stone/5 rounded-lg border border-stone/20">
+                                </div> : <div className="space-y-2 p-3 bg-stone/5 rounded-lg border border-stone/20">
                                   <p className="text-xs text-charcoal/70">Upload your photo now:</p>
                                   <div className="flex gap-2">
                                     <label className="flex-1">
-                                      <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) {
-                                            handleWillUploadLater(item.id, false);
-                                            handlePhotoUpload(item.id, file);
-                                          }
-                                        }}
-                                        className="hidden"
-                                        id={`photo-upload-later-${item.id}`}
-                                      />
-                                      <Button 
-                                        type="button"
-                                        size="sm"
-                                        className="w-full text-xs"
-                                        disabled={uploadingStates[item.id]}
-                                        onClick={() => document.getElementById(`photo-upload-later-${item.id}`)?.click()}
-                                      >
+                                      <input type="file" accept="image/*" onChange={e => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                handleWillUploadLater(item.id, false);
+                                handlePhotoUpload(item.id, file);
+                              }
+                            }} className="hidden" id={`photo-upload-later-${item.id}`} />
+                                      <Button type="button" size="sm" className="w-full text-xs" disabled={uploadingStates[item.id]} onClick={() => document.getElementById(`photo-upload-later-${item.id}`)?.click()}>
                                         <Upload className="w-3 h-3 mr-1" />
                                         {uploadingStates[item.id] ? 'Uploading...' : 'Choose File'}
                                       </Button>
                                     </label>
-                                    <Button 
-                                      type="button"
-                                      variant="ghost" 
-                                      size="sm"
-                                      className="text-xs"
-                                      onClick={() => toggleUploadInterface(item.id)}
-                                    >
+                                    <Button type="button" variant="ghost" size="sm" className="text-xs" onClick={() => toggleUploadInterface(item.id)}>
                                       Cancel
                                     </Button>
                                   </div>
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            /* No Photo State */
-                            <div className="space-y-3">
+                                </div>}
+                            </div>) : (/* No Photo State */
+                    <div className="space-y-3">
                               <div className="w-20 h-20 border-2 border-dashed border-stone/30 rounded-lg flex items-center justify-center bg-stone/10">
                                 <Camera className="w-6 h-6 text-stone/40" />
                               </div>
                               
-                              {!showUploadInterface[item.id] ? (
-                                <div className="flex gap-2">
-                                  <Button 
-                                    type="button"
-                                    variant="outline" 
-                                    size="sm"
-                                    className="flex-1 text-xs"
-                                    onClick={() => toggleUploadInterface(item.id)}
-                                  >
+                              {!showUploadInterface[item.id] ? <div className="flex gap-2">
+                                  <Button type="button" variant="outline" size="sm" className="flex-1 text-xs" onClick={() => toggleUploadInterface(item.id)}>
                                     <Plus className="w-3 h-3 mr-1" />
                                     Add Photo
                                   </Button>
-                                  <Button 
-                                    type="button"
-                                    variant="ghost" 
-                                    size="sm"
-                                    className="text-xs"
-                                    onClick={() => handleWillUploadLater(item.id, true)}
-                                  >
+                                  <Button type="button" variant="ghost" size="sm" className="text-xs" onClick={() => handleWillUploadLater(item.id, true)}>
                                     Later
                                   </Button>
-                                </div>
-                              ) : (
-                                <div className="space-y-2 p-3 bg-stone/5 rounded-lg border border-stone/20">
+                                </div> : <div className="space-y-2 p-3 bg-stone/5 rounded-lg border border-stone/20">
                                   <p className="text-xs text-charcoal/70">Upload your custom photo:</p>
                                   <div className="flex gap-2">
                                     <label className="flex-1">
-                                      <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) handlePhotoUpload(item.id, file);
-                                        }}
-                                        className="hidden"
-                                        id={`photo-upload-new-${item.id}`}
-                                      />
-                                      <Button 
-                                        type="button"
-                                        size="sm"
-                                        className="w-full text-xs"
-                                        disabled={uploadingStates[item.id]}
-                                        onClick={() => document.getElementById(`photo-upload-new-${item.id}`)?.click()}
-                                      >
+                                      <input type="file" accept="image/*" onChange={e => {
+                              const file = e.target.files?.[0];
+                              if (file) handlePhotoUpload(item.id, file);
+                            }} className="hidden" id={`photo-upload-new-${item.id}`} />
+                                      <Button type="button" size="sm" className="w-full text-xs" disabled={uploadingStates[item.id]} onClick={() => document.getElementById(`photo-upload-new-${item.id}`)?.click()}>
                                         <Upload className="w-3 h-3 mr-1" />
                                         {uploadingStates[item.id] ? 'Uploading...' : 'Choose File'}
                                       </Button>
                                     </label>
-                                    <Button 
-                                      type="button"
-                                      variant="ghost" 
-                                      size="sm"
-                                      className="text-xs"
-                                      onClick={() => toggleUploadInterface(item.id)}
-                                    >
+                                    <Button type="button" variant="ghost" size="sm" className="text-xs" onClick={() => toggleUploadInterface(item.id)}>
                                       Cancel
                                     </Button>
                                   </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
+                                </div>}
+                            </div>)}
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </div>
             </div>
@@ -604,8 +453,7 @@ const Checkout = () => {
                 <h3 className="text-2xl font-semibold text-charcoal font-playfair mb-8">Order Summary</h3>
                 
                 <div className="space-y-4 mb-8">
-                  {couponCode ? (
-                    <>
+                  {couponCode ? <>
                       <div className="flex justify-between text-base">
                         <span className="text-charcoal/70">Original Subtotal</span>
                         <span className="font-semibold text-charcoal line-through">${subtotal.toFixed(2)}</span>
@@ -618,13 +466,10 @@ const Checkout = () => {
                         <span className="text-charcoal/70">Discounted Subtotal</span>
                         <span className="font-semibold text-sage">${discountedSubtotal.toFixed(2)}</span>
                       </div>
-                    </>
-                  ) : (
-                    <div className="flex justify-between text-base">
+                    </> : <div className="flex justify-between text-base">
                       <span className="text-charcoal/70">Subtotal</span>
                       <span className="font-semibold text-charcoal">${subtotal.toFixed(2)}</span>
-                    </div>
-                  )}
+                    </div>}
                   <div className="flex justify-between text-base">
                     <span className="text-charcoal/70">Shipping</span>
                     <span className={`font-semibold ${shippingCost === 0 ? 'text-sage' : 'text-charcoal'}`}>
@@ -647,8 +492,7 @@ const Checkout = () => {
                 <div className="border-t border-stone/20 pt-6 mb-8">
                   <h4 className="text-lg font-semibold text-charcoal mb-4">Have a Coupon?</h4>
                   
-                  {couponCode ? (
-                    <div className="bg-sage/5 border border-sage/20 rounded-xl p-4">
+                  {couponCode ? <div className="bg-sage/5 border border-sage/20 rounded-xl p-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <span className="text-sm font-medium text-sage">Applied: {couponCode}</span>
@@ -656,89 +500,53 @@ const Checkout = () => {
                             Save ${(subtotal * couponDiscount).toFixed(2)} ({(couponDiscount * 100).toFixed(0)}% off)
                           </p>
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            removeCoupon();
-                            setCouponInput('');
-                          }}
-                          className="text-charcoal/70 hover:text-charcoal"
-                        >
+                        <Button variant="outline" size="sm" onClick={() => {
+                    removeCoupon();
+                    setCouponInput('');
+                  }} className="text-charcoal/70 hover:text-charcoal">
                           Remove
                         </Button>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
+                    </div> : <div className="space-y-3">
                       <div className="flex gap-3">
-                        <Input
-                          placeholder="Enter coupon code"
-                          value={couponInput}
-                          onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                          className="flex-1"
-                        />
-                        <Button
-                          onClick={async () => {
-                            if (!couponInput.trim()) {
-                              toast({
-                                title: "Error",
-                                description: "Please enter a coupon code",
-                                variant: "destructive",
-                              });
-                              return;
-                            }
-                            
-                            setIsApplyingCoupon(true);
-                            const success = await applyCoupon(couponInput.trim());
-                            setIsApplyingCoupon(false);
-                            
-                            if (success) {
-                              setCouponInput('');
-                            }
-                          }}
-                          disabled={isApplyingCoupon}
-                          className="bg-sage text-white hover:bg-sage/90"
-                        >
+                        <Input placeholder="Enter coupon code" value={couponInput} onChange={e => setCouponInput(e.target.value.toUpperCase())} className="flex-1" />
+                        <Button onClick={async () => {
+                    if (!couponInput.trim()) {
+                      toast({
+                        title: "Error",
+                        description: "Please enter a coupon code",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+                    setIsApplyingCoupon(true);
+                    const success = await applyCoupon(couponInput.trim());
+                    setIsApplyingCoupon(false);
+                    if (success) {
+                      setCouponInput('');
+                    }
+                  }} disabled={isApplyingCoupon} className="bg-sage text-white hover:bg-sage/90">
                           {isApplyingCoupon ? 'Applying...' : 'Apply'}
                         </Button>
                       </div>
-                    </div>
-                  )}
+                    </div>}
                 </div>
 
                 {/* Square Checkout */}
-                <SquareCheckout
-                  customerInfo={customerInfo} 
-                  shippingAddress={shippingAddress} 
-                  billingAddress={billingAddress} 
-                  sameAsShipping={sameAsShipping} 
-                  total={total} 
-                  subtotal={discountedSubtotal} 
-                  shippingCost={shippingCost} 
-                  tax={tax} 
-                  onSuccess={handleSquareSuccess} 
-                  onError={handleSquareError} 
-                />
+                <SquareCheckout customerInfo={customerInfo} shippingAddress={shippingAddress} billingAddress={billingAddress} sameAsShipping={sameAsShipping} total={total} subtotal={discountedSubtotal} shippingCost={shippingCost} tax={tax} onSuccess={handleSquareSuccess} onError={handleSquareError} />
 
                 <div className="mt-6 text-center text-xs text-charcoal/60">
                   <p>
-                    {settings.square_environment === 'production' 
-                      ? '🔒 Live payment processing by Square'
-                      : '🔒 Secure checkout powered by Square'
-                    }
+                    {settings.square_environment === 'production' ? '🔒 Live payment processing by Square' : '🔒 Secure checkout powered by Square'}
                   </p>
                   <p className="mt-1">Your payment information is protected</p>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          </div>}
       </div>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Checkout;
