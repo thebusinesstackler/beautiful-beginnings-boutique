@@ -10,34 +10,35 @@ const corsHeaders = {
   'Access-Control-Max-Age': '86400',
 }
 
+/** ---------- Hardcoded Square Credentials ---------- */
+const squareAppId = 'sq0idp-Yb0qVxuCDTTFAyPqch1evQ'
+const squareLocationId = 'LRXMEEWB9R0KM' // Online (Main)
+const squareAccessToken = 'EAAAl3xD8PXSpbU8UWRUOpFsW67E4yFJrDKLvRQXhkWuZqQQ-LnrltlmdIz7FCfu'
+const squareEnvironment = 'production'
+
 /** ---------- Types ---------- */
 interface BillingAddress {
   addressLine1?: string
   addressLine2?: string
-  locality?: string // city
-  administrativeDistrictLevel1?: string // state/province
+  locality?: string
+  administrativeDistrictLevel1?: string
   postalCode?: string
-  country?: string // ISO 3166-1 alpha-2, e.g., "US"
+  country?: string
 }
 
 interface PaymentRequest {
   action: 'test_connection' | 'process_payment'
-  // payment source (Web Payments SDK token or existing card_id)
   token?: string
   sourceId?: string
-  verificationToken?: string // from Web Payments SDK (3DS). Required when tokenizing a new card.
+  verificationToken?: string
   amount?: number
   orderId?: string
   idempotencyKey?: string
-
-  // customer fields
   customerId?: string
   customerEmail?: string
   customerName?: string
   customerPhone?: string
   billingAddress?: BillingAddress
-
-  // set true to save a card on file BEFORE paying (uses the one-time token)
   saveCard?: boolean
 }
 
@@ -56,7 +57,6 @@ function toCents(amount?: number | string | null) {
   return Math.round(n * 100)
 }
 
-// Square HTTP wrapper (production only)
 const SQUARE_VERSION = '2024-08-21'
 const SQUARE_BASE = 'https://connect.squareup.com'
 
@@ -76,8 +76,6 @@ async function sqFetch(path: string, accessToken: string, init: RequestInit & { 
   return { ok: res.ok, status: res.status, json }
 }
 
-// Try to find an existing customer by email; else create one.
-// If customerId is provided, we trust and return it.
 async function ensureCustomer(params: {
   customerId?: string
   email?: string
@@ -88,11 +86,8 @@ async function ensureCustomer(params: {
 }) {
   const { customerId, email, name, phone, address, accessToken } = params
   if (customerId) return { customerId }
-
-  // If no email and no name, we can’t upsert — return empty (caller can proceed without a customer)
   if (!email && !name) return {}
 
-  // Prefer search by email when available
   if (email) {
     const searchBody = { query: { filter: { email_address: { exact: email } } } }
     const search = await sqFetch('/v2/customers/search', accessToken, { method: 'POST', body: searchBody })
@@ -101,11 +96,10 @@ async function ensureCustomer(params: {
     }
   }
 
-  // Create new customer
   const createBody: Record<string, unknown> = {
     idempotency_key: crypto.randomUUID(),
     email_address: email,
-    given_name: name, // you can split first/last on your end if needed
+    given_name: name,
     phone_number: phone,
     address: address && {
       address_line_1: address.addressLine1,
@@ -117,18 +111,13 @@ async function ensureCustomer(params: {
     },
   }
   const created = await sqFetch('/v2/customers', accessToken, { method: 'POST', body: createBody })
-  if (!created.ok) {
-    // If creation fails, just proceed without a customer instead of hard-failing the payment
-    return {}
-  }
+  if (!created.ok) return {}
   return { customerId: created.json?.customer?.id as string }
 }
 
-// Save a card on file to a customer using a one-time token from Web Payments SDK.
-// Requires verification_token when your account mandates SCA (recommended).
 async function createCardOnFile(params: {
   customerId: string
-  sourceId: string // one-time token from Web Payments SDK
+  sourceId: string
   verificationToken?: string
   cardholderName?: string
   billingAddress?: BillingAddress
@@ -173,18 +162,6 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     )
 
-    const squareAppId = Deno.env.get('SQUARE_APP_ID')
-    const squareLocationId = Deno.env.get('SQUARE_LOCATION_ID')
-    const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN')
-    const squareEnvironment = 'production'
-
-    if (!squareAppId || !squareLocationId || !squareAccessToken) {
-      return json(
-        { success: false, error: 'Square configuration not found. Set SQUARE_APP_ID, SQUARE_LOCATION_ID, SQUARE_ACCESS_TOKEN.' },
-        { status: 500 },
-      )
-    }
-
     let bodyText = ''
     try { bodyText = await req.text() } catch { return badRequest('Unable to read request body') }
 
@@ -217,7 +194,6 @@ serve(async (req) => {
       const cents = toCents(amount)
       if (!cents) return badRequest('Invalid "amount". Must be a positive number (USD).')
 
-      // Figure out customer (optional but recommended when saving card or associating payment history)
       const { customerId: ensuredCustomerId } = await ensureCustomer({
         customerId,
         email: customerEmail,
@@ -227,20 +203,15 @@ serve(async (req) => {
         accessToken: squareAccessToken,
       })
 
-      // Determine payment source:
-      // - If saveCard is true and we have a one-time token, first create a card on file, then pay with that card_id.
-      // - Else if caller passes a card_id directly in sourceId, use it.
-      // - Else use the one-time token directly for a one-off payment.
       let paymentSourceId: string | undefined = sourceId || token
       let savedCardId: string | undefined
 
       if (saveCard) {
         if (!ensuredCustomerId) {
-          return badRequest('Cannot save card: missing customer context. Provide "customerId" or at least "customerEmail" or "customerName".')
+          return badRequest('Cannot save card: missing customer context.')
         }
         const oneTimeToken = token || sourceId
-        if (!oneTimeToken) return badRequest('Cannot save card: provide a one-time token in "sourceId" or "token".')
-        // Strongly recommended to pass verificationToken when creating the card
+        if (!oneTimeToken) return badRequest('Cannot save card: provide a one-time token.')
         const cardRes = await createCardOnFile({
           customerId: ensuredCustomerId,
           sourceId: oneTimeToken,
@@ -249,15 +220,12 @@ serve(async (req) => {
           billingAddress,
           accessToken: squareAccessToken,
         })
-        if (!cardRes.ok) {
-          // Do not update DB order here; we haven’t attempted payment yet
-          return json({ success: false, error: cardRes.error, raw: cardRes.raw }, { status: 400 })
-        }
+        if (!cardRes.ok) return json({ success: false, error: cardRes.error, raw: cardRes.raw }, { status: 400 })
         savedCardId = cardRes.cardId
         paymentSourceId = savedCardId
       }
 
-      if (!paymentSourceId) return badRequest('Missing payment source. Provide "sourceId" (or "token").')
+      if (!paymentSourceId) return badRequest('Missing payment source.')
 
       const paymentBody: Record<string, unknown> = {
         source_id: paymentSourceId,
@@ -268,7 +236,6 @@ serve(async (req) => {
         reference_id: orderId || undefined,
         buyer_email_address: customerEmail || undefined,
         note: customerName ? `Customer: ${customerName}` : undefined,
-        // If charging a newly-tokenized card directly (not card on file), include verification token
         ...(verificationToken && !saveCard ? { verification_token: verificationToken } : {}),
         customer_id: ensuredCustomerId || undefined,
       }
@@ -302,7 +269,7 @@ serve(async (req) => {
         receiptUrl: payment?.receipt_url,
         status: payment?.status,
         customerId: ensuredCustomerId,
-        savedCardId, // present if saveCard=true
+        savedCardId,
       })
     }
 
