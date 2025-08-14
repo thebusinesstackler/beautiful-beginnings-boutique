@@ -100,28 +100,35 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       setSdkStatus('loading');
       
       if (!checkSecureConnection()) {
+        console.error('Secure connection check failed');
         setSdkStatus('error');
         return;
       }
 
       try {
         // First fetch Square configuration
+        console.log('Fetching Square configuration...');
         const config = await fetchSquareConfig();
+        console.log('Square config received:', config);
         setSquareConfig(config);
         
         // Check if Square SDK is loaded
         if (!window.Square) {
+          console.warn(`Square SDK not loaded, retry ${retryCount + 1}/${maxRetries}`);
           if (retryCount < maxRetries) {
             retryCount++;
             setTimeout(initializeSquare, 1000);
             return;
           } else {
+            console.error('Square SDK failed to load after max retries');
             setSdkStatus('error');
             return;
           }
         }
         
-        const paymentsInstance = window.Square.payments(config.appId, config.locationId, config.environment);
+        console.log('Initializing Square payments with config:', config);
+        const paymentsInstance = window.Square.payments(config.appId, config.locationId);
+        console.log('Square payments instance created successfully');
         
         setPayments(paymentsInstance);
         setSdkStatus('ready');
@@ -132,11 +139,12 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         }, 200);
         
       } catch (error) {
+        console.error('Square SDK initialization error:', error);
         setSdkStatus('error');
         
         toast({
           title: "Payment System Error",
-          description: "Failed to initialize payment system. Please refresh and try again.",
+          description: `Failed to initialize payment system: ${error.message}`,
           variant: "destructive",
         });
       }
