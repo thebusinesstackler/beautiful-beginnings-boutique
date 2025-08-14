@@ -69,17 +69,32 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     try {
       const { supabase } = await import('@/integrations/supabase/client');
       
+      console.log('Calling square-payments function for configuration...');
       const { data, error } = await supabase.functions.invoke('square-payments', {
         body: { action: 'test_connection' }
       });
 
+      console.log('Square function response:', { data, error });
+
       if (error) {
-        throw new Error('Failed to fetch Square configuration');
+        console.error('Supabase function error:', error);
+        throw new Error(`Failed to fetch Square configuration: ${error.message}`);
+      }
+
+      if (!data) {
+        throw new Error('No data received from Square configuration function');
       }
 
       if (!data.success) {
+        console.error('Square configuration error:', data.error);
         throw new Error(data.error || 'Square configuration error');
       }
+
+      console.log('Square configuration received successfully:', {
+        hasAppId: !!data.applicationId,
+        hasLocationId: !!data.locationId,
+        environment: data.environment
+      });
 
       return {
         appId: data.applicationId,
@@ -87,6 +102,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         environment: 'production' // Production only
       };
     } catch (error: any) {
+      console.error('fetchSquareConfig error:', error);
       throw error;
     }
   };

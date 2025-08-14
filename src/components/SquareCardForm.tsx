@@ -45,7 +45,14 @@ const SquareCardForm = memo(({
             </div>
             <h4 className="text-red-700 font-medium mb-2">Payment System Initialization Failed</h4>
             <p className="text-red-600 text-sm mb-3">Square SDK failed to initialize properly</p>
-            <p className="text-red-500 text-xs">Check console for detailed error information</p>
+            <div className="text-red-500 text-xs space-y-1">
+              <p>Possible issues:</p>
+              <ul className="list-disc list-inside text-left max-w-md mx-auto">
+                <li>Edge function not deployed (run: supabase functions deploy square-payments)</li>  
+                <li>Missing Supabase secrets: SQUARE_APP_ID, SQUARE_LOCATION_ID, SQUARE_ACCESS_TOKEN</li>
+                <li>Check browser console for detailed error logs</li>
+              </ul>
+            </div>
           </div>
         )}
         

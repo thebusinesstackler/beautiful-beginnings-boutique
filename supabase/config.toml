@@ -19,6 +19,9 @@ enable_signup = true
 [functions.square-checkout]
 verify_jwt = false
 
+[functions.square-payments]
+verify_jwt = false
+
 [functions.square-webhook]
 verify_jwt = false
 
