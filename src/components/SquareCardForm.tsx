@@ -4,7 +4,7 @@ type SDKStatus = 'loading' | 'ready' | 'error'
 
 // --- Your Supabase project + function URL ---
 const PROJECT_REF = 'ibdjzzgvxlscmwlbuewd'
-const FUNCTION_URL = `https://${PROJECT_REF}.functions.supabase.co/square-payments`
+const FUNCTION_URL = 'https://ibdjzzgvxlscmwlbuewd.functions.supabase.co/square-payments';
 
 export default function SquareCardForm() {
   const [sdkStatus, setSdkStatus] = useState<SDKStatus>('loading')
