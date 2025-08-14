@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react'
 
 type SDKStatus = 'loading' | 'ready' | 'error'
 
-const FUNCTION_URL =
-  'https://<YOUR-PROJECT-REF>.functions.supabase.co/square-payments' // <-- set this
+// --- Your Supabase project + function URL ---
+const PROJECT_REF = 'ibdjzzgvxlscmwlbuewd'
+const FUNCTION_URL = `https://${PROJECT_REF}.functions.supabase.co/square-payments`
 
 export default function SquareCardForm() {
   const [sdkStatus, setSdkStatus] = useState<SDKStatus>('loading')
@@ -12,9 +13,7 @@ export default function SquareCardForm() {
 
   const cardContainerRef = useRef<HTMLDivElement>(null)
   const cardInstanceRef = useRef<any>(null)
-  const paymentsRef = useRef<any>(null)
 
-  // --- helpers ---
   async function loadSquareSdkOnce(): Promise<void> {
     if (document.querySelector('script[data-square-sdk]')) return
     await new Promise<void>((resolve, reject) => {
@@ -28,43 +27,35 @@ export default function SquareCardForm() {
     })
   }
 
-  // --- init on mount ---
   useEffect(() => {
     let cancelled = false
-
-    async function init() {
+    ;(async () => {
       try {
-        // 1) get app + location from edge function
+        // 1) Get credentials from your edge function
         const resp = await fetch(FUNCTION_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'test_connection' }),
         })
-        if (!resp.ok) {
-          throw new Error(`test_connection failed: ${await resp.text()}`)
-        }
+        if (!resp.ok) throw new Error(`test_connection failed: ${await resp.text()}`)
         const data = await resp.json()
         if (!data?.success || !data.applicationId || !data.locationId) {
           throw new Error('Missing credentials in test_connection response')
         }
 
-        // 2) load SDK
+        // 2) Load Square SDK
         await loadSquareSdkOnce()
 
-        // 3) create payments + card
+        // 3) Create payments + card
         // @ts-ignore
         if (!window.Square) throw new Error('Square SDK not available')
         // @ts-ignore
         const payments = window.Square.payments(data.applicationId, data.locationId)
-        paymentsRef.current = payments
-
         const card = await payments.card()
         cardInstanceRef.current = card
 
         if (!cardContainerRef.current) throw new Error('Card container not mounted')
-
-        // Make sure the ID here matches the element’s id below
-        await card.attach('#card-container')
+        await card.attach('#card-container') // must match the id below
 
         if (!cancelled) setSdkStatus('ready')
       } catch (e: any) {
@@ -74,17 +65,13 @@ export default function SquareCardForm() {
           setSdkStatus('error')
         }
       }
-    }
-
-    init()
+    })()
     return () => { cancelled = true }
   }, [])
 
-  // --- submit handler (tokenize then charge) ---
   async function handlePay() {
     try {
       setSubmitting(true)
-
       if (!cardInstanceRef.current) throw new Error('Card not ready')
       const result = await cardInstanceRef.current.tokenize()
       if (result.status !== 'OK') {
@@ -92,6 +79,7 @@ export default function SquareCardForm() {
         throw new Error(msg)
       }
 
+      // 4) Charge via your edge function
       const resp = await fetch(FUNCTION_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -99,19 +87,17 @@ export default function SquareCardForm() {
           action: 'process_payment',
           sourceId: result.token,
           verificationToken: result.verificationToken, // may be undefined
-          amount: 18.95, // <-- your amount (USD)
-          // Optional extras:
-          // orderId: 'abc123',
-          // customerEmail: 'pat@example.com',
-          // customerName: 'Pat Example',
+          amount: 18.95, // <-- set your price (USD)
+          // Optional:
+          // orderId: 'your-order-id',
+          // customerEmail: 'person@example.com',
+          // customerName: 'Person Example',
           // saveCard: false,
         }),
       })
 
       const json = await resp.json()
-      if (!resp.ok || !json?.success) {
-        throw new Error(json?.error || 'Payment failed')
-      }
+      if (!resp.ok || !json?.success) throw new Error(json?.error || 'Payment failed')
 
       alert(`Success! Payment ID: ${json.paymentId}`)
     } catch (e: any) {
@@ -122,18 +108,16 @@ export default function SquareCardForm() {
     }
   }
 
-  const isSecureConnection =
+  const isSecure =
     typeof window !== 'undefined' && window.location.protocol === 'https:'
 
   return (
     <div className="bg-white rounded-xl border border-sage/20 shadow-sm">
-      {/* Header */}
       <div className="px-6 py-4 border-b border-sage/10">
         <h3 className="text-lg font-medium text-gray-900">Payment Information</h3>
         <p className="text-sm text-gray-600 mt-1">Enter your card details below</p>
       </div>
 
-      {/* Body */}
       <div className="p-6">
         {sdkStatus === 'loading' && (
           <div className="flex items-center justify-center py-12">
@@ -181,20 +165,12 @@ export default function SquareCardForm() {
           </div>
         )}
 
-        {!isSecureConnection && (
+        {!isSecure && (
           <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <div className="flex items-start space-x-3">
-              <svg className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              <div>
-                <p className="text-amber-800 font-medium text-sm">Secure connection required</p>
-                <p className="text-amber-700 text-sm mt-1">
-                  HTTPS connection is required for payment processing.
-                </p>
-              </div>
-            </div>
+            <p className="text-amber-800 font-medium text-sm">Secure connection required</p>
+            <p className="text-amber-700 text-sm mt-1">
+              HTTPS connection is required for payment processing.
+            </p>
           </div>
         )}
       </div>
