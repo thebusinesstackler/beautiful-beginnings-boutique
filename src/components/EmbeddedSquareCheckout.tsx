@@ -1,20 +1,30 @@
-import React, { memo, MutableRefObject } from 'react';
+import React, { memo } from 'react';
+import useSquareSDK from '@/hooks/useSquareSDK';
 import type { SDKStatus } from '@/types/SquareCheckout';
 
-interface SquareCardFormProps {
-  cardRef: MutableRefObject<HTMLDivElement | null>; // ✅ updated type
-  sdkStatus: SDKStatus;
-  isSecureConnection: boolean;
-  squareEnvironment?: string;
+interface EmbeddedSquareCheckoutProps {
+  onPaymentSuccess?: (token: string) => void;
+  onPaymentError?: (error: any) => void;
 }
 
-const SquareCardForm = memo(({
-  cardRef,
-  sdkStatus,
-  isSecureConnection,
-  squareEnvironment
-}: SquareCardFormProps) => {
-  
+const EmbeddedSquareCheckout = memo(({ onPaymentSuccess, onPaymentError }: EmbeddedSquareCheckoutProps) => {
+  const { cardRef, sdkStatus, isSecureConnection, payments } = useSquareSDK();
+
+  const handlePayment = async () => {
+    if (!payments) return;
+
+    try {
+      const result = await payments.card().tokenize();
+      if (result.status === 'OK') {
+        onPaymentSuccess?.(result.token);
+      } else {
+        throw new Error(result.errors?.[0]?.message || 'Tokenization failed');
+      }
+    } catch (err) {
+      onPaymentError?.(err);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl border border-sage/20 shadow-sm">
       {/* Header */}
@@ -36,50 +46,37 @@ const SquareCardForm = memo(({
 
         {sdkStatus === 'error' && (
           <div className="py-8 text-center">
-            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-            </div>
-            <h4 className="text-red-700 font-medium mb-2">Payment System Initialization Failed</h4>
-            <p className="text-red-600 text-sm mb-3">Square SDK failed to initialize properly</p>
-            <div className="text-red-500 text-xs space-y-1">
-              <p>Possible issues:</p>
-              <ul className="list-disc list-inside text-left max-w-md mx-auto">
-                <li>Edge function not deployed (run: supabase functions deploy square-payments)</li>  
-                <li>Missing Supabase secrets: SQUARE_APP_ID, SQUARE_LOCATION_ID, SQUARE_ACCESS_TOKEN</li>
-                <li>Check browser console for detailed error logs</li>
-              </ul>
-            </div>
+            <p className="text-red-600">Failed to initialize Square payment form.</p>
           </div>
         )}
 
-        {sdkStatus === 'ready' && (
-          <div className="space-y-4">
-            <div>
+        {sdkStatus === 'ready' && isSecureConnection && (
+          <>
+            <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Card Information
               </label>
-              <div 
-                ref={cardRef} 
+              <div
+                ref={cardRef}
                 id="card-container"
-                className="w-full border border-gray-300 rounded-lg p-4 bg-white min-h-[80px] focus-within:border-sage focus-within:ring-1 focus-within:ring-sage transition-colors" 
+                className="w-full border border-gray-300 rounded-lg p-4 bg-white min-h-[80px] focus-within:border-sage focus-within:ring-1 focus-within:ring-sage transition-colors"
               />
             </div>
-          </div>
+
+            <button
+              type="button"
+              onClick={handlePayment}
+              className="mt-4 w-full bg-sage text-white py-3 rounded-lg hover:bg-sage-dark transition"
+            >
+              Pay Now
+            </button>
+          </>
         )}
 
         {!isSecureConnection && (
           <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <div className="flex items-start space-x-3">
-              <svg className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              <div>
-                <p className="text-amber-800 font-medium text-sm">Secure connection required</p>
-                <p className="text-amber-700 text-sm mt-1">HTTPS connection is required for payment processing.</p>
-              </div>
-            </div>
+            <p className="text-amber-800 font-medium text-sm">Secure connection required</p>
+            <p className="text-amber-700 text-sm mt-1">HTTPS connection is required for payment processing.</p>
           </div>
         )}
       </div>
@@ -87,4 +84,4 @@ const SquareCardForm = memo(({
   );
 });
 
-export default SquareCardForm;
+export default EmbeddedSquareCheckout;
