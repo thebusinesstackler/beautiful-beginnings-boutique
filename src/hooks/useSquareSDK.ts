@@ -111,13 +111,16 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
   useEffect(() => {
     let retryCount = 0;
     const maxRetries = 5;
+    let mounted = true;
 
     const initializeSquare = async () => {
+      if (!mounted) return;
+      
       setSdkStatus('loading');
       
       if (!checkSecureConnection()) {
         console.error('Secure connection check failed');
-        setSdkStatus('error');
+        if (mounted) setSdkStatus('error');
         return;
       }
 
@@ -126,37 +129,43 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         console.log('Fetching Square configuration...');
         const config = await fetchSquareConfig();
         console.log('Square config received:', config);
-        setSquareConfig(config);
+        if (mounted) setSquareConfig(config);
         
-        // Check if Square SDK is loaded
+        // Check if Square SDK is loaded with more patience
         if (!window.Square) {
           console.warn(`Square SDK not loaded, retry ${retryCount + 1}/${maxRetries}`);
           if (retryCount < maxRetries) {
             retryCount++;
-            setTimeout(initializeSquare, 1000);
+            setTimeout(() => {
+              if (mounted) initializeSquare();
+            }, 2000); // Increase timeout to 2 seconds
             return;
           } else {
             console.error('Square SDK failed to load after max retries');
-            setSdkStatus('error');
+            if (mounted) setSdkStatus('error');
             return;
           }
         }
         
+        console.log('Square SDK detected, version:', window.Square?.version || 'unknown');
         console.log('Initializing Square payments with config:', config);
+        
         const paymentsInstance = window.Square.payments(config.appId, config.locationId);
         console.log('Square payments instance created successfully');
         
-        setPayments(paymentsInstance);
-        setSdkStatus('ready');
+        if (mounted) {
+          setPayments(paymentsInstance);
+          setSdkStatus('ready');
 
-        // Wait for DOM to be ready before initializing card
-        setTimeout(() => {
-          initializeCard(paymentsInstance);
-        }, 200);
+          // Wait for DOM to be ready before initializing card
+          setTimeout(() => {
+            if (mounted) initializeCard(paymentsInstance);
+          }, 500); // Increase timeout to 500ms
+        }
         
       } catch (error) {
         console.error('Square SDK initialization error:', error);
-        setSdkStatus('error');
+        if (mounted) setSdkStatus('error');
         
         toast({
           title: "Payment System Error",
@@ -166,9 +175,12 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       }
     };
 
-    setTimeout(initializeSquare, 100);
+    // Start initialization after a short delay to ensure DOM is ready
+    const timeoutId = setTimeout(initializeSquare, 500);
 
     return () => {
+      mounted = false;
+      clearTimeout(timeoutId);
       if (card) {
         try {
           card.destroy();

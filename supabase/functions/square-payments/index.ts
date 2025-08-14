@@ -19,22 +19,42 @@ interface PaymentRequest {
 }
 
 serve(async (req) => {
+  console.log('Square payments function called:', req.method, req.url);
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
   if (req.method !== 'POST') {
+    console.log('Invalid method:', req.method);
     return new Response('Method not allowed', { status: 405, headers: corsHeaders });
   }
 
   try {
+    console.log('Processing POST request...');
+    
+    // Log environment variables (without revealing secrets)
+    console.log('Environment check:', {
+      hasSupabaseUrl: !!Deno.env.get('SUPABASE_URL'),
+      hasServiceRoleKey: !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
+      hasSquareAppId: !!Deno.env.get('SQUARE_APP_ID'),
+      hasSquareLocationId: !!Deno.env.get('SQUARE_LOCATION_ID'),
+      hasSquareAccessToken: !!Deno.env.get('SQUARE_ACCESS_TOKEN'),
+      allowedOrigin: Deno.env.get('ALLOWED_ORIGIN')
+    });
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { action, token, sourceId, verificationToken, amount, orderId, idempotencyKey, customerEmail, customerName }: PaymentRequest = await req.json();
+    const requestBody = await req.text();
+    console.log('Request body received:', requestBody);
+    
+    const { action, token, sourceId, verificationToken, amount, orderId, idempotencyKey, customerEmail, customerName }: PaymentRequest = JSON.parse(requestBody);
+    console.log('Parsed action:', action);
 
     // Get Square credentials from environment
     const squareAppId = Deno.env.get('SQUARE_APP_ID');
@@ -43,11 +63,15 @@ serve(async (req) => {
     const squareEnvironment = 'production'; // Production only
 
     if (!squareAppId || !squareLocationId || !squareAccessToken) {
-      console.error('Missing Square credentials');
+      console.error('Missing Square credentials:', {
+        hasAppId: !!squareAppId,
+        hasLocationId: !!squareLocationId,
+        hasAccessToken: !!squareAccessToken
+      });
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Square configuration not found' 
+          error: 'Square configuration not found. Please check SQUARE_APP_ID, SQUARE_LOCATION_ID, and SQUARE_ACCESS_TOKEN secrets.' 
         }),
         { 
           status: 500, 
@@ -55,6 +79,8 @@ serve(async (req) => {
         }
       );
     }
+
+    console.log('Square credentials verified successfully');
 
     if (action === 'test_connection') {
       // Return the application ID and location ID for frontend initialization
@@ -194,10 +220,18 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Square payments function error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      cause: error.cause
+    });
+    
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: 'Internal server error' 
+        error: `Internal server error: ${error.message}`,
+        details: error.name
       }),
       { 
         status: 500, 
