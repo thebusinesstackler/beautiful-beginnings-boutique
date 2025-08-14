@@ -28,7 +28,7 @@ export const useSquareCheckout = () => {
           squareCredentials: {
             appId: settings.square_app_id,
             accessToken: settings.square_access_token,
-            environment: settings.square_environment || 'sandbox'
+            environment: 'production' // Production only
           }
         }),
       });

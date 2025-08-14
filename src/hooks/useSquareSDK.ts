@@ -84,7 +84,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       return {
         appId: data.applicationId,
         locationId: data.locationId,
-        environment: data.environment || 'production'
+        environment: 'production' // Production only
       };
     } catch (error: any) {
       throw error;

@@ -125,7 +125,7 @@ serve(async (req) => {
     const squareAppId = Deno.env.get('SQUARE_APP_ID');
     const squareLocationId = Deno.env.get('SQUARE_LOCATION_ID');
     const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN');
-    const squareEnvironment = Deno.env.get('SQUARE_ENVIRONMENT') || 'production';
+    const squareEnvironment = 'production'; // Production only
 
     console.log('Square credentials loaded from secrets:', {
       hasAppId: !!squareAppId,
@@ -192,10 +192,8 @@ serve(async (req) => {
 
     console.log('All inputs validated and sanitized successfully');
 
-    // Create Square API client
-    const squareApiUrl = settings.square_environment === 'production' 
-      ? 'https://connect.squareup.com' 
-      : 'https://connect.squareupsandbox.com';
+    // Production Square API URL only
+    const squareApiUrl = 'https://connect.squareup.com';
 
     // Process payment with Square - Simplified approach for debugging
     const paymentData = {

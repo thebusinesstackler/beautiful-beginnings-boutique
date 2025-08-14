@@ -40,7 +40,7 @@ serve(async (req) => {
     const squareAppId = Deno.env.get('SQUARE_APP_ID');
     const squareLocationId = Deno.env.get('SQUARE_LOCATION_ID');
     const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN');
-    const squareEnvironment = Deno.env.get('SQUARE_ENVIRONMENT') || 'production';
+    const squareEnvironment = 'production'; // Production only
 
     if (!squareAppId || !squareLocationId || !squareAccessToken) {
       console.error('Missing Square credentials');
@@ -89,10 +89,8 @@ serve(async (req) => {
 
       console.log(`Processing Square payment${orderId ? ` for order ${orderId}` : ''}, amount: $${amount}`);
 
-      // Determine Square API base URL based on environment
-      const baseUrl = squareEnvironment === 'sandbox' 
-        ? 'https://connect.squareupsandbox.com'
-        : 'https://connect.squareup.com';
+      // Production Square API URL only
+      const baseUrl = 'https://connect.squareup.com';
 
       // Create payment request to Square
       const paymentRequest = {
