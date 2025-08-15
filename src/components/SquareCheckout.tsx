@@ -1,6 +1,6 @@
 
 import React from 'react';
-import EmbeddedSquareCheckout from './EmbeddedSquareCheckout';
+import SquarePaymentForm from './SquarePaymentForm';
 
 interface SquareCheckoutProps {
   customerInfo: {
@@ -45,7 +45,7 @@ const SquareCheckout = ({
   onError 
 }: SquareCheckoutProps) => {
   return (
-    <EmbeddedSquareCheckout
+    <SquarePaymentForm
       customerInfo={customerInfo}
       shippingAddress={shippingAddress}
       billingAddress={billingAddress}

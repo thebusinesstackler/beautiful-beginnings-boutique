@@ -1,22 +1,34 @@
 import React, { memo, useState } from 'react';
 import type { SDKStatus } from '@/types/SquareCheckout';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/integrations/supabase/client';
 
-interface EmbeddedSquareCheckoutProps {
-  cardRef: React.MutableRefObject<HTMLDivElement | null>;
-  card: any; // Square's Card instance
-  sdkStatus: SDKStatus;
-  isSecureConnection: boolean;
+import type { EmbeddedSquareCheckoutProps } from '@/types/SquareCheckout';
+
+interface Props extends EmbeddedSquareCheckoutProps {
+  cardRef?: React.MutableRefObject<HTMLDivElement | null>;
+  card?: any; // Square's Card instance
+  sdkStatus?: SDKStatus;
+  isSecureConnection?: boolean;
   squareEnvironment?: string;
 }
 
 const EmbeddedSquareCheckout = memo(({
+  customerInfo,
+  shippingAddress,
+  billingAddress,
+  sameAsShipping,
+  total,
+  subtotal,
+  shippingCost,
+  tax,
+  onSuccess,
+  onError,
   cardRef,
   card,
-  sdkStatus,
-  isSecureConnection,
+  sdkStatus = 'loading',
+  isSecureConnection = false,
   squareEnvironment
-}: EmbeddedSquareCheckoutProps) => {
+}: Props) => {
 
   const [isPaying, setIsPaying] = useState(false);
   const [paymentResult, setPaymentResult] = useState<{ success: boolean; message: string } | null>(null);
@@ -83,17 +95,23 @@ const EmbeddedSquareCheckout = memo(({
         {sdkStatus === 'ready' && (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">Card Information</label>
-            <div
-              ref={cardRef}
-              id="card-container"
-              className="w-full border border-gray-300 rounded-lg p-4 bg-white min-h-[80px]"
-            />
+            {cardRef ? (
+              <div
+                ref={cardRef}
+                id="card-container"
+                className="w-full border border-gray-300 rounded-lg p-4 bg-white min-h-[80px]"
+              />
+            ) : (
+              <div className="w-full border border-gray-300 rounded-lg p-4 bg-gray-50 min-h-[80px] flex items-center justify-center text-gray-500">
+                Payment form loading...
+              </div>
+            )}
             <button
               onClick={handlePayment}
-              disabled={isPaying}
+              disabled={isPaying || !card}
               className="w-full bg-sage text-white py-2 rounded-lg hover:bg-sage/90 transition disabled:opacity-50"
             >
-              {isPaying ? 'Processing...' : 'Pay Now'}
+              {isPaying ? 'Processing...' : `Pay $${total?.toFixed(2) || '0.00'}`}
             </button>
 
             {paymentResult && (
