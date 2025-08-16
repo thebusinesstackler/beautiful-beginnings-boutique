@@ -17,6 +17,13 @@ const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN')
 const squareEnvironment = Deno.env.get('SQUARE_ENVIRONMENT') || 'production'
 
 // Validate required Square credentials
+console.log('Square credentials check:', {
+  SQUARE_APP_ID: squareAppId ? `${squareAppId.substring(0, 10)}...` : 'MISSING',
+  SQUARE_LOCATION_ID: squareLocationId ? `${squareLocationId.substring(0, 10)}...` : 'MISSING', 
+  SQUARE_ACCESS_TOKEN: squareAccessToken ? `${squareAccessToken.substring(0, 10)}...` : 'MISSING',
+  SQUARE_ENVIRONMENT: squareEnvironment
+})
+
 if (!squareAppId || !squareLocationId || !squareAccessToken) {
   console.error('Missing Square credentials:', {
     hasAppId: !!squareAppId,
