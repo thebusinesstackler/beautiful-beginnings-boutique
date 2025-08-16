@@ -23,7 +23,12 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
 
   /** Check HTTPS or localhost */
   const checkSecureConnection = () => {
-    const secure = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+    // Allow HTTPS everywhere, HTTP only on localhost/development
+    const isLocalDev = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.hostname.includes('lovable.app');
+    
+    const secure = window.location.protocol === 'https:' || isLocalDev;
     setIsSecureConnection(secure);
     return secure;
   };

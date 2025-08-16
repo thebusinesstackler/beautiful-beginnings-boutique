@@ -103,10 +103,13 @@ export default function SquareCardForm() {
     }
   }
 
-  // ✅ FIXED HTTPS check
+  // ✅ FIXED HTTPS check for production domains
   const isSecure =
     typeof window !== 'undefined' &&
-    (window.location.protocol === 'https:' || window.location.hostname === 'localhost')
+    (window.location.protocol === 'https:' || 
+     window.location.hostname === 'localhost' || 
+     window.location.hostname === '127.0.0.1' ||
+     window.location.hostname.includes('lovable.app'))
 
   return (
     <div className="bg-white rounded-xl border border-sage/20 shadow-sm">
