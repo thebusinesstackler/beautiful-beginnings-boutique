@@ -16,7 +16,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
   const [card, setCard] = useState<any>(null);
   const [sdkStatus, setSdkStatus] = useState<SDKStatus>('loading');
   const [isSecureConnection, setIsSecureConnection] = useState<boolean>(false);
-  const [squareConfig, setSquareConfig] = useState<{ appId: string; locationId: string; environment: string } | null>(null);
+  const [squareConfig, setSquareConfig] = useState<{ appId: string; locationId: string; environment?: string } | null>(null);
 
   // This ref is passed to SquareCardForm
   const cardRef = useRef<HTMLDivElement>(null);
@@ -28,11 +28,33 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     return secure;
   };
 
-  /** Attach the card element */
-  const initializeCard = async (paymentsInstance: any) => {
+  /** Attach the card element with retry logic */
+  const initializeCard = async (paymentsInstance: any, retryCount = 0) => {
+    const maxRetries = 3;
+    
     try {
-      if (!cardRef.current) throw new Error('Card container not found');
+      // Wait for DOM to be ready
+      await new Promise(resolve => {
+        if (document.readyState === 'complete') {
+          resolve(void 0);
+        } else {
+          window.addEventListener('load', () => resolve(void 0), { once: true });
+        }
+      });
 
+      // Additional delay to ensure container is rendered
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      if (!cardRef.current) {
+        if (retryCount < maxRetries) {
+          console.log(`Card container not found, retrying... (${retryCount + 1}/${maxRetries})`);
+          setTimeout(() => initializeCard(paymentsInstance, retryCount + 1), 500);
+          return;
+        }
+        throw new Error('Card container not found after retries');
+      }
+
+      console.log('Creating Square card instance...');
       const cardInstance = await paymentsInstance.card({
         style: {
           input: {
@@ -42,12 +64,19 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         },
       });
 
+      console.log('Attaching card to DOM...');
       cardRef.current.innerHTML = '';
       await cardInstance.attach(cardRef.current);
       setCard(cardInstance);
+      console.log('Square card initialized successfully');
     } catch (err) {
       console.error('Error initializing card:', err);
-      throw err;
+      if (retryCount < maxRetries) {
+        console.log(`Retrying card initialization... (${retryCount + 1}/${maxRetries})`);
+        setTimeout(() => initializeCard(paymentsInstance, retryCount + 1), 1000);
+      } else {
+        throw err;
+      }
     }
   };
 
@@ -85,7 +114,6 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     return {
       appId: data.applicationId,
       locationId: data.locationId,
-      environment: data.environment || 'production',
     };
   };
 
@@ -122,7 +150,8 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         setSdkStatus('ready');
         
         console.log('Square SDK initialized successfully, initializing card...');
-        setTimeout(() => initializeCard(paymentsInstance), 500);
+        // Initialize card with proper DOM readiness check
+        initializeCard(paymentsInstance);
       } catch (err: any) {
         console.error('Square SDK initialization failed:', err);
         if (mounted) {
@@ -148,13 +177,13 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     };
   }, []);
 
-  /** ✅ Return matches SquareCardForm expected props */
+  /** Return Square SDK state and methods */
   return {
     payments,
     card,
     sdkStatus,
     isSecureConnection,
     cardRef,
-    squareEnvironment: squareConfig?.environment || 'production',
+    squareEnvironment: 'production',
   };
 };
