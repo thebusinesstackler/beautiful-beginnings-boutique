@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import type { SDKStatus } from '@/types/SquareCheckout';
 
 interface UseSquareSDKProps {
@@ -8,8 +9,6 @@ interface UseSquareSDKProps {
   squareEnvironment?: string;
 }
 
-const PROJECT_REF = 'ibdjzzgvxlscmwlbuewd'; // Your Supabase project ref
-const FUNCTION_URL = `https://${PROJECT_REF}.functions.supabase.co/square-payments`;
 
 // Global flag to track SDK loading state
 let squareSDKLoading = false;
@@ -147,42 +146,47 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     }
   };
 
-/** Fetch Square config from Supabase */
-  const fetchSquareConfig = async () => {
-    console.log('Fetching Square configuration...');
+  /** Fetch Square config from Supabase using proper client */
+  const fetchSquareConfig = useCallback(async () => {
+    console.log('🔍 Fetching Square configuration via Supabase client...');
     
-    const res = await fetch(FUNCTION_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'test_connection' }),
-    });
-
-    console.log('Square config response status:', res.status);
-
-    if (!res.ok) {
-      const errorText = await res.text().catch(() => 'Unknown error');
-      console.error('Square config fetch failed:', res.status, errorText);
-      throw new Error(`HTTP ${res.status}: ${errorText}`);
+    try {
+      const { data, error } = await supabase.functions.invoke('square-payments', {
+        body: { action: 'test_connection' }
+      });
+      
+      console.log('📊 Square config response:', { data, error });
+      
+      if (error) {
+        console.error('❌ Supabase function error:', error);
+        throw new Error(`Function invocation failed: ${error.message}`);
+      }
+      
+      if (!data?.success) {
+        console.error('❌ Square config failed:', data);
+        throw new Error(data?.error || 'Square configuration failed');
+      }
+      
+      if (!data.applicationId || !data.locationId) {
+        console.error('❌ Missing Square credentials in response:', data);
+        throw new Error('Square credentials not properly configured');
+      }
+      
+      console.log('✅ Square config success:', {
+        applicationId: data.applicationId?.substring(0, 10) + '...',
+        locationId: data.locationId?.substring(0, 10) + '...',
+        environment: data.environment
+      });
+      
+      return {
+        appId: data.applicationId,
+        locationId: data.locationId,
+      };
+    } catch (error) {
+      console.error('💥 Failed to fetch Square config:', error);
+      throw error;
     }
-    
-    const data = await res.json();
-    console.log('Square config response:', { success: data.success, hasAppId: !!data.applicationId, hasLocationId: !!data.locationId });
-
-    if (!data.success) {
-      console.error('Square config error:', data.error);
-      throw new Error(data.error || 'Square configuration error');
-    }
-
-    if (!data.applicationId || !data.locationId) {
-      console.error('Missing Square credentials in response:', data);
-      throw new Error('Square credentials not properly configured');
-    }
-
-    return {
-      appId: data.applicationId,
-      locationId: data.locationId,
-    };
-  };
+  }, []);
 
   /** Initialize Square SDK */
   useEffect(() => {
