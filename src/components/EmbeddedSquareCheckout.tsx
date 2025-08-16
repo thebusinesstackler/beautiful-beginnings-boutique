@@ -1,8 +1,8 @@
 import React, { memo, useState } from 'react';
 import type { SDKStatus } from '@/types/SquareCheckout';
-import { useSquarePayment } from '@/hooks/useSquarePayment';
-import { useCart } from '@/contexts/CartContext';
-import type { EmbeddedSquareCheckoutProps, PaymentRequest } from '@/types/SquareCheckout';
+import { supabase } from '@/integrations/supabase/client';
+
+import type { EmbeddedSquareCheckoutProps } from '@/types/SquareCheckout';
 
 interface Props extends EmbeddedSquareCheckoutProps {
   cardRef?: React.MutableRefObject<HTMLDivElement | null>;
@@ -29,20 +29,9 @@ const EmbeddedSquareCheckout = memo(({
   isSecureConnection = false,
   squareEnvironment
 }: Props) => {
-  const { items, clearCart } = useCart();
-  const [paymentResult, setPaymentResult] = useState<{ success: boolean; message: string } | null>(null);
 
-  const { isLoading: isPaying, processPayment } = useSquarePayment({
-    onSuccess: () => {
-      setPaymentResult({ success: true, message: 'Payment successful!' });
-      onSuccess?.();
-    },
-    onError: (error) => {
-      setPaymentResult({ success: false, message: error.message || 'Payment failed. Please try again.' });
-      onError?.(error);
-    },
-    clearCart
-  });
+  const [isPaying, setIsPaying] = useState(false);
+  const [paymentResult, setPaymentResult] = useState<{ success: boolean; message: string } | null>(null);
 
   const handlePayment = async () => {
     if (!card) {
@@ -50,35 +39,34 @@ const EmbeddedSquareCheckout = memo(({
       return;
     }
 
-    setPaymentResult(null);
+    try {
+      setIsPaying(true);
+      setPaymentResult(null);
 
-    // Create the payment request with all required data
-    const paymentRequest: PaymentRequest = {
-      token: '', // Will be set by processPayment
-      customerInfo,
-      shippingAddress,
-      billingAddress,
-      items: items.map(item => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.image,
-        uploadedPhoto: item.uploadedPhoto,
-        uploadedPhotoUrl: item.uploadedPhotoUrl,
-        willUploadLater: item.willUploadLater
-      })),
-      amount: Math.round(total * 100), // Convert to cents
-      breakdown: {
-        subtotal: Math.round(subtotal * 100),
-        shipping: Math.round(shippingCost * 100),
-        tax: Math.round(tax * 100),
-        total: Math.round(total * 100)
-      },
-      uploadedImages: items.filter(item => item.uploadedPhotoUrl).map(item => item.uploadedPhotoUrl!)
-    };
+      // 1️⃣ Tokenize the card
+      const result = await card.tokenize();
+      if (result.status !== 'OK') {
+        setPaymentResult({ success: false, message: 'Failed to tokenize card. Please check your details.' });
+        setIsPaying(false);
+        return;
+      }
 
-    await processPayment(card, paymentRequest);
+      // 2️⃣ Send token to Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('square-payments', {
+        body: { token: result.token }
+      });
+
+      if (error || !data?.success) {
+        setPaymentResult({ success: false, message: data?.error || 'Payment failed. Please try again.' });
+      } else {
+        setPaymentResult({ success: true, message: `Payment successful! ID: ${data.paymentId}` });
+      }
+
+    } catch (err: any) {
+      setPaymentResult({ success: false, message: err.message || 'Unexpected error during payment.' });
+    } finally {
+      setIsPaying(false);
+    }
   };
 
   return (
