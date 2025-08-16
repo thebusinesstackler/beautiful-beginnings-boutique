@@ -4,10 +4,18 @@ import type { PaymentRequest } from '@/types/SquareCheckout';
 export const useOrderCreation = () => {
   const createOrder = async (paymentRequest: PaymentRequest): Promise<string> => {
     try {
-      // Create order in database
+      // Get the current authenticated user
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        throw new Error('User must be authenticated to create an order');
+      }
+
+      // Create order in database with customer_id set to auth.uid()
       const { data: order, error } = await supabase
         .from('orders')
         .insert({
+          customer_id: user.id, // Required for RLS security
           customer_email: paymentRequest.customerInfo.email,
           customer_name: `${paymentRequest.customerInfo.firstName} ${paymentRequest.customerInfo.lastName}`,
           customer_phone: paymentRequest.customerInfo.phone || null,
