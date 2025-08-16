@@ -268,17 +268,47 @@ serve(async (req) => {
         customer_id: ensuredCustomerId || undefined,
       }
 
+      console.log('Sending payment request to Square API:', {
+        amount: cents,
+        locationId: squareLocationId,
+        sourceId: paymentSourceId,
+        hasVerificationToken: !!verificationToken
+      })
+
       const payRes = await sqFetch('/v2/payments', squareAccessToken, { method: 'POST', body: paymentBody })
+      
+      console.log('Square API response:', {
+        ok: payRes.ok,
+        status: payRes.status,
+        hasErrors: !!(payRes.json?.errors),
+        errorCount: Array.isArray(payRes.json?.errors) ? payRes.json.errors.length : 0
+      })
+
       if (!payRes.ok) {
         const firstErr = Array.isArray(payRes.json?.errors) ? payRes.json.errors[0] : null
         const detail = firstErr?.detail || firstErr?.code || payRes.json?.message || 'Payment processing failed'
+
+        console.error('Square payment failed:', {
+          status: payRes.status,
+          firstError: firstErr,
+          allErrors: payRes.json?.errors,
+          detail
+        })
 
         if (orderId) {
           await supabase.from('orders')
             .update({ status: 'failed', notes: `Payment failed: ${detail}` })
             .eq('id', orderId)
         }
-        return json({ success: false, error: detail, raw: payRes.json }, { status: 400 })
+
+        // Return the complete error response with raw Square API data
+        return json({ 
+          success: false, 
+          error: detail, 
+          raw: payRes.json,
+          squareStatus: payRes.status,
+          squareErrors: payRes.json?.errors || []
+        }, { status: 400 })
       }
 
       const payment = payRes.json?.payment

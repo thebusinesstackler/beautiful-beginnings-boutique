@@ -37,6 +37,14 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
       console.log('Starting card tokenization...');
       const tokenResult = await card.tokenize();
       
+      console.log('Tokenization result:', {
+        status: tokenResult.status,
+        hasToken: !!tokenResult.token,
+        hasVerificationToken: !!tokenResult.verificationToken,
+        hasErrors: !!(tokenResult.errors && tokenResult.errors.length > 0),
+        errorCount: tokenResult.errors ? tokenResult.errors.length : 0
+      });
+      
       if (tokenResult.status === 'OK') {
         const paymentToken = tokenResult.token;
         
@@ -49,7 +57,11 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
         
         console.log('Processing direct payment - Option A:', {
           amount: finalAmountInCents,
-          idempotencyKey
+          amountInDollars: finalAmountInCents / 100,
+          idempotencyKey,
+          customerEmail: paymentRequest.customerInfo.email,
+          customerName: `${paymentRequest.customerInfo.firstName} ${paymentRequest.customerInfo.lastName}`,
+          hasVerificationToken: !!tokenResult.verificationToken
         });
 
         // Use Supabase function for secure payment processing
@@ -65,8 +77,10 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
           }
         });
 
+        console.log('Square function response:', { data, error });
+
         if (error) {
-          console.error('Payment processing error:', error);
+          console.error('Payment processing error (Supabase function error):', error);
           
           // Provide more specific error messages based on the error
           if (error.message.includes('unauthorized') || error.message.includes('credentials')) {
@@ -93,7 +107,24 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
           onSuccess?.();
         } else {
           setPaymentStatus('error');
-          throw new Error(data?.error || 'Payment failed');
+          console.error('Payment failed response:', data);
+          
+          // Extract the specific error message from the Square API response
+          let specificError = data?.error || 'Payment failed';
+          
+          // If there's raw Square API response data, try to extract more specific error
+          if (data?.raw?.errors && Array.isArray(data.raw.errors) && data.raw.errors.length > 0) {
+            const squareError = data.raw.errors[0];
+            console.log('Square API error details:', squareError);
+            
+            // Use the Square error code or detail for more specific messaging
+            if (squareError.code) {
+              specificError = squareError.detail || squareError.code;
+            }
+          }
+          
+          console.log('Final processed error message:', specificError);
+          throw new Error(specificError);
         }
       } else {
         setPaymentStatus('error');
@@ -106,30 +137,51 @@ export const useSquarePayment = ({ onSuccess, onError, clearCart }: UseSquarePay
       
       let errorMessage = "Payment processing failed. Please try again.";
       
+      console.log('Processing error for user display:', {
+        errorMessage: error.message,
+        errorType: typeof error,
+        hasMessage: !!error.message
+      });
+      
       // Enhanced error handling for different Square error types
-      if (error.message.includes('INVALID_CARD_DATA')) {
+      const errorText = error.message || '';
+      
+      if (errorText.includes('INVALID_CARD_DATA') || errorText.includes('INVALID_VALUE')) {
         errorMessage = "Invalid card information. Please check your card number, expiration date, and CVV.";
-      } else if (error.message.includes('CARD_DECLINED')) {
+      } else if (errorText.includes('CARD_DECLINED') || errorText.includes('DECLINED')) {
         errorMessage = "Your card was declined. Please try a different payment method or contact your bank.";
-      } else if (error.message.includes('INSUFFICIENT_FUNDS')) {
+      } else if (errorText.includes('INSUFFICIENT_FUNDS')) {
         errorMessage = "Insufficient funds on your card. Please try a different payment method.";
-      } else if (error.message.includes('EXPIRED_CARD')) {
+      } else if (errorText.includes('EXPIRED_CARD') || errorText.includes('CARD_EXPIRED')) {
         errorMessage = "Your card has expired. Please use a different payment method.";
-      } else if (error.message.includes('CVV_FAILURE')) {
+      } else if (errorText.includes('CVV_FAILURE') || errorText.includes('CVV')) {
         errorMessage = "CVV verification failed. Please check your card's security code.";
-      } else if (error.message.includes('INVALID_LOCATION')) {
+      } else if (errorText.includes('INVALID_LOCATION')) {
         errorMessage = "Payment configuration error. Please contact support.";
-      } else if (error.message.includes('credentials') || error.message.includes('configuration')) {
+      } else if (errorText.includes('credentials') || errorText.includes('configuration')) {
         errorMessage = "Payment system configuration error. Please contact support.";
-      } else if (error.message.includes('card')) {
+      } else if (errorText.includes('GENERIC_DECLINE')) {
+        errorMessage = "Your payment was declined. Please contact your bank or try a different payment method.";
+      } else if (errorText.includes('TRANSACTION_LIMIT')) {
+        errorMessage = "Transaction limit exceeded. Please contact your bank or try a smaller amount.";
+      } else if (errorText.includes('INVALID_ACCOUNT')) {
+        errorMessage = "Card account is invalid. Please try a different payment method.";
+      } else if (errorText.includes('CARD_NOT_SUPPORTED')) {
+        errorMessage = "This card type is not supported. Please try a different payment method.";
+      } else if (errorText.includes('VERIFICATION_REQUIRED')) {
+        errorMessage = "Additional verification required. Please contact your bank.";
+      } else if (errorText.includes('PAN_FAILURE') || errorText.includes('card')) {
         errorMessage = "Card information is invalid. Please check your card details.";
-      } else if (error.message.includes('amount')) {
+      } else if (errorText.includes('amount') || errorText.includes('INVALID_MONEY')) {
         errorMessage = "Payment amount is invalid. Please try again.";
-      } else if (error.message.includes('network') || error.message.includes('timeout')) {
+      } else if (errorText.includes('network') || errorText.includes('timeout') || errorText.includes('NETWORK_ERROR')) {
         errorMessage = "Network error. Please check your connection and try again.";
-      } else if (error.message) {
+      } else if (error.message && error.message !== 'Payment failed') {
+        // Use the specific error message if it's not the generic fallback
         errorMessage = error.message;
       }
+
+      console.log('Final error message for user:', errorMessage);
 
       toast({
         title: "Payment Error",
