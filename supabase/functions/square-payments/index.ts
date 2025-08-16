@@ -11,10 +11,19 @@ const corsHeaders = {
 }
 
 /** ---------- Square Credentials from Supabase Secrets ---------- */
+console.log('🔧 Reading Square environment variables...')
 const squareAppId = Deno.env.get('SQUARE_APP_ID')
 const squareLocationId = Deno.env.get('SQUARE_LOCATION_ID') 
 const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN')
 const squareEnvironment = Deno.env.get('SQUARE_ENVIRONMENT') || 'production'
+
+console.log('🔍 Environment variable check:', {
+  SQUARE_APP_ID: squareAppId ? `Present (${squareAppId.substring(0, 8)}...)` : 'MISSING',
+  SQUARE_LOCATION_ID: squareLocationId ? `Present (${squareLocationId.substring(0, 8)}...)` : 'MISSING',
+  SQUARE_ACCESS_TOKEN: squareAccessToken ? `Present (${squareAccessToken.substring(0, 8)}...)` : 'MISSING',
+  SQUARE_ENVIRONMENT: squareEnvironment,
+  ALL_SQUARE_VARS: Object.keys(Deno.env.toObject()).filter(key => key.startsWith('SQUARE'))
+})
 
 // Validate required Square credentials
 console.log('Square credentials check:', {
