@@ -159,7 +159,20 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       
       if (error) {
         console.error('❌ Supabase function error:', error);
-        throw new Error(`Function invocation failed: ${error.message}`);
+        
+        // Try to get more detailed error information
+        let errorMessage = error.message;
+        if (error.context?.response) {
+          try {
+            const responseText = await error.context.response.text();
+            console.error('❌ Function response body:', responseText);
+            errorMessage += `: ${responseText}`;
+          } catch (e) {
+            console.error('❌ Could not read error response:', e);
+          }
+        }
+        
+        throw new Error(`Function invocation failed: ${errorMessage}`);
       }
       
       if (!data?.success) {
