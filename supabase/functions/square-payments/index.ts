@@ -10,11 +10,20 @@ const corsHeaders = {
   'Access-Control-Max-Age': '86400',
 }
 
-/** ---------- Hardcoded Square Credentials ---------- */
-const squareAppId = 'sq0idp-Yb0qVxuCDTTFAyPqch1evQ'
-const squareLocationId = 'LRXMEEWB9R0KM' // Online (Main)
-const squareAccessToken = 'EAAAl3xD8PXSpbU8UWRUOpFsW67E4yFJrDKLvRQXhkWuZqQQ-LnrltlmdIz7FCfu'
-const squareEnvironment = 'production'
+/** ---------- Square Credentials from Supabase Secrets ---------- */
+const squareAppId = Deno.env.get('SQUARE_APP_ID')
+const squareLocationId = Deno.env.get('SQUARE_LOCATION_ID') 
+const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN')
+const squareEnvironment = Deno.env.get('SQUARE_ENVIRONMENT') || 'production'
+
+// Validate required Square credentials
+if (!squareAppId || !squareLocationId || !squareAccessToken) {
+  console.error('Missing Square credentials:', {
+    hasAppId: !!squareAppId,
+    hasLocationId: !!squareLocationId,
+    hasAccessToken: !!squareAccessToken
+  })
+}
 
 /** ---------- Types ---------- */
 interface BillingAddress {
@@ -187,12 +196,31 @@ serve(async (req) => {
     if (!action) return badRequest('Missing "action"')
 
     if (action === 'test_connection') {
+      console.log('Testing Square connection...')
+      
+      // Validate credentials are available
+      if (!squareAppId || !squareLocationId || !squareAccessToken) {
+        console.error('Square credentials missing for test_connection')
+        return badRequest('Square credentials not configured properly')
+      }
+      
+      console.log('Square credentials validated successfully')
       return json({ success: true, applicationId: squareAppId, locationId: squareLocationId, environment: squareEnvironment })
     }
 
     if (action === 'process_payment') {
+      console.log('Processing payment request...')
+      
+      // Validate credentials
+      if (!squareAppId || !squareLocationId || !squareAccessToken) {
+        console.error('Square credentials missing for process_payment')
+        return badRequest('Square credentials not configured properly')
+      }
+      
       const cents = toCents(amount)
       if (!cents) return badRequest('Invalid "amount". Must be a positive number (USD).')
+      
+      console.log(`Processing payment for ${cents} cents`)
 
       const { customerId: ensuredCustomerId } = await ensureCustomer({
         customerId,

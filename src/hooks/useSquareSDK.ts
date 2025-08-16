@@ -51,23 +51,41 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     }
   };
 
-  /** Fetch Square config from Supabase */
+/** Fetch Square config from Supabase */
   const fetchSquareConfig = async () => {
+    console.log('Fetching Square configuration...');
+    
     const res = await fetch(FUNCTION_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'test_connection' }),
     });
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    console.log('Square config response status:', res.status);
 
-    if (!data.success) throw new Error(data.error || 'Square configuration error');
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => 'Unknown error');
+      console.error('Square config fetch failed:', res.status, errorText);
+      throw new Error(`HTTP ${res.status}: ${errorText}`);
+    }
+    
+    const data = await res.json();
+    console.log('Square config response:', { success: data.success, hasAppId: !!data.applicationId, hasLocationId: !!data.locationId });
+
+    if (!data.success) {
+      console.error('Square config error:', data.error);
+      throw new Error(data.error || 'Square configuration error');
+    }
+
+    if (!data.applicationId || !data.locationId) {
+      console.error('Missing Square credentials in response:', data);
+      throw new Error('Square credentials not properly configured');
+    }
 
     return {
       appId: data.applicationId,
       locationId: data.locationId,
-      environment: 'production',
+      environment: data.environment || 'production',
     };
   };
 
@@ -76,31 +94,42 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     let mounted = true;
 
     const init = async () => {
+      console.log('Initializing Square SDK...');
       setSdkStatus('loading');
 
       if (!checkSecureConnection()) {
+        console.error('Insecure connection detected');
         setSdkStatus('error');
         return;
       }
 
       try {
+        console.log('Fetching Square configuration...');
         const config = await fetchSquareConfig();
         if (!mounted) return;
+        
+        console.log('Square config loaded:', { appId: config.appId?.substring(0, 10) + '...', locationId: config.locationId });
         setSquareConfig(config);
 
-        if (!window.Square) throw new Error('Square SDK not loaded');
+        if (!window.Square) {
+          console.error('Square SDK not loaded on window object');
+          throw new Error('Square SDK not loaded');
+        }
 
+        console.log('Creating Square payments instance...');
         const paymentsInstance = window.Square.payments(config.appId, config.locationId);
         setPayments(paymentsInstance);
         setSdkStatus('ready');
-
+        
+        console.log('Square SDK initialized successfully, initializing card...');
         setTimeout(() => initializeCard(paymentsInstance), 500);
       } catch (err: any) {
+        console.error('Square SDK initialization failed:', err);
         if (mounted) {
           setSdkStatus('error');
           toast({
             title: 'Payment System Error',
-            description: err.message,
+            description: err.message || 'Failed to initialize payment system',
             variant: 'destructive',
           });
         }
