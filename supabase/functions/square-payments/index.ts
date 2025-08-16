@@ -1,3 +1,4 @@
+// Force redeployment to refresh environment variables - 2025-08-16T17:42:39Z
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
