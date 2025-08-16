@@ -271,7 +271,7 @@ const Checkout = () => {
 
               {/* Billing Address */}
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-6">
-                <h2 className="text-xl font-semibold text-charcoal font-playfair mb-4">Billing Address Here</h2>
+                <h2 className="text-xl font-semibold text-charcoal font-playfair mb-4">Billing Address</h2>
                 <div className="mb-4">
                   <label className="flex items-center space-x-2">
                     <input type="checkbox" checked={sameAsShipping} onChange={e => setSameAsShipping(e.target.checked)} className="rounded border-sage/30 text-sage focus:ring-sage" />
