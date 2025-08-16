@@ -11,6 +11,68 @@ interface UseSquareSDKProps {
 const PROJECT_REF = 'ibdjzzgvxlscmwlbuewd'; // Your Supabase project ref
 const FUNCTION_URL = `https://${PROJECT_REF}.functions.supabase.co/square-payments`;
 
+// Global flag to track SDK loading state
+let squareSDKLoading = false;
+let squareSDKLoaded = false;
+
+const loadSquareSDK = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    // If already loaded, resolve immediately
+    if (squareSDKLoaded && window.Square) {
+      resolve();
+      return;
+    }
+
+    // If currently loading, wait for it
+    if (squareSDKLoading) {
+      const checkLoaded = () => {
+        if (squareSDKLoaded && window.Square) {
+          resolve();
+        } else {
+          setTimeout(checkLoaded, 50);
+        }
+      };
+      checkLoaded();
+      return;
+    }
+
+    // Check if Square SDK script already exists
+    const existingScript = document.querySelector('script[src*="square"]');
+    if (existingScript) {
+      // Script tag exists, wait for window.Square to be available
+      const checkSquare = () => {
+        if (window.Square) {
+          squareSDKLoaded = true;
+          resolve();
+        } else {
+          setTimeout(checkSquare, 50);
+        }
+      };
+      checkSquare();
+      return;
+    }
+
+    // Load the SDK script dynamically if not found
+    squareSDKLoading = true;
+    const script = document.createElement('script');
+    script.src = 'https://web.squarecdn.com/v1/square.js'; // Use production URL
+    script.async = true;
+    
+    script.onload = () => {
+      squareSDKLoading = false;
+      squareSDKLoaded = true;
+      resolve();
+    };
+    
+    script.onerror = () => {
+      squareSDKLoading = false;
+      reject(new Error('Failed to load Square SDK'));
+    };
+    
+    document.head.appendChild(script);
+  });
+};
+
 export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment }: UseSquareSDKProps) => {
   const [payments, setPayments] = useState<any>(null);
   const [card, setCard] = useState<any>(null);
@@ -137,6 +199,14 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       }
 
       try {
+        // First, ensure Square SDK is loaded
+        console.log('Loading Square SDK...');
+        await loadSquareSDK();
+        if (!mounted) return;
+
+        console.log('Square SDK loaded successfully');
+
+        // Fetch Square configuration from Supabase
         console.log('Fetching Square configuration...');
         const config = await fetchSquareConfig();
         if (!mounted) return;
@@ -144,9 +214,9 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         console.log('Square config loaded:', { appId: config.appId?.substring(0, 10) + '...', locationId: config.locationId });
         setSquareConfig(config);
 
+        // Verify Square SDK is available
         if (!window.Square) {
-          console.error('Square SDK not loaded on window object');
-          throw new Error('Square SDK not loaded');
+          throw new Error('Square SDK failed to load properly');
         }
 
         console.log('Creating Square payments instance...');
@@ -163,7 +233,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
           setSdkStatus('error');
           toast({
             title: 'Payment System Error',
-            description: err.message || 'Failed to initialize payment system',
+            description: err.message || 'Unable to initialize the payment system. This could be due to:\n\n• Network connectivity issues\n• Square service temporarily unavailable\n• Invalid payment configuration\n\nPlease try refreshing the page or contact support if the issue persists.',
             variant: 'destructive',
           });
         }
