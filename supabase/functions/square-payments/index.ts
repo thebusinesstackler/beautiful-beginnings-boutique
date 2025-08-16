@@ -24,6 +24,11 @@ console.log('Square credentials check:', {
   SQUARE_ENVIRONMENT: squareEnvironment
 })
 
+console.log('Environment check - Raw values:', {
+  SQUARE_LOCATION_ID_RAW: Deno.env.get('SQUARE_LOCATION_ID'),
+  ALL_ENV_KEYS: Object.keys(Deno.env.toObject()).filter(key => key.includes('SQUARE'))
+})
+
 if (!squareAppId || !squareLocationId || !squareAccessToken) {
   console.error('Missing Square credentials:', {
     hasAppId: !!squareAppId,
