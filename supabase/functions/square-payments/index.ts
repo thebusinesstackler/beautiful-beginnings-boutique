@@ -99,19 +99,54 @@ const SQUARE_VERSION = '2024-08-21'
 const SQUARE_BASE = 'https://connect.squareup.com'
 
 async function sqFetch(path: string, accessToken: string, init: RequestInit & { body?: unknown } = {}) {
-  const res = await fetch(`${SQUARE_BASE}${path}`, {
-    ...init,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Square-Version': SQUARE_VERSION,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...(init.headers || {}),
-    },
-    body: init.body ? JSON.stringify(init.body) : undefined,
-  })
-  const json = await res.json().catch(() => ({}))
-  return { ok: res.ok, status: res.status, json }
+  // Add timeout to prevent hanging requests
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+  
+  try {
+    const res = await fetch(`${SQUARE_BASE}${path}`, {
+      ...init,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Square-Version': SQUARE_VERSION,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...(init.headers || {}),
+      },
+      body: init.body ? JSON.stringify(init.body) : undefined,
+      signal: controller.signal,
+    })
+    
+    clearTimeout(timeoutId);
+    
+    let json = {};
+    try {
+      json = await res.json();
+    } catch (jsonError) {
+      console.error('Failed to parse JSON response:', jsonError);
+      json = { error: 'Invalid JSON response from Square API' };
+    }
+    
+    return { ok: res.ok, status: res.status, json }
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error.name === 'AbortError') {
+      console.error('Square API request timeout');
+      return { 
+        ok: false, 
+        status: 408, 
+        json: { error: 'Request timeout', message: 'Square API request timed out' }
+      };
+    }
+    
+    console.error('Square API request failed:', error);
+    return { 
+      ok: false, 
+      status: 500, 
+      json: { error: 'Network error', message: error.message || 'Failed to connect to Square API' }
+    };
+  }
 }
 
 async function ensureCustomer(params: {
@@ -191,6 +226,41 @@ async function createCardOnFile(params: {
 
 /** ---------- Handler ---------- */
 serve(async (req) => {
+  // Add overall timeout to prevent function hanging
+  const startTime = Date.now();
+  const FUNCTION_TIMEOUT = 25000; // 25 seconds (less than Supabase's 30s limit)
+  
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error('Function execution timeout'));
+    }, FUNCTION_TIMEOUT);
+  });
+  
+  try {
+    return await Promise.race([
+      processRequest(req),
+      timeoutPromise
+    ]);
+  } catch (error) {
+    console.error('Function execution failed:', error);
+    
+    if (error.message === 'Function execution timeout') {
+      return json({ 
+        success: false, 
+        error: 'Request timeout - please try again',
+        timeout: true 
+      }, { status: 408 });
+    }
+    
+    return json({ 
+      success: false, 
+      error: 'Internal server error', 
+      details: error?.message ?? 'Unknown error' 
+    }, { status: 500 });
+  }
+});
+
+async function processRequest(req: Request) {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
   if (req.method !== 'POST') return methodNotAllowed(req.method)
 
@@ -366,4 +436,4 @@ serve(async (req) => {
     console.error('Square payments function error:', err?.message, err?.stack)
     return json({ success: false, error: 'Internal server error', details: err?.message ?? 'Unknown error' }, { status: 500 })
   }
-})
+}
