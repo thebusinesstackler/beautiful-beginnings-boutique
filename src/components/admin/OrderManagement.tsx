@@ -5,7 +5,16 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Download, Eye, CheckCircle, Users, Image as ImageIcon, RefreshCw, Trash2 } from 'lucide-react';
+import { 
+  Package, 
+  Download, 
+  Eye, 
+  CheckCircle, 
+  Users, 
+  Image as ImageIcon, 
+  RefreshCw,
+  Trash2
+} from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import OrderDetailsModal from './OrderDetailsModal';
 
