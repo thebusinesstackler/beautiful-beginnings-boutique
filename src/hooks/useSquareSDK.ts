@@ -167,7 +167,9 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
           // Check if it's a network error that we should retry
           if (error.message?.includes('Failed to fetch') || 
               error.message?.includes('network') || 
-              error.message?.includes('timeout')) {
+              error.message?.includes('timeout') ||
+              error.message?.includes('NetworkError') ||
+              error.message?.includes('fetch')) {
             
             if (retryCount < maxRetries) {
               retryCount++;
@@ -178,19 +180,30 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
             }
           }
           
-          // Try to get more detailed error information
-          let errorMessage = error.message;
+          // Handle function errors with more details
+          let errorMessage = error.message || 'Unknown error';
+          
           if (error.context?.response) {
             try {
               const responseText = await error.context.response.text();
               console.error('❌ Function response body:', responseText);
-              errorMessage += `: ${responseText}`;
+              
+              // Try to parse JSON error response
+              try {
+                const errorData = JSON.parse(responseText);
+                if (errorData.error) {
+                  errorMessage = errorData.error;
+                }
+              } catch (e) {
+                // Not JSON, use the raw text
+                errorMessage = responseText || errorMessage;
+              }
             } catch (e) {
               console.error('❌ Could not read error response:', e);
             }
           }
           
-          throw new Error(`Function invocation failed: ${errorMessage}`);
+          throw new Error(`Payment system error: ${errorMessage}`);
         }
         
         if (!data?.success) {
@@ -218,7 +231,9 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         if (retryCount < maxRetries && 
             (error.message?.includes('Failed to fetch') || 
              error.message?.includes('network') || 
-             error.message?.includes('timeout'))) {
+             error.message?.includes('timeout') ||
+             error.message?.includes('NetworkError') ||
+             error.message?.includes('fetch'))) {
           
           retryCount++;
           const delay = Math.pow(2, retryCount - 1) * 1000;
@@ -282,9 +297,23 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         console.error('Square SDK initialization failed:', err);
         if (mounted) {
           setSdkStatus('error');
+          
+          // Provide more helpful error messages
+          let userMessage = 'Unable to initialize the payment system.';
+          
+          if (err.message?.includes('Payment system error:')) {
+            userMessage = err.message.replace('Payment system error: ', '');
+          } else if (err.message?.includes('Failed to fetch') || err.message?.includes('network')) {
+            userMessage = 'Network connection issue. Please check your internet connection and try again.';
+          } else if (err.message?.includes('Square credentials')) {
+            userMessage = 'Payment configuration error. Please contact support.';
+          } else if (err.message?.includes('Insecure connection')) {
+            userMessage = 'Secure connection required for payments. Please use HTTPS.';
+          }
+          
           toast({
             title: 'Payment System Error',
-            description: err.message || 'Unable to initialize the payment system. This could be due to:\n\n• Network connectivity issues\n• Square service temporarily unavailable\n• Invalid payment configuration\n\nPlease try refreshing the page or contact support if the issue persists.',
+            description: `${userMessage}\n\nIf the issue persists, please try refreshing the page or contact support.`,
             variant: 'destructive',
           });
         }
