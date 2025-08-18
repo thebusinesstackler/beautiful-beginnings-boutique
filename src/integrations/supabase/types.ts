@@ -505,7 +505,7 @@ export type Database = {
           card_last_4: string | null
           created_at: string | null
           customer_email: string
-          customer_id: string
+          customer_id: string | null
           customer_name: string | null
           customer_phone: string | null
           fulfilled_at: string | null
@@ -531,7 +531,7 @@ export type Database = {
           card_last_4?: string | null
           created_at?: string | null
           customer_email: string
-          customer_id: string
+          customer_id?: string | null
           customer_name?: string | null
           customer_phone?: string | null
           fulfilled_at?: string | null
@@ -557,7 +557,7 @@ export type Database = {
           card_last_4?: string | null
           created_at?: string | null
           customer_email?: string
-          customer_id?: string
+          customer_id?: string | null
           customer_name?: string | null
           customer_phone?: string | null
           fulfilled_at?: string | null
