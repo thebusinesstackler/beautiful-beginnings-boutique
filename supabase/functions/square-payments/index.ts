@@ -1,177 +1,11 @@
-// Enhanced Square Payments Function v3.0 - Complete Credential Validation & Debugging
-// Force redeployment: 2025-08-18T17:45:00Z - Complete credential validation overhaul
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-/** ---------- CORS Configuration ---------- */
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Max-Age': '86400',
 }
 
-/** ---------- Enhanced Secret Validation System ---------- */
-console.log('🚀 Enhanced Square Payments Function v3.0 - Starting comprehensive validation')
-
-// Character-by-character debugging function
-function debugSecret(name: string, value: string | undefined): void {
-  if (!value) {
-    console.log(`❌ ${name}: UNDEFINED/NULL`)
-    return
-  }
-  
-  console.log(`🔍 ${name} detailed analysis:`)
-  console.log(`  Raw value type: ${typeof value}`)
-  console.log(`  Raw length: ${value.length}`)
-  console.log(`  First 10 chars: "${value.substring(0, 10)}${value.length > 10 ? '...' : ''}"`)
-  console.log(`  Last 5 chars: "${value.length > 5 ? '...' + value.substring(value.length - 5) : value}"`)
-  console.log(`  Contains spaces: ${value.includes(' ')}`)
-  console.log(`  Contains newlines: ${value.includes('\n')}`)
-  console.log(`  Contains tabs: ${value.includes('\t')}`)
-  console.log(`  Trimmed length: ${value.trim().length}`)
-  
-  // Character code analysis for hidden characters
-  const firstFewChars = value.substring(0, 5).split('').map((char, i) => 
-    `[${i}]="${char}" (${char.charCodeAt(0)})`
-  ).join(' ')
-  console.log(`  First 5 char codes: ${firstFewChars}`)
-}
-
-// Get all environment variables first
-const allEnvKeys = Object.keys(Deno.env.toObject())
-const squareRelatedKeys = allEnvKeys.filter(key => key.includes('SQUARE'))
-console.log('🔍 All environment keys containing "SQUARE":', squareRelatedKeys)
-console.log('🔍 Total environment variables found:', allEnvKeys.length)
-
-// Get raw values
-const rawSquareApplicationId = Deno.env.get('SQUARE_APPLICATION_ID')
-const rawSquareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN') 
-const rawSquareLocationId = Deno.env.get('SQUARE_LOCATION_ID')
-const rawSquareEnvironment = Deno.env.get('SQUARE_ENVIRONMENT')
-
-console.log('\n🔍 ===== RAW SECRET ANALYSIS =====')
-debugSecret('SQUARE_APPLICATION_ID', rawSquareApplicationId)
-debugSecret('SQUARE_ACCESS_TOKEN', rawSquareAccessToken)
-debugSecret('SQUARE_LOCATION_ID', rawSquareLocationId)
-debugSecret('SQUARE_ENVIRONMENT', rawSquareEnvironment)
-
-// Clean and validate
-const SQUARE_APPLICATION_ID = rawSquareApplicationId?.trim()
-const SQUARE_ACCESS_TOKEN = rawSquareAccessToken?.trim()
-const SQUARE_LOCATION_ID = rawSquareLocationId?.trim()
-let SQUARE_ENVIRONMENT = (rawSquareEnvironment || 'production').trim()
-
-// Handle encrypted/hashed environment values
-if (SQUARE_ENVIRONMENT && SQUARE_ENVIRONMENT.length > 20) {
-  console.log('⚠️ SQUARE_ENVIRONMENT appears to be encrypted/hashed, defaulting to production')
-  SQUARE_ENVIRONMENT = 'production'
-}
-
-/** ---------- Format Validation ---------- */
-function validateSquareCredentialFormats() {
-  console.log('\n🔍 ===== FORMAT VALIDATION =====')
-  
-  const validation = {
-    applicationId: {
-      present: Boolean(SQUARE_APPLICATION_ID && SQUARE_APPLICATION_ID.length > 0),
-      hasValue: !!SQUARE_APPLICATION_ID,
-      length: SQUARE_APPLICATION_ID?.length || 0,
-      startsCorrectly: SQUARE_APPLICATION_ID?.startsWith('sq0idp-') || false,
-      expectedLength: SQUARE_APPLICATION_ID ? (SQUARE_APPLICATION_ID.length >= 20 && SQUARE_APPLICATION_ID.length <= 50) : false,
-      validFormat: false
-    },
-    accessToken: {
-      present: Boolean(SQUARE_ACCESS_TOKEN && SQUARE_ACCESS_TOKEN.length > 0),
-      hasValue: !!SQUARE_ACCESS_TOKEN,
-      length: SQUARE_ACCESS_TOKEN?.length || 0,
-      startsCorrectly: SQUARE_ACCESS_TOKEN?.startsWith('EAAAl') || false,
-      expectedLength: SQUARE_ACCESS_TOKEN ? SQUARE_ACCESS_TOKEN.length >= 60 : false,
-      validFormat: false
-    },
-    locationId: {
-      present: Boolean(SQUARE_LOCATION_ID && SQUARE_LOCATION_ID.length > 0),
-      hasValue: !!SQUARE_LOCATION_ID,
-      length: SQUARE_LOCATION_ID?.length || 0,
-      expectedLength: SQUARE_LOCATION_ID ? SQUARE_LOCATION_ID.length >= 10 : false,
-      validFormat: false
-    },
-    environment: {
-      present: Boolean(SQUARE_ENVIRONMENT),
-      hasValue: !!SQUARE_ENVIRONMENT,
-      isValidValue: ['production', 'sandbox'].includes(SQUARE_ENVIRONMENT),
-      value: SQUARE_ENVIRONMENT
-    }
-  }
-  
-  // Determine valid formats
-  validation.applicationId.validFormat = validation.applicationId.present && 
-                                       validation.applicationId.startsCorrectly && 
-                                       validation.applicationId.expectedLength
-                                       
-  validation.accessToken.validFormat = validation.accessToken.present && 
-                                      validation.accessToken.startsCorrectly && 
-                                      validation.accessToken.expectedLength
-                                      
-  validation.locationId.validFormat = validation.locationId.present && 
-                                    validation.locationId.expectedLength
-  
-  console.log('📊 Validation Results:')
-  console.log('  SQUARE_APPLICATION_ID:', {
-    present: validation.applicationId.present ? '✅' : '❌',
-    format: validation.applicationId.validFormat ? '✅' : '❌',
-    details: `Length: ${validation.applicationId.length}, Starts with sq0idp-: ${validation.applicationId.startsCorrectly}`
-  })
-  
-  console.log('  SQUARE_ACCESS_TOKEN:', {
-    present: validation.accessToken.present ? '✅' : '❌', 
-    format: validation.accessToken.validFormat ? '✅' : '❌',
-    details: `Length: ${validation.accessToken.length}, Starts with EAAAl: ${validation.accessToken.startsCorrectly}`
-  })
-  
-  console.log('  SQUARE_LOCATION_ID:', {
-    present: validation.locationId.present ? '✅' : '❌',
-    format: validation.locationId.validFormat ? '✅' : '❌',
-    details: `Length: ${validation.locationId.length}`
-  })
-  
-  console.log('  SQUARE_ENVIRONMENT:', {
-    present: validation.environment.present ? '✅' : '❌',
-    valid: validation.environment.isValidValue ? '✅' : '❌',
-    value: validation.environment.value
-  })
-  
-  return validation
-}
-
-const validation = validateSquareCredentialFormats()
-
-// Overall credential status
-const hasAllCredentials = validation.applicationId.validFormat && 
-                         validation.accessToken.validFormat && 
-                         validation.locationId.validFormat &&
-                         validation.environment.isValidValue
-
-console.log('\n🎯 ===== OVERALL STATUS =====')
-console.log(`All credentials valid: ${hasAllCredentials ? '✅ YES' : '❌ NO'}`)
-
-if (!hasAllCredentials) {
-  console.error('❌ CREDENTIAL ISSUES DETECTED:')
-  if (!validation.applicationId.validFormat) {
-    console.error('  - SQUARE_APPLICATION_ID: Invalid or missing')
-  }
-  if (!validation.accessToken.validFormat) {
-    console.error('  - SQUARE_ACCESS_TOKEN: Invalid or missing')  
-  }
-  if (!validation.locationId.validFormat) {
-    console.error('  - SQUARE_LOCATION_ID: Invalid or missing')
-  }
-  if (!validation.environment.isValidValue) {
-    console.error('  - SQUARE_ENVIRONMENT: Invalid value')
-  }
-}
-
-/** ---------- Types ---------- */
 interface BillingAddress {
   addressLine1?: string
   addressLine2?: string
@@ -182,7 +16,7 @@ interface BillingAddress {
 }
 
 interface PaymentRequest {
-  action: 'test_connection' | 'process_payment' | 'validate_secrets'
+  action: 'test_connection' | 'process_payment'
   token?: string
   sourceId?: string
   verificationToken?: string
@@ -197,7 +31,6 @@ interface PaymentRequest {
   saveCard?: boolean
 }
 
-/** ---------- Helper Functions ---------- */
 function json(data: unknown, init: ResponseInit = {}) {
   return new Response(JSON.stringify(data), {
     ...init,
@@ -351,7 +184,6 @@ async function createCardOnFile(params: {
   return { ok: true, cardId: res.json?.card?.id as string, raw: res.json }
 }
 
-/** ---------- Main Handler ---------- */
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -387,42 +219,20 @@ serve(async (req) => {
       return badRequest('Missing "action" parameter')
     }
 
-    // NEW: Dedicated secret validation endpoint
-    if (action === 'validate_secrets') {
-      console.log('🔍 Secret validation endpoint called')
-      
-      return json({
-        success: true,
-        validation,
-        hasAllCredentials,
-        environment: SQUARE_ENVIRONMENT,
-        timestamp: new Date().toISOString(),
-        debug: {
-          rawAppIdExists: !!rawSquareApplicationId,
-          rawAccessTokenExists: !!rawSquareAccessToken, 
-          rawLocationIdExists: !!rawSquareLocationId,
-          rawEnvironmentExists: !!rawSquareEnvironment,
-          allSquareKeys: squareRelatedKeys
-        }
-      })
-    }
+    const SQUARE_APPLICATION_ID = Deno.env.get('SQUARE_APPLICATION_ID')
+    const SQUARE_ACCESS_TOKEN = Deno.env.get('SQUARE_ACCESS_TOKEN')
+    const SQUARE_LOCATION_ID = Deno.env.get('SQUARE_LOCATION_ID')
+    const SQUARE_ENVIRONMENT = Deno.env.get('SQUARE_ENVIRONMENT') || 'production'
 
-    // Handle test_connection action
     if (action === 'test_connection') {
-      console.log('🔍 Testing Square connection...')
+      console.log('Testing Square connection...')
       
-      if (!hasAllCredentials) {
-        console.error('❌ Square credentials missing for test_connection')
-        
-        const missingCredentials = []
-        if (!validation.applicationId.validFormat) missingCredentials.push('SQUARE_APPLICATION_ID (invalid format)')
-        if (!validation.accessToken.validFormat) missingCredentials.push('SQUARE_ACCESS_TOKEN (invalid format)')
-        if (!validation.locationId.validFormat) missingCredentials.push('SQUARE_LOCATION_ID (invalid format)')
-        
-        return badRequest(`Square credentials not configured properly. Issues: ${missingCredentials.join(', ')}`)
+      if (!SQUARE_APPLICATION_ID || !SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
+        console.error('Square credentials missing for test_connection')
+        return badRequest('Square credentials not configured')
       }
       
-      console.log('✅ Square credentials validated successfully')
+      console.log('Square credentials validated successfully')
       return json({ 
         success: true, 
         applicationId: SQUARE_APPLICATION_ID, 
@@ -431,13 +241,12 @@ serve(async (req) => {
       })
     }
 
-    // Handle process_payment action - keep existing logic
     if (action === 'process_payment') {
-      console.log('💳 Processing payment request...')
+      console.log('Processing payment request...')
       
-      if (!hasAllCredentials) {
-        console.error('❌ Square credentials missing for process_payment')
-        return badRequest('Square payment system not configured properly')
+      if (!SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
+        console.error('Square credentials missing for process_payment')
+        return badRequest('Square payment system not configured')
       }
       
       const {
@@ -460,7 +269,7 @@ serve(async (req) => {
         return badRequest('Invalid "amount". Must be a positive number (USD)')
       }
       
-      console.log(`💰 Processing payment for ${cents} cents ($${(cents/100).toFixed(2)})`)
+      console.log(`Processing payment for ${cents} cents ($${(cents/100).toFixed(2)})`)
 
       const { customerId: ensuredCustomerId } = await ensureCustomer({
         customerId,
@@ -468,7 +277,7 @@ serve(async (req) => {
         name: customerName,
         phone: customerPhone,
         address: billingAddress,
-        accessToken: SQUARE_ACCESS_TOKEN!,
+        accessToken: SQUARE_ACCESS_TOKEN,
       })
 
       let paymentSourceId: string | undefined = sourceId || token
@@ -489,14 +298,14 @@ serve(async (req) => {
           verificationToken,
           cardholderName: customerName,
           billingAddress,
-          accessToken: SQUARE_ACCESS_TOKEN!,
+          accessToken: SQUARE_ACCESS_TOKEN,
         })
         
         if (!cardRes.ok) {
           return json({ 
             success: false, 
             error: cardRes.error, 
-            raw: cardRes.raw 
+            details: cardRes.raw 
           }, { status: 400 })
         }
         
@@ -505,105 +314,86 @@ serve(async (req) => {
       }
 
       if (!paymentSourceId) {
-        return badRequest('Missing payment source (token or sourceId)')
+        return badRequest('Missing payment source (token, sourceId, or saved card)')
       }
 
-      const paymentBody: Record<string, unknown> = {
-        source_id: paymentSourceId,
-        amount_money: { amount: cents, currency: 'USD' },
-        location_id: SQUARE_LOCATION_ID,
+      const paymentBody = {
         idempotency_key: idempotencyKey || crypto.randomUUID(),
-        autocomplete: true,
-        reference_id: orderId || undefined,
-        buyer_email_address: customerEmail || undefined,
-        note: customerName ? `Customer: ${customerName}` : undefined,
-        ...(verificationToken && !saveCard ? { verification_token: verificationToken } : {}),
-        customer_id: ensuredCustomerId || undefined,
+        source_id: paymentSourceId,
+        amount_money: {
+          amount: cents,
+          currency: 'USD',
+        },
+        location_id: SQUARE_LOCATION_ID,
+        ...(ensuredCustomerId ? { customer_id: ensuredCustomerId } : {}),
       }
 
-      console.log('📡 Sending payment request to Square API')
-
-      const payRes = await sqFetch('/v2/payments', SQUARE_ACCESS_TOKEN!, { 
-        method: 'POST', 
-        body: paymentBody 
-      })
-      
-      console.log('📊 Square API response:', {
-        ok: payRes.ok,
-        status: payRes.status,
-        hasErrors: !!(payRes.json?.errors)
+      console.log('Calling Square Payments API...')
+      const paymentRes = await sqFetch('/v2/payments', SQUARE_ACCESS_TOKEN, {
+        method: 'POST',
+        body: paymentBody,
       })
 
-      if (!payRes.ok) {
-        const firstErr = Array.isArray(payRes.json?.errors) ? payRes.json.errors[0] : null
-        const detail = firstErr?.detail || firstErr?.code || payRes.json?.message || 'Payment processing failed'
-
-        console.error('❌ Square payment failed:', detail)
-
+      if (!paymentRes.ok) {
+        console.error('Square payment failed:', paymentRes.json)
+        
         if (orderId) {
-          try {
-            await supabase.from('orders')
-              .update({ status: 'failed', notes: `Payment failed: ${detail}` })
-              .eq('id', orderId)
-          } catch (orderUpdateError) {
-            console.error('Failed to update order status:', orderUpdateError)
-          }
+          await supabase
+            .from('orders')
+            .update({ 
+              status: 'payment_failed', 
+              square_payment_id: null,
+              notes: `Payment failed: ${JSON.stringify(paymentRes.json?.errors || [])}`
+            })
+            .eq('id', orderId)
         }
-
+        
+        const firstErr = Array.isArray(paymentRes.json?.errors) ? paymentRes.json.errors[0] : null
+        const detail = firstErr?.detail || firstErr?.code || paymentRes.json?.message || 'Payment failed'
+        
         return json({ 
           success: false, 
           error: detail, 
-          raw: payRes.json,
-          squareStatus: payRes.status,
-          squareErrors: payRes.json?.errors || []
+          details: paymentRes.json 
         }, { status: 400 })
       }
 
-      const payment = payRes.json?.payment
-      const paymentId = payment?.id as string | undefined
+      const payment = paymentRes.json?.payment
+      console.log('Payment successful:', payment?.id)
 
-      console.log('✅ Payment successful:', paymentId?.substring(0, 10) + '...')
-
-      if (orderId) {
-        try {
-          const { error: updateError } = await supabase.from('orders')
-            .update({ 
-              status: 'completed', 
-              square_order_id: paymentId, 
-              payment_id: paymentId 
-            })
-            .eq('id', orderId)
-          
-          if (updateError) {
-            console.error('Order update failed:', updateError)
-          } else {
-            console.log('✅ Order updated successfully')
-          }
-        } catch (orderUpdateError) {
-          console.error('Failed to update order:', orderUpdateError)
+      if (orderId && payment?.id) {
+        const { error: updateError } = await supabase
+          .from('orders')
+          .update({ 
+            status: 'paid', 
+            square_payment_id: payment.id,
+            payment_method: payment.source_type || 'card'
+          })
+          .eq('id', orderId)
+        
+        if (updateError) {
+          console.error('Failed to update order status:', updateError)
         }
       }
 
       return json({
         success: true,
-        paymentId,
-        receiptUrl: payment?.receipt_url,
-        status: payment?.status,
+        paymentId: payment?.id,
         customerId: ensuredCustomerId,
-        savedCardId,
+        ...(savedCardId ? { savedCardId } : {}),
       })
     }
 
-    return badRequest(`Invalid action: "${action}". Supported actions: test_connection, process_payment, validate_secrets`)
-    
+    return badRequest(`Unknown action: ${action}`)
   } catch (error) {
-    const err = error as Error
-    console.error('💥 Square payments function error:', err?.message, err?.stack)
-    
-    return json({ 
-      success: false, 
-      error: 'Internal server error', 
-      details: err?.message ?? 'Unknown error' 
-    }, { status: 500 })
+    console.error('Payment processing error:', error)
+    return json(
+      { 
+        success: false, 
+        error: 'Internal server error', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      }, 
+      { status: 500 }
+    )
   }
 })
