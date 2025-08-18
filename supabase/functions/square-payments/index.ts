@@ -228,8 +228,19 @@ serve(async (req) => {
     if (action === 'test_connection') {
       console.log('Testing Square connection...')
       
+      // Debug the actual secret values
+      console.log('SQUARE_APPLICATION_ID exists:', !!SQUARE_APPLICATION_ID, 'length:', SQUARE_APPLICATION_ID?.length || 0)
+      console.log('SQUARE_ACCESS_TOKEN exists:', !!SQUARE_ACCESS_TOKEN, 'length:', SQUARE_ACCESS_TOKEN?.length || 0)  
+      console.log('SQUARE_LOCATION_ID exists:', !!SQUARE_LOCATION_ID, 'length:', SQUARE_LOCATION_ID?.length || 0)
+      console.log('SQUARE_ENVIRONMENT:', SQUARE_ENVIRONMENT)
+      
       if (!SQUARE_APPLICATION_ID || !SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
         console.error('Square credentials missing for test_connection')
+        console.error('Missing:', {
+          applicationId: !SQUARE_APPLICATION_ID,
+          accessToken: !SQUARE_ACCESS_TOKEN, 
+          locationId: !SQUARE_LOCATION_ID
+        })
         return badRequest('Square credentials not configured')
       }
       
