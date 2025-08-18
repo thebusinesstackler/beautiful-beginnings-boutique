@@ -369,7 +369,7 @@ const OrderManagement = () => {
                 <div key={order.id} className="border rounded-lg p-3 sm:p-4 bg-white shadow-sm">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 sm:mb-4 gap-2">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-charcoal text-sm sm:text-base">Order #{order.id.slice(0, 8)}</h3>
+                      <h3 className="font-medium text-charcoal text-sm sm:text-base">Order #{order.id}</h3>
                       <p className="text-xs sm:text-sm text-stone truncate">{order.customer_email}</p>
                       {order.customer_name && (
                         <p className="text-xs sm:text-sm text-stone">{order.customer_name}</p>

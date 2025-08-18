@@ -372,10 +372,13 @@ serve(async (req) => {
 
       const payment = paymentRes.json?.payment
       console.log('Payment successful:', payment?.id)
+      console.log('Full payment response:', JSON.stringify(payment, null, 2))
 
       if (orderId && payment?.id) {
         // Extract card details from payment response
         const cardDetails = payment?.card_details
+        console.log('Card details from payment:', JSON.stringify(cardDetails, null, 2))
+        
         const updateData: any = {
           status: 'paid', 
           payment_id: payment.id,
@@ -384,19 +387,28 @@ serve(async (req) => {
 
         // Add card details if available
         if (cardDetails) {
+          console.log('Processing card details:', cardDetails)
           if (cardDetails.card?.last_4) {
             updateData.card_last_4 = cardDetails.card.last_4
+            console.log('Added card_last_4:', cardDetails.card.last_4)
           }
           if (cardDetails.card?.card_brand) {
             updateData.card_brand = cardDetails.card.card_brand
+            console.log('Added card_brand:', cardDetails.card.card_brand)
           }
           if (cardDetails.card?.exp_month) {
             updateData.card_exp_month = cardDetails.card.exp_month
+            console.log('Added card_exp_month:', cardDetails.card.exp_month)
           }
           if (cardDetails.card?.exp_year) {
             updateData.card_exp_year = cardDetails.card.exp_year
+            console.log('Added card_exp_year:', cardDetails.card.exp_year)
           }
+        } else {
+          console.log('No card_details found in payment response')
         }
+        
+        console.log('Final update data:', JSON.stringify(updateData, null, 2))
         
         const { error: updateError } = await supabase
           .from('orders')
@@ -405,6 +417,8 @@ serve(async (req) => {
         
         if (updateError) {
           console.error('Failed to update order status:', updateError)
+        } else {
+          console.log('Order status updated successfully to paid')
         }
       }
 
