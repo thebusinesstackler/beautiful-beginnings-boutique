@@ -36,7 +36,7 @@ const loadSquareSDK = (): Promise<void> => {
     }
 
     // Check if Square SDK script already exists
-    const existingScript = document.querySelector('script[src*="square"]');
+    const existingScript = document.querySelector('script[src="https://web.squarecdn.com/v1/square.js"]');
     if (existingScript) {
       // Script tag exists, wait for window.Square to be available
       const checkSquare = () => {
@@ -81,6 +81,8 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
 
   // This ref is passed to SquareCardForm
   const cardRef = useRef<HTMLDivElement>(null);
+  // Ref to track the current card instance for cleanup
+  const cardRefInstance = useRef<any>(null);
 
   /** Check HTTPS or localhost */
   const checkSecureConnection = () => {
@@ -98,7 +100,18 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
   const initializeCard = async (paymentsInstance: any, retryCount = 0) => {
     const maxRetries = 3;
     
+    // Return early if paymentsInstance is falsy to avoid console noise
+    if (!paymentsInstance) {
+      console.warn('No payments instance available for card initialization');
+      return;
+    }
+    
     try {
+      // Guard against multiple initializeCard calls if component re-mounts quickly
+      if (cardRef.current?.childNodes?.length) {
+        console.log('Card already attached, skipping initialization');
+        return;
+      }
       // Wait for DOM to be ready
       await new Promise(resolve => {
         if (document.readyState === 'complete') {
@@ -134,6 +147,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
       cardRef.current.innerHTML = '';
       await cardInstance.attach(cardRef.current);
       setCard(cardInstance);
+      cardRefInstance.current = cardInstance;
       console.log('Square card initialized successfully');
     } catch (err) {
       console.error('Error initializing card:', err);
@@ -153,7 +167,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     const maxRetries = 3;
     let retryCount = 0;
     
-    const attemptFetch = async (): Promise<{ appId: string; locationId: string }> => {
+    const attemptFetch = async (): Promise<{ appId: string; locationId: string; environment?: string }> => {
       try {
         const { data, error } = await supabase.functions.invoke('square-payments', {
           body: { action: 'test_connection' }
@@ -218,13 +232,14 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         
         console.log('✅ Square config success:', {
           applicationId: data.applicationId?.substring(0, 10) + '...',
-          locationId: data.locationId?.substring(0, 10) + '...',
+          locationId: data.locationId?.substring(0, 8) + '...',
           environment: data.environment
         });
         
         return {
           appId: data.applicationId,
           locationId: data.locationId,
+          environment: data.environment,
         };
       } catch (error) {
         // If it's a network error and we haven't exhausted retries
@@ -277,7 +292,11 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
         const config = await fetchSquareConfig();
         if (!mounted) return;
         
-        console.log('Square config loaded:', { appId: config.appId?.substring(0, 10) + '...', locationId: config.locationId });
+        console.log('Square config loaded:', { 
+          appId: config.appId?.substring(0, 10) + '...', 
+          locationId: config.locationId?.substring(0, 8) + '...',
+          environment: config.environment 
+        });
         setSquareConfig(config);
 
         // Verify Square SDK is available
@@ -324,11 +343,9 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
 
     return () => {
       mounted = false;
-      if (card) {
-        try {
-          card.destroy();
-        } catch {}
-      }
+      try {
+        cardRefInstance.current?.destroy?.();
+      } catch {}
     };
   }, []);
 
@@ -339,6 +356,6 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     sdkStatus,
     isSecureConnection,
     cardRef,
-    squareEnvironment: 'production',
+    squareEnvironment: squareEnvironment ?? squareConfig?.environment ?? 'production',
   };
 };
