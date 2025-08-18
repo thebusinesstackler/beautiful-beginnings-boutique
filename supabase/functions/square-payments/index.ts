@@ -13,10 +13,21 @@ const corsHeaders = {
 /** ---------- Square Credentials from Environment Variables ---------- */
 console.log('🔧 Reading Square environment variables...')
 
+// Get all environment variables and log Square-related ones
+const allEnvKeys = Object.keys(Deno.env.toObject())
+const squareRelatedKeys = allEnvKeys.filter(key => key.includes('SQUARE'))
+console.log('🔍 All Square-related environment keys found:', squareRelatedKeys)
+
 const SQUARE_APPLICATION_ID = Deno.env.get('SQUARE_APPLICATION_ID')
 const SQUARE_ACCESS_TOKEN = Deno.env.get('SQUARE_ACCESS_TOKEN')
 const SQUARE_LOCATION_ID = Deno.env.get('SQUARE_LOCATION_ID')
-const SQUARE_ENVIRONMENT = Deno.env.get('SQUARE_ENVIRONMENT') || 'production'
+let SQUARE_ENVIRONMENT = Deno.env.get('SQUARE_ENVIRONMENT') || 'production'
+
+// Handle encrypted/hashed environment values - default to production if not standard
+if (SQUARE_ENVIRONMENT && SQUARE_ENVIRONMENT.length > 20) {
+  console.log('⚠️ SQUARE_ENVIRONMENT appears to be encrypted/hashed, defaulting to production')
+  SQUARE_ENVIRONMENT = 'production'
+}
 
 console.log('🔍 Square credentials check:', {
   SQUARE_APPLICATION_ID: SQUARE_APPLICATION_ID ? `Present (${SQUARE_APPLICATION_ID.substring(0, 8)}...)` : 'MISSING',
@@ -24,6 +35,15 @@ console.log('🔍 Square credentials check:', {
   SQUARE_LOCATION_ID: SQUARE_LOCATION_ID ? `Present (${SQUARE_LOCATION_ID.substring(0, 8)}...)` : 'MISSING',
   SQUARE_ENVIRONMENT: SQUARE_ENVIRONMENT
 })
+
+// Additional debugging - show what we actually got
+if (!SQUARE_APPLICATION_ID || !SQUARE_LOCATION_ID) {
+  console.log('🔍 Raw environment values for debugging:')
+  console.log(`  SQUARE_APPLICATION_ID length: ${SQUARE_APPLICATION_ID?.length || 0}`)
+  console.log(`  SQUARE_ACCESS_TOKEN length: ${SQUARE_ACCESS_TOKEN?.length || 0}`)
+  console.log(`  SQUARE_LOCATION_ID length: ${SQUARE_LOCATION_ID?.length || 0}`)
+  console.log(`  SQUARE_ENVIRONMENT raw: "${Deno.env.get('SQUARE_ENVIRONMENT') || 'MISSING'}"`)
+}
 
 // Validate required Square credentials
 const hasAllCredentials = !!(SQUARE_APPLICATION_ID && SQUARE_ACCESS_TOKEN && SQUARE_LOCATION_ID)
