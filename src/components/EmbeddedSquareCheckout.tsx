@@ -82,7 +82,32 @@ const EmbeddedSquareCheckout = memo(({
 
       if (error) {
         console.error('Payment processing error:', error);
-        setPaymentResult({ success: false, message: error.message || 'Payment failed. Please try again.' });
+        
+        // Enhanced error logging with response text
+        let errorMessage = error.message || 'Payment failed. Please try again.';
+        if (error.context?.response) {
+          try {
+            const responseText = await error.context.response.text();
+            console.error('❌ Payment function response body:', responseText);
+            
+            // Try to parse JSON error response
+            try {
+              const errorData = JSON.parse(responseText);
+              if (errorData.error) {
+                errorMessage = errorData.error;
+              }
+            } catch (e) {
+              // Not JSON, use the raw text if it's meaningful
+              if (responseText && responseText.trim() !== '') {
+                errorMessage = responseText;
+              }
+            }
+          } catch (e) {
+            console.error('❌ Could not read payment error response:', e);
+          }
+        }
+        
+        setPaymentResult({ success: false, message: errorMessage });
       } else if (data?.success) {
         setPaymentResult({ success: true, message: `Payment successful! ID: ${data.paymentId}` });
         onSuccess?.();

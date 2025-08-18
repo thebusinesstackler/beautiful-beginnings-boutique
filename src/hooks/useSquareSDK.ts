@@ -200,7 +200,7 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
           if (error.context?.response) {
             try {
               const responseText = await error.context.response.text();
-              console.error('❌ Function response body:', responseText);
+              console.error('❌ Test connection function response body:', responseText);
               
               // Try to parse JSON error response
               try {
