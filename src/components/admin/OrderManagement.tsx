@@ -5,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Download, Eye, CheckCircle, Users, Image as ImageIcon, RefreshCw } from 'lucide-react';
+import { Package, Download, Eye, CheckCircle, Users, Image as ImageIcon, RefreshCw, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import OrderDetailsModal from './OrderDetailsModal';
 
 interface Order {
@@ -35,6 +36,7 @@ const OrderManagement = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [deleteConfirmOrder, setDeleteConfirmOrder] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -106,6 +108,33 @@ const OrderManagement = () => {
       toast({
         title: "Error",
         description: "Failed to update order status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteOrder = async (orderId: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      // Remove from local state
+      setOrders(orders.filter(order => order.id !== orderId));
+      setDeleteConfirmOrder(null);
+
+      toast({
+        title: "Success",
+        description: "Order deleted successfully",
+      });
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete order",
         variant: "destructive",
       });
     }
@@ -475,8 +504,17 @@ const OrderManagement = () => {
                           <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                           Fulfill
                         </Button>
-                      )}
-                    </div>
+                       )}
+                       <Button
+                         size="sm"
+                         variant="outline"
+                         onClick={() => setDeleteConfirmOrder(order.id)}
+                         className="border-red-300 text-red-600 hover:bg-red-50 text-xs sm:text-sm"
+                       >
+                         <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                         Delete
+                       </Button>
+                     </div>
                   </div>
                 </div>
               );
@@ -494,6 +532,31 @@ const OrderManagement = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
       />
+
+      {/* Delete Confirmation Dialog */}
+      {deleteConfirmOrder && (
+        <Dialog open={!!deleteConfirmOrder} onOpenChange={() => setDeleteConfirmOrder(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Order</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this order? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteConfirmOrder(null)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={() => deleteOrder(deleteConfirmOrder)}
+              >
+                Delete Order
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Users, Mail, Download, Search, Plus, RefreshCw } from 'lucide-react';
+import { Users, Mail, Download, Search, Plus, RefreshCw, Trash2 } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -27,6 +27,7 @@ const CustomerManagement = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddingCustomer, setIsAddingCustomer] = useState(false);
+  const [deleteConfirmCustomer, setDeleteConfirmCustomer] = useState<string | null>(null);
   const [newCustomer, setNewCustomer] = useState({
     email: '',
     name: '',
@@ -102,6 +103,33 @@ const CustomerManagement = () => {
       toast({
         title: "Error",
         description: "Failed to add customer",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteCustomer = async (customerId: string) => {
+    try {
+      const { error } = await supabase
+        .from('customers')
+        .delete()
+        .eq('id', customerId);
+
+      if (error) throw error;
+
+      // Remove from local state
+      setCustomers(customers.filter(customer => customer.id !== customerId));
+      setDeleteConfirmCustomer(null);
+
+      toast({
+        title: "Success",
+        description: "Customer deleted successfully",
+      });
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete customer",
         variant: "destructive",
       });
     }
@@ -348,34 +376,47 @@ const CustomerManagement = () => {
           ) : (
             <div className="space-y-4">
               {filteredCustomers.map((customer) => (
-                <div key={customer.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm">
-                  <div>
-                    <h3 className="font-medium text-charcoal">{customer.email}</h3>
-                    {customer.name && (
-                      <p className="text-sm text-stone">{customer.name}</p>
-                    )}
-                    {customer.phone && (
-                      <p className="text-sm text-stone">{customer.phone}</p>
-                    )}
-                    <div className="flex items-center space-x-2 mt-2">
-                      <Badge variant="outline">
-                        {customer.total_orders || 0} orders
-                      </Badge>
-                      <Badge variant="outline">
-                        ${(customer.total_spent || 0).toFixed(2)} spent
-                      </Badge>
-                      {customer.newsletter_subscribed && (
-                        <Badge variant="default">Newsletter</Badge>
+                <div key={customer.id} className="p-4 border rounded-lg bg-white shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-charcoal">{customer.email}</h3>
+                      {customer.name && (
+                        <p className="text-sm text-stone">{customer.name}</p>
                       )}
+                      {customer.phone && (
+                        <p className="text-sm text-stone">{customer.phone}</p>
+                      )}
+                      <div className="flex items-center space-x-2 mt-2">
+                        <Badge variant="outline">
+                          {customer.total_orders || 0} orders
+                        </Badge>
+                        <Badge variant="outline">
+                          ${(customer.total_spent || 0).toFixed(2)} spent
+                        </Badge>
+                        {customer.newsletter_subscribed && (
+                          <Badge variant="default">Newsletter</Badge>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-stone">
-                      Joined {new Date(customer.created_at).toLocaleDateString()}
-                    </p>
-                    {(customer.total_spent || 0) > 100 && (
-                      <Badge variant="secondary" className="mt-1">High Value</Badge>
-                    )}
+                    <div className="flex items-center space-x-2">
+                      <div className="text-right">
+                        <p className="text-sm text-stone">
+                          Joined {new Date(customer.created_at).toLocaleDateString()}
+                        </p>
+                        {(customer.total_spent || 0) > 100 && (
+                          <Badge variant="secondary" className="mt-1">High Value</Badge>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setDeleteConfirmCustomer(customer.id)}
+                        className="border-red-300 text-red-600 hover:bg-red-50 text-xs"
+                      >
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -383,6 +424,31 @@ const CustomerManagement = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Customer Confirmation Dialog */}
+      {deleteConfirmCustomer && (
+        <Dialog open={!!deleteConfirmCustomer} onOpenChange={() => setDeleteConfirmCustomer(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Customer</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this customer? This action cannot be undone and will also delete all associated orders.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteConfirmCustomer(null)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={() => deleteCustomer(deleteConfirmCustomer)}
+              >
+                Delete Customer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
