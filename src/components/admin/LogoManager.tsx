@@ -49,15 +49,29 @@ const LogoManager = () => {
         <div className="space-y-3">
           <Label className="text-charcoal font-medium">Current Logo</Label>
           <div className="flex items-center space-x-4 p-4 bg-white rounded-lg border border-sage/20">
-            <img 
-              src={logoUrl || '/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png'} 
-              alt={logoAltText} 
-              className="h-16 w-16 object-contain rounded-lg border border-stone/20"
-            />
-            <div>
-              <p className="text-sm font-medium text-charcoal">Logo Preview</p>
-              <p className="text-xs text-stone">{logoAltText}</p>
-            </div>
+            {logoUrl ? (
+              <>
+                <img 
+                  src={logoUrl} 
+                  alt={logoAltText} 
+                  className="h-16 w-16 object-contain rounded-lg border border-stone/20"
+                />
+                <div>
+                  <p className="text-sm font-medium text-charcoal">Logo Preview</p>
+                  <p className="text-xs text-stone">{logoAltText}</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="h-16 w-16 rounded-lg border border-stone/20 bg-stone/10 flex items-center justify-center">
+                  <Image className="h-6 w-6 text-stone/50" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-charcoal">No Logo Selected</p>
+                  <p className="text-xs text-stone">Upload a logo to display here</p>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
