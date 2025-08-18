@@ -11,10 +11,6 @@ interface SiteSettings {
   store_address: string;
   logo_url?: string;
   logo_alt_text?: string;
-  square_app_id?: string;
-  square_location_id?: string;
-  square_access_token?: string;
-  square_environment?: string;
   domestic_shipping?: string;
   international_shipping?: string;
   free_shipping_threshold?: string;
@@ -46,10 +42,11 @@ export const useSettings = () => {
 
   const fetchSettings = async () => {
     try {
-      console.log('Fetching ALL settings from database (including Square credentials)...');
+      console.log('Fetching settings from database (excluding Square credentials)...');
       const { data, error } = await supabase
         .from('settings')
-        .select('key, value');
+        .select('key, value')
+        .not('key', 'in', '("square_app_id","square_location_id","square_access_token","square_environment")');
 
       if (error) {
         console.error('Error fetching settings:', error);
@@ -67,7 +64,7 @@ export const useSettings = () => {
           }
         });
         
-        console.log('Parsed settings object with Square credentials:', settingsObject);
+        console.log('Parsed settings object (excluding Square credentials):', settingsObject);
         setSettings(prev => ({ ...prev, ...settingsObject }));
       }
     } catch (error) {

@@ -582,9 +582,7 @@ const Checkout = () => {
                 />
 
                 <div className="mt-6 text-center text-xs text-charcoal/60">
-                  <p>
-                    {settings.square_environment === 'production' ? '🔒 Live payment processing by Square' : '🔒 Secure checkout powered by Square'}
-                  </p>
+                  <p>🔒 Secure checkout powered by Square</p>
                   <p className="mt-1">Your payment information is protected</p>
                 </div>
               </div>
