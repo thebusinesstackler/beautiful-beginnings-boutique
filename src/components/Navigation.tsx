@@ -38,7 +38,7 @@ const Navigation = () => {
             style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
           >
             <img 
-              src={settings.logo_url || '/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png'} 
+              src={settings.logo_url || 'https://ibdjzzgvxlscmwlbuewd.supabase.co/storage/v1/object/public/logos/logo_1755556584395.png'} 
               alt={settings.logo_alt_text || 'Beautiful Beginnings'} 
               className="h-24 w-24 object-contain"
             />

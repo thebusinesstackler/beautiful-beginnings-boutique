@@ -42,7 +42,7 @@ const Footer = () => {
               <div className="relative">
                 <div className="absolute inset-0 bg-sage/10 rounded-full blur-sm"></div>
                 <img 
-                  src={settings.logo_url || '/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png'} 
+                  src={settings.logo_url || 'https://ibdjzzgvxlscmwlbuewd.supabase.co/storage/v1/object/public/logos/logo_1755556584395.png'} 
                   alt={settings.logo_alt_text || 'Beautiful Beginnings'} 
                   className="relative h-12 w-12 object-contain rounded-full shadow-md"
                 />
