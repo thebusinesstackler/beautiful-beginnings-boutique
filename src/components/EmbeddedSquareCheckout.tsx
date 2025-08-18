@@ -110,6 +110,18 @@ const EmbeddedSquareCheckout = memo(({
         setPaymentResult({ success: false, message: errorMessage });
       } else if (data?.success) {
         setPaymentResult({ success: true, message: `Payment successful! ID: ${data.paymentId}` });
+        
+        // Redirect to success page with customer name
+        const firstName = customerInfo.firstName || '';
+        const lastName = customerInfo.lastName || '';
+        const fullName = `${firstName} ${lastName}`.trim();
+        
+        if (fullName) {
+          window.location.href = `/checkout/success?customerName=${encodeURIComponent(fullName)}`;
+        } else {
+          window.location.href = '/checkout/success';
+        }
+        
         onSuccess?.();
       } else {
         const errorMsg = data?.error || 'Payment failed. Please try again.';

@@ -1,6 +1,6 @@
 
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Package, ArrowRight } from 'lucide-react';
 import Navigation from '@/components/Navigation';
@@ -10,8 +10,16 @@ import { toast } from '@/hooks/use-toast';
 
 const CheckoutSuccess = () => {
   const { clearCart } = useCart();
+  const [searchParams] = useSearchParams();
+  const [customerName, setCustomerName] = useState<string>('');
 
   useEffect(() => {
+    // Get customer name from URL parameters
+    const nameParam = searchParams.get('customerName');
+    if (nameParam) {
+      setCustomerName(nameParam);
+    }
+    
     // Clear cart after successful payment
     clearCart();
     
@@ -20,7 +28,7 @@ const CheckoutSuccess = () => {
       title: "Payment Successful!",
       description: "Your order has been processed and you'll receive a confirmation email shortly.",
     });
-  }, [clearCart]);
+  }, [clearCart, searchParams]);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -35,10 +43,10 @@ const CheckoutSuccess = () => {
 
           {/* Success Message */}
           <h1 className="text-4xl font-bold text-charcoal font-playfair mb-4">
-            Thank You for Your Order!
+            {customerName ? `Thank You, ${customerName.split(' ')[0]}!` : 'Thank You for Your Order!'}
           </h1>
           <p className="text-xl text-charcoal/70 mb-8 max-w-2xl mx-auto">
-            We received your order! We're excited to create your personalized keepsake!
+            {customerName ? `Hi ${customerName.split(' ')[0]},` : ''} We received your order! We're excited to create your personalized keepsake!
           </p>
 
           {/* Order Details Card */}
