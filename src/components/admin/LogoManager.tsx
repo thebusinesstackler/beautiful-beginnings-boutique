@@ -5,10 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Image, Upload } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
+import { useLogoUpload } from '@/hooks/useLogoUpload';
 import CompactPhotoUpload from '@/components/CompactPhotoUpload';
 
 const LogoManager = () => {
   const { settings, updateSettings, loading } = useSettings();
+  const { uploadLogo, uploading } = useLogoUpload();
   const [logoUrl, setLogoUrl] = useState(settings.logo_url || '');
   const [logoAltText, setLogoAltText] = useState(settings.logo_alt_text || 'Beautiful Beginnings');
 
@@ -17,10 +19,11 @@ const LogoManager = () => {
     setLogoAltText(settings.logo_alt_text || 'Beautiful Beginnings');
   }, [settings]);
 
-  const handleLogoUpload = (file: File) => {
-    // The CompactPhotoUpload component handles the upload and provides the URL
-    const uploadedUrl = `/lovable-uploads/${file.name}`;
-    setLogoUrl(uploadedUrl);
+  const handleLogoUpload = async (file: File) => {
+    const uploadedUrl = await uploadLogo(file);
+    if (uploadedUrl) {
+      setLogoUrl(uploadedUrl);
+    }
   };
 
   const handleSaveLogo = () => {
@@ -103,9 +106,9 @@ const LogoManager = () => {
         <Button 
           className="bg-sage hover:bg-sage/90 text-white"
           onClick={handleSaveLogo}
-          disabled={loading}
+          disabled={loading || uploading}
         >
-          {loading ? 'Saving...' : 'Save Logo Settings'}
+          {uploading ? 'Uploading...' : loading ? 'Saving...' : 'Save Logo Settings'}
         </Button>
       </CardContent>
     </Card>
