@@ -74,12 +74,12 @@ export const useLogoUpload = () => {
       const fileExt = file.name.split('.').pop();
       const sanitizedFileName = sanitizeInput(`logo_${Date.now()}`);
       const uniqueFileName = `${sanitizedFileName}.${fileExt}`;
-      const filePath = `logos/${uniqueFileName}`;
+      const filePath = uniqueFileName;
 
       console.log('Uploading logo to Supabase storage:', filePath);
 
       const { data, error } = await supabase.storage
-        .from('product-images')
+        .from('logos')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false
@@ -97,7 +97,7 @@ export const useLogoUpload = () => {
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('product-images')
+        .from('logos')
         .getPublicUrl(filePath);
 
       console.log('Logo uploaded successfully:', publicUrl);
@@ -130,7 +130,7 @@ export const useLogoUpload = () => {
       }
 
       // Extract file path from URL
-      const urlParts = url.split('/product-images/');
+      const urlParts = url.split('/logos/');
       if (urlParts.length !== 2) {
         console.error('Invalid URL format for deletion');
         return false;
@@ -139,7 +139,7 @@ export const useLogoUpload = () => {
       const filePath = urlParts[1];
 
       const { error } = await supabase.storage
-        .from('product-images')
+        .from('logos')
         .remove([filePath]);
 
       if (error) {
