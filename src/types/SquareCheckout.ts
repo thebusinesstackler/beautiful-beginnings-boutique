@@ -15,11 +15,12 @@ export interface Address {
 }
 
 export interface CartItem {
-  id: number;
+  id: string; // Changed to string to match new cart structure
   name: string;
   price: number;
   quantity: number;
   image: string;
+  product_id?: string; // Added product_id to link to actual products
   uploadedPhoto?: File;
   uploadedPhotoUrl?: string;
   willUploadLater?: boolean;

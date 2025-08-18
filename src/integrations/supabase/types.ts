@@ -499,6 +499,10 @@ export type Database = {
       orders: {
         Row: {
           billing_address: Json | null
+          card_brand: string | null
+          card_exp_month: number | null
+          card_exp_year: number | null
+          card_last_4: string | null
           created_at: string | null
           customer_email: string
           customer_id: string
@@ -508,6 +512,7 @@ export type Database = {
           id: string
           notes: string | null
           payment_id: string | null
+          payment_method: string | null
           personalization_data: Json | null
           shipping_address: Json | null
           square_checkout_id: string | null
@@ -520,6 +525,10 @@ export type Database = {
         }
         Insert: {
           billing_address?: Json | null
+          card_brand?: string | null
+          card_exp_month?: number | null
+          card_exp_year?: number | null
+          card_last_4?: string | null
           created_at?: string | null
           customer_email: string
           customer_id: string
@@ -529,6 +538,7 @@ export type Database = {
           id?: string
           notes?: string | null
           payment_id?: string | null
+          payment_method?: string | null
           personalization_data?: Json | null
           shipping_address?: Json | null
           square_checkout_id?: string | null
@@ -541,6 +551,10 @@ export type Database = {
         }
         Update: {
           billing_address?: Json | null
+          card_brand?: string | null
+          card_exp_month?: number | null
+          card_exp_year?: number | null
+          card_last_4?: string | null
           created_at?: string | null
           customer_email?: string
           customer_id?: string
@@ -550,6 +564,7 @@ export type Database = {
           id?: string
           notes?: string | null
           payment_id?: string | null
+          payment_method?: string | null
           personalization_data?: Json | null
           shipping_address?: Json | null
           square_checkout_id?: string | null

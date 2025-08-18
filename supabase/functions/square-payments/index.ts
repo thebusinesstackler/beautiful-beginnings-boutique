@@ -374,13 +374,33 @@ serve(async (req) => {
       console.log('Payment successful:', payment?.id)
 
       if (orderId && payment?.id) {
+        // Extract card details from payment response
+        const cardDetails = payment?.card_details
+        const updateData: any = {
+          status: 'paid', 
+          payment_id: payment.id,
+          payment_method: payment.source_type || 'card'
+        }
+
+        // Add card details if available
+        if (cardDetails) {
+          if (cardDetails.card?.last_4) {
+            updateData.card_last_4 = cardDetails.card.last_4
+          }
+          if (cardDetails.card?.card_brand) {
+            updateData.card_brand = cardDetails.card.card_brand
+          }
+          if (cardDetails.card?.exp_month) {
+            updateData.card_exp_month = cardDetails.card.exp_month
+          }
+          if (cardDetails.card?.exp_year) {
+            updateData.card_exp_year = cardDetails.card.exp_year
+          }
+        }
+        
         const { error: updateError } = await supabase
           .from('orders')
-          .update({ 
-            status: 'paid', 
-            square_payment_id: payment.id,
-            payment_method: payment.source_type || 'card'
-          })
+          .update(updateData)
           .eq('id', orderId)
         
         if (updateError) {

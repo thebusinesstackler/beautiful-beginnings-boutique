@@ -19,10 +19,16 @@ interface Order {
   billing_address: any;
   payment_id: string;
   square_order_id: string;
+  square_checkout_id?: string;
   tracking_number: string;
   notes: string;
   fulfilled_at: string;
   customer_id: string;
+  payment_method?: string;
+  card_last_4?: string;
+  card_brand?: string;
+  card_exp_month?: number;
+  card_exp_year?: number;
 }
 
 interface OrderDetailsModalProps {
@@ -406,6 +412,31 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                 <div>
                   <span className="text-stone font-medium">Square Order ID:</span>
                   <p className="text-charcoal font-mono text-xs">{order.square_order_id}</p>
+                </div>
+              )}
+              {order.square_checkout_id && (
+                <div>
+                  <span className="text-stone font-medium">Square Checkout ID:</span>
+                  <p className="text-charcoal font-mono text-xs">{order.square_checkout_id}</p>
+                </div>
+              )}
+              {order.card_last_4 && order.card_brand && (
+                <div>
+                  <span className="text-stone font-medium">Card Details:</span>
+                  <p className="text-charcoal">
+                    {order.card_brand} ending in {order.card_last_4}
+                    {order.card_exp_month && order.card_exp_year && (
+                      <span className="text-xs text-gray-600 ml-2">
+                        (Exp: {order.card_exp_month.toString().padStart(2, '0')}/{order.card_exp_year})
+                      </span>
+                    )}
+                  </p>
+                </div>
+              )}
+              {order.payment_method && (
+                <div>
+                  <span className="text-stone font-medium">Payment Method:</span>
+                  <p className="text-charcoal">{order.payment_method}</p>
                 </div>
               )}
             </div>

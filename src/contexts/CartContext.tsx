@@ -4,7 +4,8 @@ import { toast } from '@/hooks/use-toast';
 import { usePhotoUpload } from '@/hooks/usePhotoUpload';
 
 interface CartItem {
-  id: number;
+  id: string; // Changed to string to store product UUID
+  product_id: string; // Actual product UUID from database
   name: string;
   price: number;
   quantity: number;
@@ -17,10 +18,10 @@ interface CartItem {
 interface CartContextProps {
   items: CartItem[];
   addToCart: (product: any, quantity?: number, photo?: File) => void;
-  removeFromCart: (itemId: number) => void;
-  updateQuantity: (itemId: number, newQuantity: number) => void;
-  updatePhoto: (itemId: number, file: File) => Promise<void>;
-  updateItemProperty: (itemId: number, property: string, value: any) => void;
+  removeFromCart: (itemId: string) => void;
+  updateQuantity: (itemId: string, newQuantity: number) => void;
+  updatePhoto: (itemId: string, file: File) => Promise<void>;
+  updateItemProperty: (itemId: string, property: string, value: any) => void;
   clearCart: () => void;
   getCartTotal: () => number;
   getCartItemCount: () => number;
@@ -47,6 +48,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         // Ensure all items have the correct structure and clean data
         const validatedItems = parsedItems.map((item: any) => ({
           id: item.id,
+          product_id: item.product_id || item.id, // Fallback for old cart items
           name: item.name,
           price: item.price,
           quantity: item.quantity,
@@ -67,6 +69,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     // Store cart items but exclude file objects and clean up undefined values
     const itemsToStore = items.map(item => ({
       id: item.id,
+      product_id: item.product_id,
       name: item.name,
       price: item.price,
       quantity: item.quantity,
@@ -79,8 +82,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [items]);
 
   const addToCart = useCallback(async (product: any, quantity: number = 1, photo?: File) => {
+    const itemId = `${product.id || product.uuid || Date.now()}-${Date.now()}`;
     const newItem: CartItem = {
-      id: Date.now(),
+      id: itemId,
+      product_id: product.id || product.uuid, // Store the actual product UUID
       name: product.name,
       price: product.price,
       quantity,
@@ -134,7 +139,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }, [uploadPhoto]);
 
-  const removeFromCart = useCallback((itemId: number) => {
+  const removeFromCart = useCallback((itemId: string) => {
     setItems(prevItems => prevItems.filter(item => item.id !== itemId));
     toast({
       title: "Item removed",
@@ -142,7 +147,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }, []);
 
-  const updateQuantity = useCallback((itemId: number, newQuantity: number) => {
+  const updateQuantity = useCallback((itemId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
       removeFromCart(itemId);
       return;
@@ -155,7 +160,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     );
   }, [removeFromCart]);
 
-  const updatePhoto = useCallback(async (itemId: number, file: File) => {
+  const updatePhoto = useCallback(async (itemId: string, file: File) => {
     
     try {
       // Upload the photo and get the URL
@@ -189,7 +194,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [uploadPhoto]);
 
-  const updateItemProperty = useCallback((itemId: number, property: string, value: any) => {
+  const updateItemProperty = useCallback((itemId: string, property: string, value: any) => {
     setItems(prevItems => prevItems.map(item =>
       item.id === itemId ? { ...item, [property]: value } : item
     ));

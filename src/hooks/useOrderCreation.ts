@@ -64,7 +64,7 @@ export const useOrderCreation = () => {
       if (orderRequest.items && orderRequest.items.length > 0) {
         const orderItems = orderRequest.items.map((item: any) => ({
           order_id: order.id,
-          product_id: item.id,
+          product_id: item.product_id || item.id, // Use product_id first, fallback to id
           product_name: item.name,
           product_image: item.image,
           quantity: item.quantity,

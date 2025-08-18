@@ -33,10 +33,10 @@ const Checkout = () => {
 
   // Photo upload states for each item
   const [uploadingStates, setUploadingStates] = useState<{
-    [key: number]: boolean;
+    [key: string]: boolean;
   }>({});
   const [showUploadInterface, setShowUploadInterface] = useState<{
-    [key: number]: boolean;
+    [key: string]: boolean;
   }>({});
 
   // Coupon state
@@ -114,7 +114,7 @@ const Checkout = () => {
       variant: "destructive"
     });
   };
-  const handlePhotoUpload = async (itemId: number, file: File) => {
+  const handlePhotoUpload = async (itemId: string, file: File) => {
     setUploadingStates(prev => ({
       ...prev,
       [itemId]: true
@@ -143,7 +143,7 @@ const Checkout = () => {
       }));
     }
   };
-  const handleRemovePhoto = (itemId: number) => {
+  const handleRemovePhoto = (itemId: string) => {
     updateItemProperty(itemId, 'uploadedPhotoUrl', null);
     updateItemProperty(itemId, 'uploadedPhoto', undefined);
     updateItemProperty(itemId, 'willUploadLater', false);
@@ -152,7 +152,7 @@ const Checkout = () => {
       [itemId]: false
     }));
   };
-  const handleWillUploadLater = (itemId: number, willUpload: boolean) => {
+  const handleWillUploadLater = (itemId: string, willUpload: boolean) => {
     updateItemProperty(itemId, 'willUploadLater', willUpload);
     setShowUploadInterface(prev => ({
       ...prev,
@@ -164,7 +164,7 @@ const Checkout = () => {
       updateItemProperty(itemId, 'uploadedPhoto', undefined);
     }
   };
-  const toggleUploadInterface = (itemId: number) => {
+  const toggleUploadInterface = (itemId: string) => {
     setShowUploadInterface(prev => ({
       ...prev,
       [itemId]: !prev[itemId]

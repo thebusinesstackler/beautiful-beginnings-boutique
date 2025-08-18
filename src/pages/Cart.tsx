@@ -33,7 +33,7 @@ const Cart = () => {
   const total = subtotal + shippingCost + tax;
   const estimatedDelivery = getEstimatedDelivery();
 
-  const handlePhotoUpload = (itemId: number, file: File) => {
+  const handlePhotoUpload = (itemId: string, file: File) => {
     updatePhoto(itemId, file);
     toast({
       title: "Photo uploaded!",
@@ -41,7 +41,7 @@ const Cart = () => {
     });
   };
 
-  const handlePhotoReplace = (itemId: number) => {
+  const handlePhotoReplace = (itemId: string) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';

@@ -26,7 +26,7 @@ const CartDrawer = ({ children }: CartDrawerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handlePhotoUpload = (itemId: number, file: File) => {
+  const handlePhotoUpload = (itemId: string, file: File) => {
     updatePhoto(itemId, file);
     toast({
       title: "Photo uploaded!",
