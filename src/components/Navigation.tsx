@@ -4,12 +4,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
-import { useLogo } from '@/hooks/useLogo';
+import { useSettings } from '@/hooks/useSettings';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { getCartItemCount } = useCart();
-  const { logoSettings } = useLogo();
+  const { settings } = useSettings();
   const navigate = useNavigate();
 
   const navItems = [
@@ -38,8 +38,8 @@ const Navigation = () => {
             style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
           >
             <img 
-              src={logoSettings.logo_url} 
-              alt={logoSettings.logo_alt_text} 
+              src={settings.logo_url || '/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png'} 
+              alt={settings.logo_alt_text || 'Beautiful Beginnings'} 
               className="h-24 w-24 object-contain"
             />
           </Link>

@@ -8,7 +8,7 @@ import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useLogo } from '@/hooks/useLogo';
+import { useSettings } from '@/hooks/useSettings';
 
 interface Product {
   id: string;
@@ -21,7 +21,7 @@ interface Product {
 }
 
 const Birthdays = () => {
-  const { logoSettings } = useLogo();
+  const { settings } = useSettings();
   const [likedProducts, setLikedProducts] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -118,8 +118,8 @@ const Birthdays = () => {
           <div className="text-center">
             <div className="mb-8">
                <img 
-                src={logoSettings.logo_url} 
-                alt={logoSettings.logo_alt_text} 
+                src={settings.logo_url || '/lovable-uploads/5e4be881-9356-47e3-ba32-e012d51e3e8c.png'} 
+                alt={settings.logo_alt_text || 'Beautiful Beginnings'} 
                 className="h-48 w-48 object-contain mx-auto"
               />
             </div>
