@@ -11,7 +11,8 @@ const corsHeaders = {
 }
 
 /** ---------- Square Credentials from Environment Variables ---------- */
-console.log('🔧 Reading Square environment variables...')
+console.log('🔧 Reading Square environment variables... (v2)')
+console.log('🔄 Function redeployed to pick up recreated secrets')
 
 // Get all environment variables and log Square-related ones
 const allEnvKeys = Object.keys(Deno.env.toObject())
