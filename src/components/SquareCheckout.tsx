@@ -30,6 +30,7 @@ interface SquareCheckoutProps {
   tax: number;
   onSuccess?: () => void;
   onError?: (error: any) => void;
+  isFormValid?: boolean;
 }
 
 const SquareCheckout = ({ 
@@ -42,7 +43,8 @@ const SquareCheckout = ({
   shippingCost,
   tax,
   onSuccess, 
-  onError 
+  onError,
+  isFormValid = true
 }: SquareCheckoutProps) => {
   return (
     <SquarePaymentForm
@@ -56,6 +58,7 @@ const SquareCheckout = ({
       tax={tax}
       onSuccess={onSuccess}
       onError={onError}
+      isFormValid={isFormValid}
     />
   );
 };

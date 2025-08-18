@@ -26,7 +26,8 @@ const EmbeddedSquareCheckout = memo(({
   card,
   sdkStatus = 'loading',
   isSecureConnection = false,
-  squareEnvironment
+  squareEnvironment,
+  isFormValid = true
 }: Props) => {
 
   const [isPaying, setIsPaying] = useState(false);
@@ -176,10 +177,12 @@ const EmbeddedSquareCheckout = memo(({
             
             <button
               onClick={handlePayment}
-              disabled={isPaying || !card || !cardRef}
+              disabled={isPaying || !card || !cardRef || !isFormValid}
               className="w-full bg-sage text-white py-3 px-4 rounded-lg hover:bg-sage/90 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
-              {isPaying ? (
+              {!isFormValid ? (
+                'Complete Required Fields First'
+              ) : isPaying ? (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
                   Processing Payment...

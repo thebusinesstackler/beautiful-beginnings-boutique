@@ -52,6 +52,7 @@ export interface EmbeddedSquareCheckoutProps {
   tax: number;
   onSuccess?: () => void;
   onError?: (error: any) => void;
+  isFormValid?: boolean;
 }
 
 export type PaymentStatus = 'idle' | 'processing' | 'success' | 'error';

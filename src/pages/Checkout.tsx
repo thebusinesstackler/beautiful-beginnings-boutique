@@ -68,6 +68,32 @@ const Checkout = () => {
     country: 'United States'
   });
   const [sameAsShipping, setSameAsShipping] = useState(true);
+  
+  // Form validation
+  const isFormValid = () => {
+    // Check customer info
+    const customerValid = customerInfo.firstName.trim() !== '' &&
+                         customerInfo.lastName.trim() !== '' &&
+                         customerInfo.email.trim() !== '' &&
+                         customerInfo.phone.trim() !== '';
+    
+    // Check shipping address
+    const shippingValid = shippingAddress.address.trim() !== '' &&
+                         shippingAddress.city.trim() !== '' &&
+                         shippingAddress.state.trim() !== '' &&
+                         shippingAddress.zipCode.trim() !== '';
+    
+    // Check billing address if different from shipping
+    const billingValid = sameAsShipping || (
+      billingAddress.address.trim() !== '' &&
+      billingAddress.city.trim() !== '' &&
+      billingAddress.state.trim() !== '' &&
+      billingAddress.zipCode.trim() !== ''
+    );
+    
+    return customerValid && shippingValid && billingValid;
+  };
+  
   const subtotal = getCartTotal();
   const discountedSubtotal = getDiscountedTotal();
   const shippingCost = calculateShipping(discountedSubtotal);
@@ -532,8 +558,28 @@ const Checkout = () => {
                     </div>}
                 </div>
 
+                {/* Form validation warning */}
+                {!isFormValid() && (
+                  <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-amber-800 font-medium text-sm">Please complete all required fields</p>
+                    <p className="text-amber-700 text-xs mt-1">Fill in your contact information and addresses to continue</p>
+                  </div>
+                )}
+
                 {/* Square Checkout */}
-                <SquareCheckout customerInfo={customerInfo} shippingAddress={shippingAddress} billingAddress={billingAddress} sameAsShipping={sameAsShipping} total={total} subtotal={discountedSubtotal} shippingCost={shippingCost} tax={tax} onSuccess={handleSquareSuccess} onError={handleSquareError} />
+                <SquareCheckout 
+                  customerInfo={customerInfo} 
+                  shippingAddress={shippingAddress} 
+                  billingAddress={billingAddress} 
+                  sameAsShipping={sameAsShipping} 
+                  total={total} 
+                  subtotal={discountedSubtotal} 
+                  shippingCost={shippingCost} 
+                  tax={tax} 
+                  onSuccess={handleSquareSuccess} 
+                  onError={handleSquareError}
+                  isFormValid={isFormValid()}
+                />
 
                 <div className="mt-6 text-center text-xs text-charcoal/60">
                   <p>
