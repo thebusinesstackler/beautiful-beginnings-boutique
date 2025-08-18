@@ -47,7 +47,7 @@ export const useSettings = () => {
       const { data, error } = await supabase
         .from('settings')
         .select('key, value')
-        .not('key', 'in', '(square_access_token,square_app_id,square_location_id,square_environment)'); // Exclude sensitive Square settings
+        .not('key', 'in', '(square_access_token,square_application_id,square_location_id,square_environment)'); // Exclude sensitive Square settings
 
       if (error) {
         throw error;

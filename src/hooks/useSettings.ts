@@ -46,7 +46,7 @@ export const useSettings = () => {
       const { data, error } = await supabase
         .from('settings')
         .select('key, value')
-        .not('key', 'in', '("square_app_id","square_location_id","square_access_token","square_environment")');
+        .not('key', 'in', '("square_application_id","square_location_id","square_access_token","square_environment")');
 
       if (error) {
         console.error('Error fetching settings:', error);

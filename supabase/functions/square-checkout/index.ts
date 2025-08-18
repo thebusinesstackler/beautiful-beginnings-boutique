@@ -140,7 +140,7 @@ serve(async (req) => {
     }
 
     const settings = {
-      square_app_id: squareAppId,
+      square_application_id: squareAppId,
       square_location_id: squareLocationId, 
       square_access_token: squareAccessToken,
       square_environment: squareEnvironment
