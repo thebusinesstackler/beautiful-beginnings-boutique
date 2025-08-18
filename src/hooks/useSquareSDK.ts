@@ -146,59 +146,93 @@ export const useSquareSDK = ({ squareAppId, squareLocationId, squareEnvironment 
     }
   };
 
-  /** Fetch Square config from Supabase using proper client */
+  /** Fetch Square config from Supabase using proper client with retry logic */
   const fetchSquareConfig = useCallback(async () => {
     console.log('🔍 Fetching Square configuration via Supabase client...');
     
-    try {
-      const { data, error } = await supabase.functions.invoke('square-payments', {
-        body: { action: 'test_connection' }
-      });
-      
-      console.log('📊 Square config response:', { data, error });
-      
-      if (error) {
-        console.error('❌ Supabase function error:', error);
+    const maxRetries = 3;
+    let retryCount = 0;
+    
+    const attemptFetch = async (): Promise<{ appId: string; locationId: string }> => {
+      try {
+        const { data, error } = await supabase.functions.invoke('square-payments', {
+          body: { action: 'test_connection' }
+        });
         
-        // Try to get more detailed error information
-        let errorMessage = error.message;
-        if (error.context?.response) {
-          try {
-            const responseText = await error.context.response.text();
-            console.error('❌ Function response body:', responseText);
-            errorMessage += `: ${responseText}`;
-          } catch (e) {
-            console.error('❌ Could not read error response:', e);
+        console.log('📊 Square config response:', { data, error });
+        
+        if (error) {
+          console.error('❌ Supabase function error:', error);
+          
+          // Check if it's a network error that we should retry
+          if (error.message?.includes('Failed to fetch') || 
+              error.message?.includes('network') || 
+              error.message?.includes('timeout')) {
+            
+            if (retryCount < maxRetries) {
+              retryCount++;
+              const delay = Math.pow(2, retryCount - 1) * 1000; // Exponential backoff: 1s, 2s, 4s
+              console.log(`⏳ Network error, retrying in ${delay}ms... (attempt ${retryCount}/${maxRetries})`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+              return attemptFetch();
+            }
           }
+          
+          // Try to get more detailed error information
+          let errorMessage = error.message;
+          if (error.context?.response) {
+            try {
+              const responseText = await error.context.response.text();
+              console.error('❌ Function response body:', responseText);
+              errorMessage += `: ${responseText}`;
+            } catch (e) {
+              console.error('❌ Could not read error response:', e);
+            }
+          }
+          
+          throw new Error(`Function invocation failed: ${errorMessage}`);
         }
         
-        throw new Error(`Function invocation failed: ${errorMessage}`);
+        if (!data?.success) {
+          console.error('❌ Square config failed:', data);
+          throw new Error(data?.error || 'Square configuration failed');
+        }
+        
+        if (!data.applicationId || !data.locationId) {
+          console.error('❌ Missing Square credentials in response:', data);
+          throw new Error('Square credentials not properly configured');
+        }
+        
+        console.log('✅ Square config success:', {
+          applicationId: data.applicationId?.substring(0, 10) + '...',
+          locationId: data.locationId?.substring(0, 10) + '...',
+          environment: data.environment
+        });
+        
+        return {
+          appId: data.applicationId,
+          locationId: data.locationId,
+        };
+      } catch (error) {
+        // If it's a network error and we haven't exhausted retries
+        if (retryCount < maxRetries && 
+            (error.message?.includes('Failed to fetch') || 
+             error.message?.includes('network') || 
+             error.message?.includes('timeout'))) {
+          
+          retryCount++;
+          const delay = Math.pow(2, retryCount - 1) * 1000;
+          console.log(`⏳ Network error, retrying in ${delay}ms... (attempt ${retryCount}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return attemptFetch();
+        }
+        
+        console.error('💥 Failed to fetch Square config:', error);
+        throw error;
       }
-      
-      if (!data?.success) {
-        console.error('❌ Square config failed:', data);
-        throw new Error(data?.error || 'Square configuration failed');
-      }
-      
-      if (!data.applicationId || !data.locationId) {
-        console.error('❌ Missing Square credentials in response:', data);
-        throw new Error('Square credentials not properly configured');
-      }
-      
-      console.log('✅ Square config success:', {
-        applicationId: data.applicationId?.substring(0, 10) + '...',
-        locationId: data.locationId?.substring(0, 10) + '...',
-        environment: data.environment
-      });
-      
-      return {
-        appId: data.applicationId,
-        locationId: data.locationId,
-      };
-    } catch (error) {
-      console.error('💥 Failed to fetch Square config:', error);
-      throw error;
-    }
+    };
+    
+    return attemptFetch();
   }, []);
 
   /** Initialize Square SDK */
