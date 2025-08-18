@@ -1,3 +1,5 @@
+'use client';
+
 import React, { memo, useState } from 'react';
 import type { SDKStatus } from '@/types/SquareCheckout';
 import { supabase } from '@/integrations/supabase/client';
@@ -143,26 +145,14 @@ const EmbeddedSquareCheckout = memo(({
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">Card Information</label>
             
-            {/* Ensure card container exists and is properly configured */}
+            {/* Card container - always render when SDK is ready */}
             <div className="relative">
-              {cardRef ? (
-                <div
-                  ref={cardRef}
-                  id="card-container"
-                  className="w-full border border-gray-300 rounded-lg p-4 bg-white min-h-[80px] focus-within:ring-2 focus-within:ring-sage focus-within:border-sage"
-                  style={{ minHeight: '80px' }}
-                />
-              ) : (
-                <div className="w-full border border-red-300 rounded-lg p-4 bg-red-50 min-h-[80px] flex items-center justify-center">
-                  <div className="text-center">
-                    <svg className="h-8 w-8 text-red-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 6.5c-.77.833.192 2.5 1.732 2.5z" />
-                    </svg>
-                    <p className="text-red-600 font-medium text-sm">Payment form container error</p>
-                    <p className="text-red-500 text-xs mt-1">Please refresh the page</p>
-                  </div>
-                </div>
-              )}
+              <div
+                ref={cardRef}
+                id="sq-card-container"
+                className="w-full border border-gray-300 rounded-lg p-4 bg-white min-h-[80px] focus-within:ring-2 focus-within:ring-sage focus-within:border-sage"
+                style={{ minHeight: '80px' }}
+              />
               
               {/* Loading overlay for card container */}
               {cardRef && !card && (
@@ -177,7 +167,7 @@ const EmbeddedSquareCheckout = memo(({
             
             <button
               onClick={handlePayment}
-              disabled={isPaying || !card || !cardRef || !isFormValid}
+              disabled={isPaying || !card || !cardRef?.current || !isFormValid}
               className="w-full bg-sage text-white py-3 px-4 rounded-lg hover:bg-sage/90 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
               {!isFormValid ? (
