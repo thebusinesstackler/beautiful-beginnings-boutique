@@ -122,7 +122,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Get credentials from Supabase secrets (secure)
-    const squareAppId = Deno.env.get('SQUARE_APP_ID');
+    const squareAppId = Deno.env.get('SQUARE_APPLICATION_ID');
     const squareLocationId = Deno.env.get('SQUARE_LOCATION_ID');
     const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN');
     const squareEnvironment = 'production'; // Production only
@@ -136,7 +136,7 @@ serve(async (req) => {
 
     // Validate Square credentials
     if (!squareAppId || !squareLocationId || !squareAccessToken) {
-      throw new Error('Square credentials not properly configured in Supabase secrets. Please check SQUARE_APP_ID, SQUARE_LOCATION_ID, and SQUARE_ACCESS_TOKEN.');
+      throw new Error('Square credentials not properly configured in Supabase secrets. Please check SQUARE_APPLICATION_ID, SQUARE_LOCATION_ID, and SQUARE_ACCESS_TOKEN.');
     }
 
     const settings = {

@@ -14,8 +14,8 @@ const corsHeaders = {
 /** ---------- Square Credentials from Supabase Secrets ---------- */
 console.log('🔧 Reading Square environment variables...')
 
-// Try multiple possible secret names to handle any naming inconsistencies
-const squareAppId = Deno.env.get('SQUARE_APP_ID') || Deno.env.get('SQAURE_APPLICATION_ID') || Deno.env.get('SQUARE_APPLICATION_ID')
+// Use consistent secret names across all Square integrations
+const squareAppId = Deno.env.get('SQUARE_APPLICATION_ID')
 const squareLocationId = Deno.env.get('SQUARE_LOCATION_ID')
 const squareAccessToken = Deno.env.get('SQUARE_ACCESS_TOKEN')
 const squareEnvironment = Deno.env.get('SQUARE_ENVIRONMENT') || 'production'
@@ -26,7 +26,7 @@ const squareEnvVars = Object.keys(allEnvVars).filter(key => key.toUpperCase().in
 console.log('🔍 All Square-related environment variables:', squareEnvVars)
 
 console.log('🔍 Environment variable check:', {
-  SQUARE_APP_ID: squareAppId ? `Present (${squareAppId.substring(0, 8)}...)` : 'MISSING',
+  SQUARE_APPLICATION_ID: squareAppId ? `Present (${squareAppId.substring(0, 8)}...)` : 'MISSING',
   SQUARE_LOCATION_ID: squareLocationId ? `Present (${squareLocationId.substring(0, 8)}...)` : 'MISSING',
   SQUARE_ACCESS_TOKEN: squareAccessToken ? `Present (${squareAccessToken.substring(0, 8)}...)` : 'MISSING',
   SQUARE_ENVIRONMENT: squareEnvironment,
@@ -35,7 +35,7 @@ console.log('🔍 Environment variable check:', {
 
 // Validate required Square credentials
 console.log('Square credentials check:', {
-  SQUARE_APP_ID: squareAppId ? `${squareAppId.substring(0, 10)}...` : 'MISSING',
+  SQUARE_APPLICATION_ID: squareAppId ? `${squareAppId.substring(0, 10)}...` : 'MISSING',
   SQUARE_LOCATION_ID: squareLocationId ? `${squareLocationId.substring(0, 10)}...` : 'MISSING', 
   SQUARE_ACCESS_TOKEN: squareAccessToken ? `${squareAccessToken.substring(0, 10)}...` : 'MISSING',
   SQUARE_ENVIRONMENT: squareEnvironment
