@@ -18,7 +18,7 @@ export const usePhotoUpload = () => {
 
       // Upload to Supabase storage
       const { data, error } = await supabase.storage
-        .from('product-images')
+        .from('customer-uploads')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false
@@ -31,7 +31,7 @@ export const usePhotoUpload = () => {
 
       // Get public URL
       const { data: urlData } = supabase.storage
-        .from('product-images')
+        .from('customer-uploads')
         .getPublicUrl(filePath);
 
       const publicUrl = urlData.publicUrl;
