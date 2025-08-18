@@ -19,8 +19,12 @@ interface OrderCreationRequest {
 export const useOrderCreation = () => {
   const createOrder = async (orderRequest: OrderCreationRequest): Promise<string> => {
     try {
-      // Always use guest checkout (customer_id = NULL) since users aren't logged in
-      const customerId = null;
+      // Get current user session to determine if guest or authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      const customerId = user ? user.id : null;
+      
+      console.log('Creating order for:', customerId ? 'authenticated user' : 'guest user');
+      console.log('Order request:', { ...orderRequest, uploadedImages: orderRequest.uploadedImages?.length || 0 });
 
       // Create order in database
       const { data: order, error } = await supabase
@@ -53,24 +57,53 @@ export const useOrderCreation = () => {
 
       if (error) {
         console.error('Error creating order:', error);
-        throw new Error('Failed to create order');
+        console.error('Error details:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+        throw new Error(`Failed to create order: ${error.message}`);
       }
 
-      // Create order items
+      console.log('Order created successfully:', order.id);
+
+      // Validate and create order items
       if (orderRequest.items && orderRequest.items.length > 0) {
-        const orderItems = orderRequest.items.map((item: any) => ({
-          order_id: order.id,
-          product_id: item.product_id || item.id, // Use product_id first, fallback to id
-          product_name: item.name,
-          product_image: item.image,
-          quantity: item.quantity,
-          price: item.price,
-          personalization_data: item.uploadedPhotoUrl ? { uploadedPhotoUrl: item.uploadedPhotoUrl, willUploadLater: item.willUploadLater || false } : null
-        }));
+        console.log('Processing', orderRequest.items.length, 'cart items');
+        
+        // Validate cart items structure
+        const validItems = [];
+        for (const item of orderRequest.items) {
+          if (!item.name || !item.price || !item.quantity) {
+            console.warn('Skipping invalid cart item:', item);
+            continue;
+          }
+          
+          if (!item.product_id && !item.id) {
+            console.warn('Cart item missing product_id and id:', item);
+            continue;
+          }
+          
+          validItems.push({
+            order_id: order.id,
+            product_id: item.product_id || item.id,
+            product_name: item.name,
+            product_image: item.image,
+            quantity: item.quantity,
+            price: item.price,
+            personalization_data: item.uploadedPhotoUrl ? { 
+              uploadedPhotoUrl: item.uploadedPhotoUrl, 
+              willUploadLater: item.willUploadLater || false 
+            } : null
+          });
+        }
+        
+        console.log('Valid items to insert:', validItems.length);
 
         const { error: itemsError } = await supabase
           .from('order_items')
-          .insert(orderItems);
+          .insert(validItems);
 
         if (itemsError) {
           console.error('Error creating order items:', itemsError);
