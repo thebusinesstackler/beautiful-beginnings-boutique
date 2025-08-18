@@ -4,6 +4,8 @@ import React, { memo, useState } from 'react';
 import type { SDKStatus } from '@/types/SquareCheckout';
 import { supabase } from '@/integrations/supabase/client';
 import type { EmbeddedSquareCheckoutProps } from '@/types/SquareCheckout';
+import { useOrderCreation } from '@/hooks/useOrderCreation';
+import { useCart } from '@/contexts/CartContext';
 
 interface Props extends EmbeddedSquareCheckoutProps {
   cardRef?: React.MutableRefObject<HTMLDivElement | null>;
@@ -34,6 +36,8 @@ const EmbeddedSquareCheckout = memo(({
 
   const [isPaying, setIsPaying] = useState(false);
   const [paymentResult, setPaymentResult] = useState<{ success: boolean; message: string } | null>(null);
+  const { createOrder } = useOrderCreation();
+  const { items: cartItems, clearCart } = useCart();
 
   const handlePayment = async () => {
     if (!card) {
@@ -45,25 +49,60 @@ const EmbeddedSquareCheckout = memo(({
       setIsPaying(true);
       setPaymentResult(null);
 
-      console.log('Starting embedded checkout payment processing...');
+      console.log('🚀 Starting embedded checkout payment processing...');
 
-      // 1️⃣ Tokenize the card
-      const result = await card.tokenize();
-      if (result.status !== 'OK') {
-        setPaymentResult({ success: false, message: 'Failed to tokenize card. Please check your details.' });
+      // 1️⃣ Create order in database FIRST
+      console.log('📝 Creating order in database...');
+      let orderId: string;
+      try {
+        // Gather uploaded image URLs from cart items
+        const uploadedImages = cartItems
+          .filter(item => item.uploadedPhotoUrl)
+          .map(item => item.uploadedPhotoUrl!)
+          .filter(Boolean);
+
+        orderId = await createOrder({
+          customerInfo,
+          shippingAddress,
+          billingAddress,
+          items: cartItems,
+          amount: total * 100, // Convert to cents
+          breakdown: {
+            subtotal: subtotal * 100,
+            shipping: shippingCost * 100,
+            tax: tax * 100,
+            total: total * 100
+          },
+          uploadedImages
+        });
+        console.log('✅ Order created with ID:', orderId);
+      } catch (orderError) {
+        console.error('❌ Failed to create order:', orderError);
+        setPaymentResult({ success: false, message: 'Failed to create order. Please try again.' });
         setIsPaying(false);
         return;
       }
 
-      console.log('Card tokenization successful');
+      // 2️⃣ Tokenize the card
+      console.log('💳 Tokenizing card...');
+      const result = await card.tokenize();
+      if (result.status !== 'OK') {
+        console.error('❌ Card tokenization failed:', result);
+        setPaymentResult({ success: false, message: 'Failed to tokenize card. Please check your details.' });
+        setIsPaying(false);
+        return;
+      }
+      console.log('✅ Card tokenization successful');
 
-      // 2️⃣ Send complete payment data to Supabase Edge Function
+      // 3️⃣ Send payment data to Supabase Edge Function with orderId
+      console.log('💰 Processing payment with Square...');
       const { data, error } = await supabase.functions.invoke('square-payments', {
         body: {
           action: 'process_payment',
           sourceId: result.token,
           verificationToken: result.verificationToken,
           amount: total, // Amount in dollars
+          orderId: orderId, // Pass the created order ID
           idempotencyKey: crypto.randomUUID(),
           customerEmail: customerInfo.email,
           customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
@@ -78,10 +117,10 @@ const EmbeddedSquareCheckout = memo(({
         }
       });
 
-      console.log('Square payment function response:', { data, error });
+      console.log('📊 Square payment function response:', { data, error });
 
       if (error) {
-        console.error('Payment processing error:', error);
+        console.error('❌ Payment processing error:', error);
         
         // Enhanced error logging with response text
         let errorMessage = error.message || 'Payment failed. Please try again.';
@@ -109,22 +148,29 @@ const EmbeddedSquareCheckout = memo(({
         
         setPaymentResult({ success: false, message: errorMessage });
       } else if (data?.success) {
-        setPaymentResult({ success: true, message: `Payment successful! ID: ${data.paymentId}` });
+        console.log('✅ Payment successful! Order ID:', orderId, 'Payment ID:', data.paymentId);
+        setPaymentResult({ success: true, message: `Payment successful! Order: ${orderId.substring(0, 8)}...` });
         
-        // Redirect to success page with customer name
+        // Clear the cart since payment was successful
+        clearCart();
+        
+        // Redirect to success page with customer name and order ID
         const firstName = customerInfo.firstName || '';
         const lastName = customerInfo.lastName || '';
         const fullName = `${firstName} ${lastName}`.trim();
         
+        const successParams = new URLSearchParams();
         if (fullName) {
-          window.location.href = `/checkout/success?customerName=${encodeURIComponent(fullName)}`;
-        } else {
-          window.location.href = '/checkout/success';
+          successParams.set('customerName', fullName);
         }
+        successParams.set('orderId', orderId);
+        
+        window.location.href = `/checkout/success?${successParams.toString()}`;
         
         onSuccess?.();
       } else {
         const errorMsg = data?.error || 'Payment failed. Please try again.';
+        console.error('❌ Payment failed:', errorMsg);
         setPaymentResult({ success: false, message: errorMsg });
       }
 

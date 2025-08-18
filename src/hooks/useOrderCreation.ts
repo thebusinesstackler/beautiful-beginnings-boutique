@@ -1,8 +1,23 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { PaymentRequest } from '@/types/SquareCheckout';
+import type { CustomerInfo, Address, CartItem } from '@/types/SquareCheckout';
+
+interface OrderCreationRequest {
+  customerInfo: CustomerInfo;
+  shippingAddress: Address;
+  billingAddress: Address;
+  items: CartItem[];
+  amount: number;
+  breakdown: {
+    subtotal: number;
+    shipping: number;
+    tax: number;
+    total: number;
+  };
+  uploadedImages?: string[];
+}
 
 export const useOrderCreation = () => {
-  const createOrder = async (paymentRequest: PaymentRequest): Promise<string> => {
+  const createOrder = async (orderRequest: OrderCreationRequest): Promise<string> => {
     try {
       // Get the current authenticated user (optional for guest checkout)
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -16,26 +31,26 @@ export const useOrderCreation = () => {
         .from('orders')
         .insert({
           customer_id: customerId, // NULL for guest users, auth.uid() for authenticated users
-          customer_email: paymentRequest.customerInfo.email,
-          customer_name: `${paymentRequest.customerInfo.firstName} ${paymentRequest.customerInfo.lastName}`,
-          customer_phone: paymentRequest.customerInfo.phone || null,
-          total_amount: paymentRequest.amount / 100, // Convert cents to dollars
+          customer_email: orderRequest.customerInfo.email,
+          customer_name: `${orderRequest.customerInfo.firstName} ${orderRequest.customerInfo.lastName}`,
+          customer_phone: orderRequest.customerInfo.phone || null,
+          total_amount: orderRequest.amount / 100, // Convert cents to dollars
           status: 'pending',
           shipping_address: {
-            address: paymentRequest.shippingAddress.address,
-            city: paymentRequest.shippingAddress.city,
-            state: paymentRequest.shippingAddress.state,
-            zipCode: paymentRequest.shippingAddress.zipCode,
-            country: paymentRequest.shippingAddress.country
+            address: orderRequest.shippingAddress.address,
+            city: orderRequest.shippingAddress.city,
+            state: orderRequest.shippingAddress.state,
+            zipCode: orderRequest.shippingAddress.zipCode,
+            country: orderRequest.shippingAddress.country
           },
           billing_address: {
-            address: paymentRequest.billingAddress.address,
-            city: paymentRequest.billingAddress.city,
-            state: paymentRequest.billingAddress.state,
-            zipCode: paymentRequest.billingAddress.zipCode,
-            country: paymentRequest.billingAddress.country
+            address: orderRequest.billingAddress.address,
+            city: orderRequest.billingAddress.city,
+            state: orderRequest.billingAddress.state,
+            zipCode: orderRequest.billingAddress.zipCode,
+            country: orderRequest.billingAddress.country
           },
-          uploaded_images: paymentRequest.uploadedImages || []
+          uploaded_images: orderRequest.uploadedImages || []
         })
         .select()
         .single();
@@ -46,8 +61,8 @@ export const useOrderCreation = () => {
       }
 
       // Create order items
-      if (paymentRequest.items && paymentRequest.items.length > 0) {
-        const orderItems = paymentRequest.items.map((item: any) => ({
+      if (orderRequest.items && orderRequest.items.length > 0) {
+        const orderItems = orderRequest.items.map((item: any) => ({
           order_id: order.id,
           product_id: item.id,
           product_name: item.name,
