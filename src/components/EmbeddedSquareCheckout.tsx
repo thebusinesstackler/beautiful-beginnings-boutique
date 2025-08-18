@@ -1,7 +1,6 @@
 import React, { memo, useState } from 'react';
 import type { SDKStatus } from '@/types/SquareCheckout';
 import { supabase } from '@/integrations/supabase/client';
-
 import type { EmbeddedSquareCheckoutProps } from '@/types/SquareCheckout';
 
 interface Props extends EmbeddedSquareCheckoutProps {
@@ -43,6 +42,8 @@ const EmbeddedSquareCheckout = memo(({
       setIsPaying(true);
       setPaymentResult(null);
 
+      console.log('Starting embedded checkout payment processing...');
+
       // 1️⃣ Tokenize the card
       const result = await card.tokenize();
       if (result.status !== 'OK') {
@@ -51,19 +52,46 @@ const EmbeddedSquareCheckout = memo(({
         return;
       }
 
-      // 2️⃣ Send token to Supabase Edge Function
+      console.log('Card tokenization successful');
+
+      // 2️⃣ Send complete payment data to Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('square-payments', {
-        body: { token: result.token }
+        body: {
+          action: 'process_payment',
+          sourceId: result.token,
+          verificationToken: result.verificationToken,
+          amount: total, // Amount in dollars
+          idempotencyKey: crypto.randomUUID(),
+          customerEmail: customerInfo.email,
+          customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
+          customerPhone: customerInfo.phone,
+          billingAddress: {
+            addressLine1: billingAddress.address,
+            locality: billingAddress.city,
+            administrativeDistrictLevel1: billingAddress.state,
+            postalCode: billingAddress.zipCode,
+            country: billingAddress.country
+          }
+        }
       });
 
-      if (error || !data?.success) {
-        setPaymentResult({ success: false, message: data?.error || 'Payment failed. Please try again.' });
-      } else {
+      console.log('Square payment function response:', { data, error });
+
+      if (error) {
+        console.error('Payment processing error:', error);
+        setPaymentResult({ success: false, message: error.message || 'Payment failed. Please try again.' });
+      } else if (data?.success) {
         setPaymentResult({ success: true, message: `Payment successful! ID: ${data.paymentId}` });
+        onSuccess?.();
+      } else {
+        const errorMsg = data?.error || 'Payment failed. Please try again.';
+        setPaymentResult({ success: false, message: errorMsg });
       }
 
     } catch (err: any) {
+      console.error('Payment error:', err);
       setPaymentResult({ success: false, message: err.message || 'Unexpected error during payment.' });
+      onError?.(err);
     } finally {
       setIsPaying(false);
     }
