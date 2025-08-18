@@ -46,6 +46,11 @@ const EmbeddedSquareCheckout = memo(({
     }
 
     try {
+      console.log('💳 Starting payment process...');
+      console.log('Customer info:', customerInfo);
+      console.log('Cart items:', cartItems);
+      console.log('Total amount:', total);
+      
       setIsPaying(true);
       setPaymentResult(null);
 

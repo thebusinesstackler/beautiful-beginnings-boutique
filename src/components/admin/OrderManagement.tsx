@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Download, Eye, CheckCircle, Users, Image as ImageIcon } from 'lucide-react';
+import { Package, Download, Eye, CheckCircle, Users, Image as ImageIcon, RefreshCw } from 'lucide-react';
 import OrderDetailsModal from './OrderDetailsModal';
 
 interface Order {
@@ -34,6 +34,7 @@ const OrderManagement = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -107,6 +108,37 @@ const OrderManagement = () => {
         description: "Failed to update order status",
         variant: "destructive",
       });
+    }
+  };
+
+  const syncSquareOrders = async () => {
+    setIsSyncing(true);
+    try {
+      console.log('🔄 Starting Square orders sync...');
+      
+      const { data, error } = await supabase.functions.invoke('sync-square-orders', {});
+      
+      if (error) throw error;
+      
+      console.log('✅ Sync completed:', data);
+      
+      toast({
+        title: "Success",
+        description: `${data.syncedCount} missing orders synced from Square`,
+      });
+      
+      // Refresh orders after sync
+      fetchOrders();
+      
+    } catch (error) {
+      console.error('❌ Sync error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to sync orders from Square",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -213,12 +245,23 @@ const OrderManagement = () => {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-2">Order Management</h2>
-          <p className="text-stone text-sm sm:text-base">View and manage customer orders with uploaded photos</p>
+          <p className="text-stone text-sm sm:text-base">View and manage customer orders with uploaded photos. Sync missing orders from Square.</p>
         </div>
-        <Button onClick={exportOrders} variant="outline" className="border-stone text-charcoal hover:bg-cream/50 w-full sm:w-auto">
-          <Download className="h-4 w-4 mr-2" />
-          Export CSV
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button 
+            onClick={syncSquareOrders} 
+            variant="outline" 
+            disabled={isSyncing}
+            className="border-sage text-sage hover:bg-sage/10 w-full sm:w-auto"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Syncing...' : 'Sync Square Orders'}
+          </Button>
+          <Button onClick={exportOrders} variant="outline" className="border-stone text-charcoal hover:bg-cream/50 w-full sm:w-auto">
+            <Download className="h-4 w-4 mr-2" />
+            Export CSV
+          </Button>
+        </div>
       </div>
 
       {/* Order Stats */}
