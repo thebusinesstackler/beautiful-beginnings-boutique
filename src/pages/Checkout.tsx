@@ -11,6 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import SquareCheckout from '@/components/SquareCheckout';
 import { useShippingSettings } from '@/hooks/useShippingSettings';
 import { useSettings } from '@/hooks/useSettings';
+import DebugSquareSecrets from '@/components/DebugSquareSecrets';
 const Checkout = () => {
   const {
     items,
@@ -477,6 +478,9 @@ const Checkout = () => {
             <div className="xl:col-span-2">
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-sage/10 p-8 sticky top-8">
                 <h3 className="text-2xl font-semibold text-charcoal font-playfair mb-8">Order Summary</h3>
+                
+                {/* Debug Square Secrets - TEMPORARY */}
+                <DebugSquareSecrets />
                 
                 <div className="space-y-4 mb-8">
                   {couponCode ? <>
