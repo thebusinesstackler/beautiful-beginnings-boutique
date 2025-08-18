@@ -19,12 +19,8 @@ interface OrderCreationRequest {
 export const useOrderCreation = () => {
   const createOrder = async (orderRequest: OrderCreationRequest): Promise<string> => {
     try {
-      // Get the current authenticated user (optional for guest checkout)
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
-      // For guest checkout, user can be null
-      // For authenticated users, use their ID as customer_id
-      const customerId = user?.id || null;
+      // Always use guest checkout (customer_id = NULL) since users aren't logged in
+      const customerId = null;
 
       // Create order in database
       const { data: order, error } = await supabase
