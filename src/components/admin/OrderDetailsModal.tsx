@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Calendar, User, MapPin, CreditCard, Package, Eye, ShoppingBag, DollarSign } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Order {
   id: string;
@@ -31,6 +32,18 @@ interface Order {
   card_exp_year?: number;
 }
 
+interface OrderItem {
+  id: string;
+  order_id: string;
+  product_id: string;
+  product_name: string;
+  product_image: string;
+  quantity: number;
+  price: number;
+  personalization_data: any;
+  created_at: string;
+}
+
 interface OrderDetailsModalProps {
   order: Order | null;
   isOpen: boolean;
@@ -38,7 +51,44 @@ interface OrderDetailsModalProps {
 }
 
 const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) => {
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [loadingItems, setLoadingItems] = useState(false);
+  
   if (!order) return null;
+
+  // Fetch order items from database
+  useEffect(() => {
+    const fetchOrderItems = async () => {
+      if (!order.id) return;
+      
+      setLoadingItems(true);
+      try {
+        console.log('Fetching order items for order:', order.id);
+        
+        const { data: items, error } = await supabase
+          .from('order_items')
+          .select('*')
+          .eq('order_id', order.id);
+
+        if (error) {
+          console.error('Error fetching order items:', error);
+          setOrderItems([]);
+        } else {
+          console.log('Fetched order items:', items);
+          setOrderItems(items || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch order items:', error);
+        setOrderItems([]);
+      } finally {
+        setLoadingItems(false);
+      }
+    };
+
+    if (isOpen && order.id) {
+      fetchOrderItems();
+    }
+  }, [order.id, isOpen]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
@@ -133,10 +183,26 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
     return uniqueImages;
   };
 
-  // Extract product information from order data
+  // Get product details - now uses actual order_items from database
   const getProductDetails = () => {
-    console.log('Extracting product details from:', order.personalization_data);
+    console.log('Order items from database:', orderItems);
+    console.log('Fallback personalization data:', order.personalization_data);
     
+    // Use actual order_items from database if available
+    if (orderItems && orderItems.length > 0) {
+      return orderItems.map((item) => ({
+        id: item.product_id,
+        name: item.product_name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.product_image,
+        uploadedPhotoUrl: item.personalization_data?.uploadedPhotoUrl || null,
+        willUploadLater: item.personalization_data?.willUploadLater || false,
+        source: 'database'
+      }));
+    }
+    
+    // Fallback to personalization_data if no order_items found
     if (!order.personalization_data) {
       return [];
     }
@@ -149,18 +215,25 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
         price: item.price || 0,
         quantity: item.quantity || 1,
         uploadedPhotoUrl: item.uploadedPhotoUrl || null,
-        hasPhoto: item.hasPhoto || false
+        hasPhoto: item.hasPhoto || false,
+        source: 'personalization_data'
       }));
     }
     
     // Check for cart items data
     if (Array.isArray(order.personalization_data)) {
-      return order.personalization_data;
+      return order.personalization_data.map((item, index) => ({
+        ...item,
+        source: 'personalization_data_array'
+      }));
     }
     
     // Check for single product object
     if (typeof order.personalization_data === 'object') {
-      return [order.personalization_data];
+      return [{
+        ...order.personalization_data,
+        source: 'personalization_data_object'
+      }];
     }
     
     return [];
@@ -285,32 +358,48 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
               <span className="font-bold text-lg text-charcoal">Products to Fulfill</span>
             </div>
             
-            {productDetails.length > 0 ? (
+            {loadingItems ? (
+              <div className="bg-white rounded-lg p-8 border border-green-300 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-green-600 border-t-transparent mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading order items...</p>
+              </div>
+            ) : productDetails.length > 0 ? (
               <div className="grid gap-4">
+                <div className="text-sm text-green-700 bg-green-100 p-3 rounded-lg">
+                  <strong>Found {productDetails.length} item(s)</strong> - 
+                  Data source: {productDetails[0]?.source === 'database' ? 'Order Items Database' : 'Personalization Data (Fallback)'}
+                </div>
                 {productDetails.map((product: any, index) => (
                   <div key={index} className="bg-white rounded-lg p-4 border border-green-300 shadow-sm">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
-                        <h4 className="text-lg font-semibold text-charcoal mb-2">
+                        <h4 className="text-lg font-semibold text-charcoal mb-2 flex items-center">
+                          <ShoppingBag className="h-5 w-5 mr-2 text-green-600" />
                           {product.name || 'Product'}
                         </h4>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                           <div>
                             <span className="font-medium text-stone">Product Name:</span>
-                            <p className="text-charcoal">{product.name || 'Product from order'}</p>
+                            <p className="text-charcoal font-semibold">{product.name || 'Product from order'}</p>
                           </div>
                           <div>
-                            <span className="font-medium text-stone">Price:</span>
-                            <p className="text-charcoal font-semibold">
-                              {product.price ? (typeof product.price === 'number' ? `$${product.price.toFixed(2)}` : `$${(product.price / 100).toFixed(2)}`) : `$${(order.total_amount / (productDetails.length || 1)).toFixed(2)}`}
+                            <span className="font-medium text-stone">Price (Each):</span>
+                            <p className="text-charcoal font-semibold text-green-600">
+                              ${typeof product.price === 'number' ? product.price.toFixed(2) : '0.00'}
                             </p>
                           </div>
                           <div>
                             <span className="font-medium text-stone">Quantity:</span>
-                            <p className="text-charcoal">{product.quantity || 1}</p>
+                            <p className="text-charcoal font-semibold">{product.quantity || 1}</p>
+                          </div>
+                          <div>
+                            <span className="font-medium text-stone">Line Total:</span>
+                            <p className="text-charcoal font-bold text-lg">
+                              ${((product.price || 0) * (product.quantity || 1)).toFixed(2)}
+                            </p>
                           </div>
                           {product.id && (
-                            <div>
+                            <div className="md:col-span-2">
                               <span className="font-medium text-stone">Product ID:</span>
                               <p className="text-charcoal font-mono text-xs">{product.id}</p>
                             </div>
@@ -319,13 +408,38 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                       </div>
                     </div>
                     
+                    {/* Product Photo - if uploaded for this specific item */}
+                    {product.uploadedPhotoUrl && (
+                      <div className="mt-4 p-3 bg-blue-50 rounded-lg border-2 border-blue-200">
+                        <h5 className="text-sm font-medium text-blue-700 mb-2 flex items-center">
+                          <Eye className="h-4 w-4 mr-2" />
+                          Photo for this product:
+                        </h5>
+                        <div className="bg-white rounded-lg p-2 border">
+                          <img
+                            src={product.uploadedPhotoUrl}
+                            alt={`Photo for ${product.name}`}
+                            className="w-32 h-32 object-cover rounded cursor-pointer hover:scale-105 transition-transform"
+                            onClick={() => handleImageClick(product.uploadedPhotoUrl)}
+                            onError={handleImageError}
+                          />
+                          <p className="text-xs text-blue-600 mt-2">Click to enlarge</p>
+                        </div>
+                        {product.willUploadLater && (
+                          <div className="mt-2 p-2 bg-yellow-100 rounded text-xs text-yellow-700">
+                            ⚠️ Customer indicated they will upload photo later
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     {/* Product customization details */}
-                    {Object.keys(product).filter(k => !['name', 'price', 'quantity', 'id', 'image', 'uploadedPhoto', 'uploadedPhotoUrl', 'willUploadLater', 'hasPhoto'].includes(k)).length > 0 && (
+                    {Object.keys(product).filter(k => !['name', 'price', 'quantity', 'id', 'image', 'uploadedPhoto', 'uploadedPhotoUrl', 'willUploadLater', 'hasPhoto', 'source'].includes(k)).length > 0 && (
                       <div className="mt-3 p-3 bg-gray-50 rounded border">
-                        <h5 className="text-sm font-medium text-charcoal mb-2">Customization Details:</h5>
+                        <h5 className="text-sm font-medium text-charcoal mb-2">Additional Details:</h5>
                         <div className="space-y-1 text-xs">
                           {Object.entries(product)
-                            .filter(([k]) => !['name', 'price', 'quantity', 'id', 'image', 'uploadedPhoto', 'uploadedPhotoUrl', 'willUploadLater', 'hasPhoto'].includes(k))
+                            .filter(([k]) => !['name', 'price', 'quantity', 'id', 'image', 'uploadedPhoto', 'uploadedPhotoUrl', 'willUploadLater', 'hasPhoto', 'source'].includes(k))
                             .map(([k, v]: [string, any]) => (
                               <div key={k} className="flex justify-between">
                                 <span className="font-medium text-stone capitalize">{k.replace(/([A-Z])/g, ' $1')}:</span>
@@ -339,9 +453,22 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-lg p-4 border border-green-300">
-                <p className="text-gray-600">Product details not available in standard format.</p>
-                <p className="text-sm text-gray-500 mt-1">Order total: ${order.total_amount?.toFixed(2)}</p>
+              <div className="bg-white rounded-lg p-6 border border-green-300">
+                <div className="text-center">
+                  <ShoppingBag className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-600 mb-2">No Product Items Found</h3>
+                  <p className="text-gray-500 mb-4">
+                    No order items were found in the database for this order.
+                  </p>
+                  <div className="text-sm bg-yellow-50 border border-yellow-200 rounded p-3">
+                    <p className="text-yellow-700">
+                      <strong>Order Total:</strong> ${order.total_amount?.toFixed(2)}
+                    </p>
+                    <p className="text-yellow-600 mt-1">
+                      This might be due to the order validation issue that has been fixed. Future orders should show detailed product information.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>

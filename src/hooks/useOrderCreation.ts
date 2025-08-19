@@ -72,22 +72,30 @@ export const useOrderCreation = () => {
       if (orderRequest.items && orderRequest.items.length > 0) {
         console.log('Processing', orderRequest.items.length, 'cart items');
         
-        // Validate cart items structure
+        // Validate cart items structure - improved validation logic
         const validItems = [];
         for (const item of orderRequest.items) {
+          console.log('Processing cart item:', {
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            product_id: item.product_id,
+            id: item.id,
+            uploadedPhotoUrl: item.uploadedPhotoUrl
+          });
+
+          // Check required fields
           if (!item.name || !item.price || !item.quantity) {
-            console.warn('Skipping invalid cart item:', item);
+            console.warn('Skipping invalid cart item - missing required fields:', item);
             continue;
           }
           
-          if (!item.product_id && !item.id) {
-            console.warn('Cart item missing product_id and id:', item);
-            continue;
-          }
+          // Use product_id if available, otherwise use id, otherwise generate one
+          const productId = item.product_id || item.id || `cart-item-${Date.now()}-${Math.random()}`;
           
-          validItems.push({
+          const orderItem = {
             order_id: order.id,
-            product_id: item.product_id || item.id,
+            product_id: productId,
             product_name: item.name,
             product_image: item.image,
             quantity: item.quantity,
@@ -96,7 +104,10 @@ export const useOrderCreation = () => {
               uploadedPhotoUrl: item.uploadedPhotoUrl, 
               willUploadLater: item.willUploadLater || false 
             } : null
-          });
+          };
+          
+          console.log('Valid order item created:', orderItem);
+          validItems.push(orderItem);
         }
         
         console.log('Valid items to insert:', validItems.length);
