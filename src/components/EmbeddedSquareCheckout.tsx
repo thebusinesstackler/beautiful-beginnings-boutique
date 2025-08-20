@@ -234,12 +234,16 @@ const EmbeddedSquareCheckout = memo(({
             <label className="block text-sm font-medium text-gray-700">Card Information</label>
             
             {/* Card container - always render when SDK is ready */}
-            <div className="relative">
+            <div className="relative overflow-hidden">
               <div
                 ref={cardRef}
                 id="sq-card-container"
-                className="w-full border border-gray-300 rounded-lg p-4 bg-white min-h-[80px] focus-within:ring-2 focus-within:ring-sage focus-within:border-sage"
-                style={{ minHeight: '80px' }}
+                className="w-full max-w-full border border-gray-300 rounded-lg p-4 bg-white min-h-[80px] focus-within:ring-2 focus-within:ring-sage focus-within:border-sage overflow-hidden"
+                style={{ 
+                  minHeight: '80px',
+                  maxWidth: '100%',
+                  boxSizing: 'border-box'
+                }}
               />
               
               {/* Loading overlay for card container */}

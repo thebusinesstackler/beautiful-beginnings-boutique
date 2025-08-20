@@ -20,6 +20,53 @@
   background-color: #f5f0ee !important; /* very light version for disabled */
 }
 
+/* Square Card Form Container - Fix positioning and iframe overflow */
+#sq-card-container {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Square SDK iframe elements - Control sizing and positioning */
+#sq-card-container iframe {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 60px !important;
+  border: none !important;
+  display: block !important;
+  box-sizing: border-box !important;
+}
+
+/* Square card element wrapper - Ensure proper containment */
+#sq-card-container > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Square payment form - Responsive adjustments */
+@media (max-width: 768px) {
+  #sq-card-container {
+    min-height: 70px !important;
+  }
+  
+  #sq-card-container iframe {
+    min-height: 50px !important;
+  }
+}
+
+/* Square form fields - Ensure they fit within container */
+#sq-card-container input,
+#sq-card-container [data-testid*="card"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 /* Quill Editor Styling */
 .ql-toolbar {
   border: 1px solid #e5e7eb !important;
