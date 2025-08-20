@@ -54,12 +54,10 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [loadingItems, setLoadingItems] = useState(false);
   
-  if (!order) return null;
-
-  // Fetch order items from database
+  // Fetch order items from database - hook must be called before any early returns
   useEffect(() => {
     const fetchOrderItems = async () => {
-      if (!order.id) return;
+      if (!order?.id) return;
       
       setLoadingItems(true);
       try {
@@ -85,10 +83,13 @@ const OrderDetailsModal = ({ order, isOpen, onClose }: OrderDetailsModalProps) =
       }
     };
 
-    if (isOpen && order.id) {
+    if (isOpen && order?.id) {
       fetchOrderItems();
     }
-  }, [order.id, isOpen]);
+  }, [order?.id, isOpen]);
+
+  // Early return after all hooks are called
+  if (!order) return null;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
