@@ -118,7 +118,16 @@ export const useOrderCreation = () => {
 
         if (itemsError) {
           console.error('Error creating order items:', itemsError);
-          // Don't throw here as the order is already created
+          console.error('Failed order items data:', validItems);
+          console.error('Error details:', {
+            code: itemsError.code,
+            message: itemsError.message,
+            details: itemsError.details,
+            hint: itemsError.hint
+          });
+          // Don't throw here as the order is already created, but log for debugging
+        } else {
+          console.log('Successfully created', validItems.length, 'order items');
         }
       }
 
