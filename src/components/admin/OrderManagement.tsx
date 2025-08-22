@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import OrderDetailsModal from './OrderDetailsModal';
+import { TestOrderButton } from './TestOrderButton';
 
 interface Order {
   id: string;
@@ -286,6 +287,7 @@ const OrderManagement = () => {
           <p className="text-stone text-sm sm:text-base">View and manage customer orders with uploaded photos. Sync missing orders from Square.</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <TestOrderButton onOrderCreated={() => fetchOrders()} />
           <Button 
             onClick={syncSquareOrders} 
             variant="outline" 

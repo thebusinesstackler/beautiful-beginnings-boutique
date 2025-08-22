@@ -72,7 +72,7 @@ export const useOrderCreation = () => {
       if (orderRequest.items && orderRequest.items.length > 0) {
         console.log('Processing', orderRequest.items.length, 'cart items');
         
-        // Validate cart items structure - improved validation logic
+        // Validate cart items structure and create order items
         const validItems = [];
         for (const item of orderRequest.items) {
           console.log('Processing cart item:', {
@@ -84,22 +84,33 @@ export const useOrderCreation = () => {
             uploadedPhotoUrl: item.uploadedPhotoUrl
           });
 
-          // Check required fields
-          if (!item.name || !item.price || !item.quantity) {
+          // Check required fields - be more lenient with validation
+          if (!item.name || item.price === undefined || item.price === null || !item.quantity) {
             console.warn('Skipping invalid cart item - missing required fields:', item);
             continue;
           }
+
+          // Ensure price is a number
+          let itemPrice = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
+          if (isNaN(itemPrice)) {
+            console.warn('Skipping cart item with invalid price:', item);
+            continue;
+          }
           
-          // Use product_id if available, otherwise use id, otherwise generate one
-          const productId = item.product_id || item.id || `cart-item-${Date.now()}-${Math.random()}`;
+          // Use product_id if available, otherwise use id as fallback
+          const productId = item.product_id || item.id;
+          if (!productId) {
+            console.warn('Skipping cart item without product_id or id:', item);
+            continue;
+          }
           
           const orderItem = {
             order_id: order.id,
             product_id: productId,
             product_name: item.name,
-            product_image: item.image,
+            product_image: item.image || null,
             quantity: item.quantity,
-            price: item.price,
+            price: itemPrice,
             personalization_data: item.uploadedPhotoUrl ? { 
               uploadedPhotoUrl: item.uploadedPhotoUrl, 
               willUploadLater: item.willUploadLater || false 
@@ -110,25 +121,56 @@ export const useOrderCreation = () => {
           validItems.push(orderItem);
         }
         
-        console.log('Valid items to insert:', validItems.length);
+        console.log('Attempting to insert', validItems.length, 'valid items');
 
-        const { error: itemsError } = await supabase
-          .from('order_items')
-          .insert(validItems);
+        if (validItems.length > 0) {
+          const { data: insertedItems, error: itemsError } = await supabase
+            .from('order_items')
+            .insert(validItems)
+            .select();
 
-        if (itemsError) {
-          console.error('Error creating order items:', itemsError);
-          console.error('Failed order items data:', validItems);
-          console.error('Error details:', {
-            code: itemsError.code,
-            message: itemsError.message,
-            details: itemsError.details,
-            hint: itemsError.hint
-          });
-          // Don't throw here as the order is already created, but log for debugging
+          if (itemsError) {
+            console.error('❌ Error creating order items:', itemsError);
+            console.error('Failed order items data:', validItems);
+            console.error('Error details:', {
+              code: itemsError.code,
+              message: itemsError.message,
+              details: itemsError.details,
+              hint: itemsError.hint
+            });
+            
+            // Try to update order with error status but don't fail the whole process
+            await supabase
+              .from('orders')
+              .update({ 
+                notes: `Order created but failed to save ${validItems.length} items. Error: ${itemsError.message}` 
+              })
+              .eq('id', order.id);
+              
+          } else {
+            console.log('✅ Successfully created', insertedItems?.length || 0, 'order items');
+            
+            // Update order with success info
+            await supabase
+              .from('orders')
+              .update({ 
+                notes: `Order created successfully with ${insertedItems?.length || 0} items` 
+              })
+              .eq('id', order.id);
+          }
         } else {
-          console.log('Successfully created', validItems.length, 'order items');
+          console.warn('⚠️ No valid items to insert for order', order.id);
+          
+          // Update order to note the issue
+          await supabase
+            .from('orders')
+            .update({ 
+              notes: 'Order created but no valid items could be processed from cart data' 
+            })
+            .eq('id', order.id);
         }
+      } else {
+        console.warn('⚠️ No items provided in order request');
       }
 
       return order.id;
