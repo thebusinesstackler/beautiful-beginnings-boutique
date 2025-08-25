@@ -1,6 +1,7 @@
 
 import { Upload, Palette, Package, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const HowItWorks = () => {
   const steps = [
@@ -87,9 +88,11 @@ const HowItWorks = () => {
         </div>
 
         <div className="text-center">
-          <Button className="text-lg px-10 py-4 font-semibold rounded-lg transition-all duration-200 hover:scale-105 text-white" style={{ backgroundColor: '#E28F84' }}>
-            <Sparkles className="h-5 w-5 mr-2" />
-            Start Personalizing Now
+          <Button asChild className="text-lg px-10 py-4 font-semibold rounded-lg transition-all duration-200 hover:scale-105 text-white" style={{ backgroundColor: '#E28F84' }}>
+            <Link to="/shop">
+              <Sparkles className="h-5 w-5 mr-2" />
+              Start Personalizing Now
+            </Link>
           </Button>
         </div>
       </div>

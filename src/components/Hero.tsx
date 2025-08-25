@@ -119,6 +119,7 @@ const Hero = () => {
                 </Link>
               </Button>
               <Button 
+                asChild
                 variant="outline" 
                 className="text-lg px-8 py-3 border-2 transition-all duration-200 font-semibold rounded-lg"
                 style={{ 
@@ -134,7 +135,9 @@ const Hero = () => {
                   e.currentTarget.style.borderColor = '#E28F84';
                 }}
               >
-                Customize Your Gift
+                <Link to="/shop">
+                  Customize Your Gift
+                </Link>
               </Button>
             </div>
 
