@@ -318,13 +318,17 @@ const About = () => {
             Join thousands of happy customers who've turned their favorite memories into treasured keepsakes that feel like hugs from home
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-            <Button className="text-lg px-10 py-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 text-white font-semibold" style={{ backgroundColor: '#E28F84' }}>
-              <Sparkles className="h-5 w-5 mr-2" />
-              Start Personalizing
-            </Button>
-            <Button variant="outline" className="text-lg px-10 py-4 border-2 hover:scale-105 transition-all duration-300" style={{ borderColor: '#E28F84', color: '#7A7047' }}>
-              View All Products
-            </Button>
+            <Link to="/shop">
+              <Button className="w-full text-lg px-10 py-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 text-white font-semibold" style={{ backgroundColor: '#E28F84' }}>
+                <Sparkles className="h-5 w-5 mr-2" />
+                Start Personalizing
+              </Button>
+            </Link>
+            <Link to="/shop">
+              <Button variant="outline" className="w-full text-lg px-10 py-4 border-2 hover:scale-105 transition-all duration-300" style={{ borderColor: '#E28F84', color: '#7A7047' }}>
+                View All Products
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
